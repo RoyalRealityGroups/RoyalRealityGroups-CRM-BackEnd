@@ -6643,5 +6643,280 @@
         "Name": "Export",
         "Permission": "General.export_generalsettings",
         "Hide": "0"
+    },
+    {
+        "Name": "Export",
+        "Permission": "General.export_generalsettings",
+        "Hide": "0"
+    },
+    {
+        "Name": "Add",
+        "Permission": "Lead.add_lead",
+        "Hide": "0"
+    },
+    {
+        "Name": "Change",
+        "Permission": "Lead.change_lead",
+        "Hide": "0"
+    },
+    {
+        "Name": "Delete",
+        "Permission": "Lead.delete_lead",
+        "Hide": "0"
+    },
+    {
+        "Name": "View",
+        "Permission": "Lead.view_lead",
+        "Hide": "0"
+    },
+    {
+        "Name": "Reports",
+        "Permission": "Lead.reports_lead",
+        "Hide": "0"
+    },
+    {
+        "Name": "Export",
+        "Permission": "Lead.export_lead",
+        "Hide": "0"
+    },
+    {
+        "Name": "Import",
+        "Permission": "Lead.import_lead",
+        "Hide": "0"
+    },
+    {
+        "Name": "Print",
+        "Permission": "Lead.print_lead",
+        "Hide": "0"
+    },
+    {
+        "Name": "Download",
+        "Permission": "Lead.download_lead",
+        "Hide": "0"
+    },
+    {
+        "Name": "Add",
+        "Permission": "Lead.add_leadstatushistory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Change",
+        "Permission": "Lead.change_leadstatushistory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Delete",
+        "Permission": "Lead.delete_leadstatushistory",
+        "Hide": "0"
+    },
+    {
+        "Name": "View",
+        "Permission": "Lead.view_leadstatushistory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Reports",
+        "Permission": "Lead.reports_leadstatushistory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Export",
+        "Permission": "Lead.export_leadstatushistory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Import",
+        "Permission": "Lead.import_leadstatushistory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Print",
+        "Permission": "Lead.print_leadstatushistory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Download",
+        "Permission": "Lead.download_leadstatushistory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Add",
+        "Permission": "Lead.add_leadfollowup",
+        "Hide": "0"
+    },
+    {
+        "Name": "Change",
+        "Permission": "Lead.change_leadfollowup",
+        "Hide": "0"
+    },
+    {
+        "Name": "Delete",
+        "Permission": "Lead.delete_leadfollowup",
+        "Hide": "0"
+    },
+    {
+        "Name": "View",
+        "Permission": "Lead.view_leadfollowup",
+        "Hide": "0"
+    },
+    {
+        "Name": "Reports",
+        "Permission": "Lead.reports_leadfollowup",
+        "Hide": "0"
+    },
+    {
+        "Name": "Export",
+        "Permission": "Lead.export_leadfollowup",
+        "Hide": "0"
+    },
+    {
+        "Name": "Import",
+        "Permission": "Lead.import_leadfollowup",
+        "Hide": "0"
+    },
+    {
+        "Name": "Print",
+        "Permission": "Lead.print_leadfollowup",
+        "Hide": "0"
+    },
+    {
+        "Name": "Download",
+        "Permission": "Lead.download_leadfollowup",
+        "Hide": "0"
+    },
+    {
+        "Name": "Add",
+        "Permission": "Lead.add_leadcrosscheck",
+        "Hide": "0"
+    },
+    {
+        "Name": "Change",
+        "Permission": "Lead.change_leadcrosscheck",
+        "Hide": "0"
+    },
+    {
+        "Name": "Delete",
+        "Permission": "Lead.delete_leadcrosscheck",
+        "Hide": "0"
+    },
+    {
+        "Name": "View",
+        "Permission": "Lead.view_leadcrosscheck",
+        "Hide": "0"
+    },
+    {
+        "Name": "Reports",
+        "Permission": "Lead.reports_leadcrosscheck",
+        "Hide": "0"
+    },
+    {
+        "Name": "Export",
+        "Permission": "Lead.export_leadcrosscheck",
+        "Hide": "0"
+    },
+    {
+        "Name": "Import",
+        "Permission": "Lead.import_leadcrosscheck",
+        "Hide": "0"
+    },
+    {
+        "Name": "Print",
+        "Permission": "Lead.print_leadcrosscheck",
+        "Hide": "0"
+    },
+    {
+        "Name": "Download",
+        "Permission": "Lead.download_leadcrosscheck",
+        "Hide": "0"
+    },
+    {
+        "Name": "Add",
+        "Permission": "Masters.add_project",
+        "Hide": "0"
+    },
+    {
+        "Name": "Change",
+        "Permission": "Masters.change_project",
+        "Hide": "0"
+    },
+    {
+        "Name": "Delete",
+        "Permission": "Masters.delete_project",
+        "Hide": "0"
+    },
+    {
+        "Name": "View",
+        "Permission": "Masters.view_project",
+        "Hide": "0"
+    },
+    {
+        "Name": "Reports",
+        "Permission": "Masters.reports_project",
+        "Hide": "0"
+    },
+    {
+        "Name": "Export",
+        "Permission": "Masters.export_project",
+        "Hide": "0"
+    },
+    {
+        "Name": "Import",
+        "Permission": "Masters.import_project",
+        "Hide": "0"
+    },
+    {
+        "Name": "Print",
+        "Permission": "Masters.print_project",
+        "Hide": "0"
+    },
+    {
+        "Name": "Download",
+        "Permission": "Masters.download_project",
+        "Hide": "0"
+    },
+    {
+        "Name": "Add",
+        "Permission": "Masters.add_projectstatushistory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Change",
+        "Permission": "Masters.change_projectstatushistory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Delete",
+        "Permission": "Masters.delete_projectstatushistory",
+        "Hide": "0"
+    },
+    {
+        "Name": "View",
+        "Permission": "Masters.view_projectstatushistory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Reports",
+        "Permission": "Masters.reports_projectstatushistory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Export",
+        "Permission": "Masters.export_projectstatushistory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Import",
+        "Permission": "Masters.import_projectstatushistory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Print",
+        "Permission": "Masters.print_projectstatushistory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Download",
+        "Permission": "Masters.download_projectstatushistory",
+        "Hide": "0"
     }
 ]

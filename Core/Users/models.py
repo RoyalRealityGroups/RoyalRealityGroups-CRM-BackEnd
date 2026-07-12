@@ -116,6 +116,10 @@ class CoreUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return str(self.username)
 
+    @property
+    def channel_partner_type(self):
+        return 'STAFF'  # ponytail: temp shim — field removed by migration 0003; real fix is ChannelPartnerManager refactor against *_data_scope
+
     class Meta:
         abstract = True
 

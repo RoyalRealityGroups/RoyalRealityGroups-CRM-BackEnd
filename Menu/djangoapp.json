@@ -106,5 +106,17 @@
         "App_Label": "Delivery",
         "Hide": "0",
         "sequence": "60"
+    },
+    {
+        "Name": "Lead Management",
+        "App_Label": "Lead",
+        "Hide": "0",
+        "sequence": "70"
+    },
+    {
+        "Name": "Project Management",
+        "App_Label": "ProjectManagement",
+        "Hide": "0",
+        "sequence": "80"
     }
 ]

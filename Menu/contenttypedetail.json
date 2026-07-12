@@ -718,5 +718,41 @@
         "ContentType": "generalsettings",
         "App": "General",
         "Hide": "0"
+    },
+    {
+        "Name": "Lead",
+        "ContentType": "lead",
+        "App": "Lead",
+        "Hide": "0"
+    },
+    {
+        "Name": "Leadstatushistory",
+        "ContentType": "leadstatushistory",
+        "App": "Lead",
+        "Hide": "0"
+    },
+    {
+        "Name": "Leadfollowup",
+        "ContentType": "leadfollowup",
+        "App": "Lead",
+        "Hide": "0"
+    },
+    {
+        "Name": "Leadcrosscheck",
+        "ContentType": "leadcrosscheck",
+        "App": "Lead",
+        "Hide": "0"
+    },
+    {
+        "Name": "Project",
+        "ContentType": "project",
+        "App": "ProjectManagement",
+        "Hide": "0"
+    },
+    {
+        "Name": "Projectstatushistory",
+        "ContentType": "projectstatushistory",
+        "App": "ProjectManagement",
+        "Hide": "0"
     }
 ]

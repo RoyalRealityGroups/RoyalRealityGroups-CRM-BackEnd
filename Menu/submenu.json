@@ -1,16 +1,5 @@
 [
     {
-        "Code": "SBM-003",
-        "Name": "Settings",
-        "Sequence": "999",
-        "Icon": "settings",
-        "Click": "",
-        "Menu": "MENU-001",
-        "Submenu": "",
-        "Created On": "2026-01-04 00:00:00",
-        "Modified On": "2026-03-06 11:47:06"
-    },
-    {
         "Code": "SBM-000",
         "Name": "Dashboard",
         "Sequence": "0",
@@ -64,5 +53,16 @@
         "Submenu": "",
         "Created On": "2026-05-01 00:00:00",
         "Modified On": "2026-05-01 00:00:00"
+    },
+    {
+        "Code": "SBM-003",
+        "Name": "Settings",
+        "Sequence": "5",
+        "Icon": "settings",
+        "Click": "/settings",
+        "Menu": "MENU-001",
+        "Submenu": "",
+        "Created On": "2026-07-12 00:00:00",
+        "Modified On": "2026-07-12 00:00:00"
     }
 ]

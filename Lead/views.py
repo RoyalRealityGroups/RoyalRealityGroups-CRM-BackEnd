@@ -104,7 +104,7 @@ class LeadViewSet(viewsets.ModelViewSet):
                         'status': dup.get_status_display(),
                         'last_follow_up_date': last_fu.isoformat() if last_fu else None,
                         'assigned_employee': {
-                            'name': dup.assigned_employee.fullname if dup.assigned_employee else None
+                            'name': f"{dup.assigned_employee.first_name} {dup.assigned_employee.last_name}".strip() or dup.assigned_employee.username if dup.assigned_employee else None
                         } if dup.assigned_employee else None
                     },
                     'match_field': match_field,

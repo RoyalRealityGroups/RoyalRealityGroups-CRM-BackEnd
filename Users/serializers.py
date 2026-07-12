@@ -70,6 +70,17 @@ class UserSerializer(serializers.ModelSerializer):
 
     
     profilepicture = serializers.ImageField(required=False, allow_null=True)
+
+    designation = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    joining_date = serializers.DateField(required=False, allow_null=True)
+    reporting_manager = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),
+        required=False,
+        allow_null=True
+    )
+    reporting_manager_name = serializers.SerializerMethodField()
+    user_status = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    must_reset_password = serializers.BooleanField(required=False)
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -84,6 +95,15 @@ class UserSerializer(serializers.ModelSerializer):
     
     def get_fullname(self, user):
         return '{} {}'.format(user.first_name, user.last_name)
+    
+    def get_reporting_manager_name(self, obj):
+        if obj.reporting_manager:
+            return '{} {}'.format(obj.reporting_manager.first_name, obj.reporting_manager.last_name).strip() or obj.reporting_manager.username
+        return None
+
+    team_count = serializers.SerializerMethodField()
+    def get_team_count(self, obj):
+        return obj.team_members.count()
 
     def validate_username(self, value):
         if value and not value.isalnum():
@@ -130,7 +150,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         read_only_fields = ['otp', 'username']
-        fields = ['id', 'username', 'fullname', 'email', 'phone', 'groups', 'group_ids', 'password', 'first_name', 'last_name', 'otp', 'gender', 'gender_name', 'is_email_verified', 'is_phone_verified','receive_sms','receive_email','receive_notification', 'is_active', 'device_access', 'device_access_name', 'profilepicture']
+        fields = ['id', 'username', 'fullname', 'email', 'phone', 'groups', 'group_ids', 'password', 'first_name', 'last_name', 'otp', 'gender', 'gender_name', 'is_email_verified', 'is_phone_verified','receive_sms','receive_email','receive_notification', 'is_active', 'device_access', 'device_access_name', 'profilepicture', 'designation', 'joining_date', 'reporting_manager', 'reporting_manager_name', 'team_count', 'user_status', 'must_reset_password', 'leads_assigned', 'site_visits', 'bookings', 'registrations']
 
 
     def create(self, validated_data):
@@ -353,14 +373,20 @@ class UserWithPermissionsSerializer(serializers.ModelSerializer):
     """User serializer with permissions included"""
     permissions = UserPermissionSerializer(many=True, read_only=True)
     reporting_manager_name = serializers.SerializerMethodField()
+    reporting_manager_fullname = serializers.SerializerMethodField()
     team_count = serializers.SerializerMethodField()
     
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'phone', 'designation', 'reporting_manager', 'reporting_manager_name', 'user_status', 'lead_data_scope', 'followup_data_scope', 'sitevisit_data_scope', 'booking_data_scope', 'must_reset_password', 'is_active', 'permissions', 'team_count', 'created_at']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'phone', 'designation', 'joining_date', 'reporting_manager', 'reporting_manager_name', 'reporting_manager_fullname', 'user_status', 'lead_data_scope', 'followup_data_scope', 'sitevisit_data_scope', 'booking_data_scope', 'must_reset_password', 'is_active', 'leads_assigned', 'site_visits', 'bookings', 'registrations', 'permissions', 'team_count', 'created_at']
     
     def get_reporting_manager_name(self, obj):
         return obj.reporting_manager.username if obj.reporting_manager else None
+    
+    def get_reporting_manager_fullname(self, obj):
+        if obj.reporting_manager:
+            return '{} {}'.format(obj.reporting_manager.first_name, obj.reporting_manager.last_name).strip() or obj.reporting_manager.username
+        return None
     
     def get_team_count(self, obj):
         return obj.team_members.count()

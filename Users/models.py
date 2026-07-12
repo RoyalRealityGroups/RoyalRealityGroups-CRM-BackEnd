@@ -68,6 +68,18 @@ class User(CoreUser):
         help_text='Force password reset on first login'
     )
     
+    # =========================================================================
+    # Employee Management fields (Module 10)
+    # =========================================================================
+    joining_date = models.DateField(
+        null=True, blank=True,
+        help_text='Employee joining date'
+    )
+    leads_assigned = models.PositiveIntegerField(default=0, help_text='Total leads assigned')
+    site_visits = models.PositiveIntegerField(default=0, help_text='Total site visits')
+    bookings = models.PositiveIntegerField(default=0, help_text='Total bookings')
+    registrations = models.PositiveIntegerField(default=0, help_text='Total registrations')
+    
     class Meta:
         proxy = False
 

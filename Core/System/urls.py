@@ -16,7 +16,7 @@ urlpatterns = [
     path('menuitems/searchlist/', views.MenuitemList2.as_view(),), # global search
     path("menuitem/<int:pk>", views.MenuitemDetail.as_view()),
     path('Notification/', views.NotificationList.as_view()),
-    path('Notification/Clear/<str:pk>', views.NotificationClear.as_view()),
+    path('Notification/Clear/<str:pk>/', views.NotificationClear.as_view()),
     path('Notification/ClearAll/', views.NotificationClearAll.as_view(),),
     path('Database/DoBackup', views.BackupNow.as_view()),
     path('Database/Backup', views.BackupList.as_view()),

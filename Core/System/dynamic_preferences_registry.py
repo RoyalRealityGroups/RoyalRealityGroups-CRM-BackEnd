@@ -18,7 +18,7 @@ jsonpushfile = Section('JSON_DATA')
 class HostUser(StringPreference):
     section = sendemail
     name = 'USER'
-    default = 'adityaabsolin@gmail.com'
+    default = 'admin@gmail.com'
     required = True
     verbose_name ='HOST_USER'
 

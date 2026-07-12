@@ -36,6 +36,7 @@ urlpatterns = [
     
     path('dropdowns/companies/', views.CompanyDropdownView.as_view(), name='companies_dropdown'),
     path('dropdowns/locations/', views.LocationDropdownView.as_view(), name='locations_dropdown'),
+    path('dropdowns/reporting-managers/', views.ReportingManagerDropdownView.as_view(), name='reporting_managers_dropdown'),
     
     path('screens/', views.ScreenListView.as_view(), name='screen_list'),
     path('permissions/my/', views.MyPermissionsView.as_view(), name='my_permissions'),

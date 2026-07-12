@@ -142,7 +142,7 @@ MIDDLEWARE = [
     'Core.Core.middleware.allpermissions.allPermissionsMiddleware',
     'Core.Core.middleware.error.ErrorMiddleware',
     # 'Common.middleware.TimezoneMiddleware',
-    'Core.Core.middleware.query_monitor.QueryMonitorMiddleware',  # Query monitoring
+    # 'Core.Core.middleware.query_monitor.QueryMonitorMiddleware',  # Query monitoring
 ]
 
 # Security Settings

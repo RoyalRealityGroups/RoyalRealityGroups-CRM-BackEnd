@@ -498,6 +498,17 @@ class LocationDropdownView(generics.ListAPIView):
         return Response(list(locations), status=status.HTTP_200_OK)
 
 
+class ReportingManagerDropdownView(generics.ListAPIView):
+    """List all active users for reporting manager dropdown"""
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = CoreUserMiniSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    search_fields = ['username', 'email', 'phone', 'first_name', 'last_name']
+
+    def get_queryset(self):
+        return User.objects.filter(is_active=True, is_superuser=False).order_by('first_name', 'last_name')
+
+
 # =============================================================================
 # RRGMS Permission API Views
 # =============================================================================

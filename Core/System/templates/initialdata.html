@@ -1,0 +1,10 @@
+{% extends 'admin/change_list.html' %}
+
+{% block object-tools-items %}
+   
+        <li><a href="export_menu_data/" class="export_link">Export_MenuData</a></li>
+        <li><a href="import_menu_data/" class="export_link">Import_MenuData</a></li>
+
+        <li><a href="ResetDatabase/" class="export_link">ResetDatabase</a></li>
+    {{ block.super }}
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h1>Fields for {{ content_type.app_label }}.{{ content_type.model }}</h1>
+
+<table class="adminlist">
+    <thead>
+        <tr>
+            <th>Field Name</th>
+            <th>Field Verbose Name</th>
+            <th>Data Type</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for field in fields %}
+        <tr>
+            <td>{{ field.name }}</td>
+            <td>{{ field.verbose_name }}</td>
+            <td>{{ field.type }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<p><a href="/admin/contenttypes/contenttype/">Back to Content Types</a></p>
+{% endblock %}

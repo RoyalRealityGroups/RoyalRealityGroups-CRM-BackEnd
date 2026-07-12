@@ -1,0 +1,38 @@
+{% extends "admin/base_site.html" %}
+{% block object-tools %}
+    <head>
+        <script>
+            function goBack() {
+                window.history.back();
+            }
+        </script>
+    </head>
+
+    <form id="downloadForm" action="" method="POST">
+        {% csrf_token %}
+        {{ form }}
+        <input type="hidden" id="fileUrl" name="fileUrl" value="{{ file_url }}">
+        <input type="button" value="Download File" onclick="downloadFile()">
+    </form>
+
+    <input type="button" value="Back" onclick="goBack()">
+
+    <script>
+        document.getElementById('downloadForm').addEventListener('click', function() {
+            // Get the current date and time to create a timestamp for the file name
+            var timestamp = new Date().toISOString().replace(/[-:]/g, '').replace('T', '_').replace(/\..+/, '');
+            
+            // Set the desired file name with the timestamp
+            var fileName = 'DATABASE_BACKUP_' + timestamp + '.sql';
+            
+
+            // Simulate a click on a dynamically created link to trigger the download
+            var link = document.createElement('a');
+            link.href = document.getElementById('fileUrl').value;
+            link.download = fileName;
+            link.click();
+        });
+    </script>
+
+    {{ block.super }}
+{% endblock %}

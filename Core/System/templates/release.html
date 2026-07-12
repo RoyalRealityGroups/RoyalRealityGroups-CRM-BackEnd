@@ -1,0 +1,14 @@
+{% extends 'admin/base_site.html' %}
+
+{% block content %}
+  <form id="upload_release_file" action="{% url 'admin:upload_release_file' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <p>{{ file_upload_form.non_field_errors }}</p>
+    <p>{{ file_upload_form.release_file.label_tag }} {{ file_upload_form.release_file }}<br>
+      {% for error in file_upload_form.release_file.errors %}
+        <span style="color: red;">{{ error }}</span><br>
+      {% endfor %}
+    </p>
+    <p><input type="submit" value="Upload Release File" /></p>
+  </form>
+{% endblock %}

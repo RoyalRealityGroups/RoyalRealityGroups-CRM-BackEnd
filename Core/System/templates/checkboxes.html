@@ -1,0 +1,127 @@
+{% extends "admin/base_site.html" %}
+{% block object-tools %}
+<html>  
+<head> 
+<style>
+.Button1 {
+  background-color: red;
+
+  color: white;
+  padding: 10px 32px;
+  text-align: center;
+  font-size: 16px;
+}
+.myDiv1 {
+  position: absolute;
+  top: 100px;
+}
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+  var password="";
+  var selectedids=[];
+  var data={};
+
+function myFunction() 
+{
+  password = prompt("Please Enter password");
+  var checkboxes = document.getElementsByName("datasets");
+
+  for(var i=0; i<checkboxes.length; ++i)
+  {
+    if(checkboxes[i].checked)
+    {
+         checkedValue = checkboxes[i].value;
+         selectedids.push(checkedValue);
+    }
+    if(i+1==checkboxes.length)
+    { 
+      console.log(password,selectedids);
+      data = {password:password,contenttype_ids:selectedids};
+      data.csrfmiddlewaretoken = '{{ csrf_token }}';
+      data = JSON.stringify(data);
+      $.ajax({
+        type: "POST",
+        url: '/system/Database/Reset/dryrun', 
+        data:data ,
+        headers: { "X-CSRFToken": '{{ csrf_token }}' },
+        dataType:'json',
+        contentType:'application/json',
+        success: function(result){
+                                   var size = Object.keys(result.all_dependent_models).length;
+                                   document.getElementsByClassName('myDiv')[0].style.visibility = 'hidden';
+                                   var HTMLContent =
+                                   `<div class="content">
+                                    <h2>The Dependency Models are</h2>`
+                                    var keys = Object.keys(result.all_dependent_models);
+                                    for (var i=0; i<keys.length; i++) 
+                                    {
+                                      var key = keys[i];
+                                      HTMLContent+=`<h2>`;
+                                      HTMLContent +=result.all_dependent_models[key]
+                                      HTMLContent+=`<\h2>`;
+                                      if (i+1==size)
+                                      {
+                                        
+                                        HTMLContent+= `<button type="button" onclick="Function2()"> Confirm Delete</button>`
+                                        HTMLContent += `</div>`; 
+                                        $("#preview").html(HTMLContent);
+                
+                                      }
+                                    }
+                                  }
+                                }
+                              )  
+                            }   
+                          }    
+                        }
+  
+     function Function2() 
+                  {
+                        var HTMLContent =
+                        `<div class="content">
+                        <h2>SuccessFully Deleted</h2>
+                        </div>
+                        `
+                          $.ajax(
+                            {
+                              type: "POST",
+                              url: '/system/Database/Reset/process', 
+                              data:data ,
+                              headers: { "X-CSRFToken": '{{ csrf_token }}' },
+                              dataType:'json',
+                              contentType:'application/json',
+                              success: function(result)
+                              {
+                                $('#preview').html(HTMLContent);  
+                              }
+                          })  
+                  }     
+</script>
+</head>  
+  <body>  
+
+    <div class="myDiv">
+        {% for key, value in dataset.items %}
+          <table>
+          <td>
+          <th><label><input type="checkbox" value="{{key}}" name="datasets"> <a href="/admin/contenttypes/contenttype/{{key}}/change/">{{value}}  </a>
+          </label></th>
+          </td>
+          <br/>
+          {% endfor %}	
+          </table>
+          <button type="button" class="Button1" onclick="myFunction()">Submit</button>
+    </div>
+
+    <div id="preview" class="myDiv1">
+    </div>
+
+  </body> 
+{{ block.super }}
+{% endblock %}
+</html>  
+
+
+

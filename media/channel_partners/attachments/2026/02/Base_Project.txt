@@ -1,0 +1,99 @@
+Backend Prompts
+1. Authentication & Authorization (RBAC)
+
+Prompt:
+"Create a Django app 'auth_core' with models for custom users, groups, and permissions. Implement class-based views for signup, login, logout, and password management. Add RBAC support with permission checks per view and API endpoint using Django's permissions framework."
+2. User Management
+
+Prompt:
+"Build a 'user_management' app providing REST API endpoints and Django admin integration for CRUD operations on user profiles, user groups, password change, role assignments, and group membership. Ensure integration with the base user model."
+3. Settings & Configurations
+
+Prompt:
+"In the base settings directory, split settings into base.py, dev.py, prod.py. Add support for environment variables via django-environ. Document configuration options and provide sample .env files for development and production."
+4. Error Handling & Logging
+
+Prompt:
+"Implement centralized middleware or service for error handling and structured logging. Use Python logging and integrate Sentry (or similar) for error reporting. Provide sample log configuration in settings and reusable logging utilities."
+5. Reusable Model Mixins
+
+Prompt:
+"Develop mixins for timestamped models (created_at, updated_at), soft deletes, audit fields, and auto-number generation. Structure as reusable base classes in a 'core/models.py'."
+6. Notification & Messaging
+
+Prompt:
+"Provide a notification app with modular support for email, SMS, and in-app notifications. Create models and APIs to trigger notifications for workflow events, approvals, and alerts."
+7. Permission Matrix & Role Management
+
+Prompt:
+"Design a permission matrix model to map screens/actions to roles. Expose management screens and API endpoints for role-specific access control and multi-level authorization workflows."
+8. Audit Trail/History
+
+Prompt:
+"Implement a reusable audit trail module that logs changes to master/transaction data and exposes searchable history views. Use signals to automatically record changes."
+9. Deployment Scripts
+
+Prompt:
+"Create Docker, requirements.txt and sample bash scripts for migrations, unit tests, and environment bootstrap. Include a template CI/CD pipeline file."
+10. Testing & Documentation
+
+Prompt:
+"Provide sample unit tests in every app, automated test runners, and auto-generated API documentation using Swagger or DRF. Add onboarding and README.md files for each module."
+Frontend Prompts
+1. Authentication Screens
+
+Prompt:
+"Design reusable login, registration, password reset, forgot password, and logout screens/layouts. Use standard UI frameworks (React, Bootstrap, or Django templates) and ensure error messages are clear and informative."
+2. User Management UI
+
+Prompt:
+"Build responsive CRUD forms and list screens for user profiles, roles, and group assignments. Include modals for password change and role/group editing."
+3. Settings & Configurations UI
+
+Prompt:
+"Provide configuration panels for setting environment options, toggling features, and changing preferences, with live updates and feedback alerts."
+4. Error Handling Displays
+
+Prompt:
+"Consistently display validation errors, server errors, and notifications across all modules. Use a central error component for standardized messaging."
+5. Notifications Panel
+
+Prompt:
+"Create a notification dropdown or modal displaying emails, in-app alerts, and workflow messages. Add real-time update support as needed."
+6. Audit Log Viewer
+
+Prompt:
+"Implement a searchable, filterable UI for audit histories on master and transaction records. Include diff views for before/after changes."
+7. Role/permission Matrix UI
+
+Prompt:
+"Build a matrix/table UI displaying which roles have access to which screens/actions, with toggles to change permissions and audit changes."
+8. Reporting & Export Interfaces
+
+Prompt:
+"Design report screens with filterable lists and export options (PDF/Excel). Include customizable headers/footers for branding."
+Structure Reference
+
+text
+my_project/
+  ├── apps/
+  │   ├── auth_core/
+  │   ├── user_management/
+  │   ├── core/
+  │   ├── notifications/
+  │   ├── audit/
+  ├── config/
+  │   ├── base.py
+  │   ├── dev.py
+  │   ├── prod.py
+  ├── templates/
+  │   ├── auth/
+  │   ├── user/
+  │   ├── audit/
+  ├── static/
+  ├── requirements.txt
+  ├── Dockerfile
+  ├── README.md
+
+Best Practice:
+Modularize each feature and maintain consistent structure across backend and frontend, ensuring plug-and-play components, comprehensive documentation, and standardized configuration to streamline multi-app development.

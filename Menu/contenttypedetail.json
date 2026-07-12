@@ -1,0 +1,722 @@
+[
+    {
+        "Name": "Formulavariables",
+        "ContentType": "formulavariables",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Attachment",
+        "ContentType": "attachment",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Recentactivity",
+        "ContentType": "recentactivity",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Download",
+        "ContentType": "download",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Notification",
+        "ContentType": "notification",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Datapermissions",
+        "ContentType": "datapermissions",
+        "App": "core_users",
+        "Hide": "0"
+    },
+    {
+        "Name": "Tax",
+        "ContentType": "tax",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Proof Of Delivery",
+        "ContentType": "proofofdelivery",
+        "App": "Delivery",
+        "Hide": "0"
+    },
+    {
+        "Name": "Userpreferences",
+        "ContentType": "userpreferences",
+        "App": "core_users",
+        "Hide": "0"
+    },
+    {
+        "Name": "Synclog",
+        "ContentType": "synclog",
+        "App": "thirdparty",
+        "Hide": "0"
+    },
+    {
+        "Name": "Temporaryverification",
+        "ContentType": "temporaryverification",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Synctrigger",
+        "ContentType": "synctrigger",
+        "App": "thirdparty",
+        "Hide": "0"
+    },
+    {
+        "Name": "Contenttypedetail",
+        "ContentType": "contenttypedetail",
+        "App": "core_users",
+        "Hide": "0"
+    },
+    {
+        "Name": "Importrequest",
+        "ContentType": "importrequest",
+        "App": "Reports",
+        "Hide": "0"
+    },
+    {
+        "Name": "Djangoapp",
+        "ContentType": "djangoapp",
+        "App": "core_users",
+        "Hide": "0"
+    },
+    {
+        "Name": "Authorizationdefinition",
+        "ContentType": "authorizationdefinition",
+        "App": "core_users",
+        "Hide": "0"
+    },
+    {
+        "Name": "Pricebook",
+        "ContentType": "pricebook",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Company",
+        "ContentType": "company",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Sequencecode",
+        "ContentType": "sequencecode",
+        "App": "core_users",
+        "Hide": "0"
+    },
+    {
+        "Name": "Logentry",
+        "ContentType": "logentry",
+        "App": "admin",
+        "Hide": "0"
+    },
+    {
+        "Name": "Pricebookdocument",
+        "ContentType": "pricebookdocument",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Outlet Type",
+        "ContentType": "outlettype",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Announcements",
+        "ContentType": "announcements",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Payment",
+        "ContentType": "payment",
+        "App": "Invoice",
+        "Hide": "0"
+    },
+    {
+        "Name": "Globalpreferencemodel",
+        "ContentType": "globalpreferencemodel",
+        "App": "dynamic_preferences",
+        "Hide": "0"
+    },
+    {
+        "Name": "Reportrequest",
+        "ContentType": "reportrequest",
+        "App": "Reports",
+        "Hide": "0"
+    },
+    {
+        "Name": "Authorizationhistory",
+        "ContentType": "authorizationhistory",
+        "App": "core_users",
+        "Hide": "0"
+    },
+    {
+        "Name": "Invoice",
+        "ContentType": "invoice",
+        "App": "Invoice",
+        "Hide": "0"
+    },
+    {
+        "Name": "Distributor",
+        "ContentType": "distributor",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Channelpartnerconfiguration",
+        "ContentType": "channelpartnerconfiguration",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Template",
+        "ContentType": "template",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Assigneebypass",
+        "ContentType": "assigneebypass",
+        "App": "core_users",
+        "Hide": "0"
+    },
+    {
+        "Name": "Devicelog",
+        "ContentType": "devicelog",
+        "App": "core_users",
+        "Hide": "0"
+    },
+    {
+        "Name": "Formulaupdate",
+        "ContentType": "formulaupdate",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "City",
+        "ContentType": "city",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Item",
+        "ContentType": "item",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Pdftemplate",
+        "ContentType": "pdftemplate",
+        "App": "Reports",
+        "Hide": "0"
+    },
+    {
+        "Name": "Brand",
+        "ContentType": "brand",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Jwttoken",
+        "ContentType": "jwttoken",
+        "App": "core_users",
+        "Hide": "0"
+    },
+    {
+        "Name": "Importpermission",
+        "ContentType": "importpermission",
+        "App": "General",
+        "Hide": "0"
+    },
+    {
+        "Name": "Error",
+        "ContentType": "error",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Savedfilter",
+        "ContentType": "savedfilter",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Dispatchitem",
+        "ContentType": "dispatchitem",
+        "App": "Dispatch",
+        "Hide": "0"
+    },
+    {
+        "Name": "Retailer",
+        "ContentType": "retailer",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "User",
+        "ContentType": "user",
+        "App": "Users",
+        "Hide": "0"
+    },
+    {
+        "Name": "Restore",
+        "ContentType": "restore",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Country",
+        "ContentType": "country",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Salesorder",
+        "ContentType": "salesorder",
+        "App": "Sales",
+        "Hide": "0"
+    },
+    {
+        "Name": "Item Tax Composition",
+        "ContentType": "itemtaxcomposition",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Salesorderhistory",
+        "ContentType": "salesorderhistory",
+        "App": "Sales",
+        "Hide": "0"
+    },
+    {
+        "Name": "Superstockist",
+        "ContentType": "superstockist",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Alertconfig",
+        "ContentType": "alertconfig",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Scheduledemail",
+        "ContentType": "scheduledemail",
+        "App": "Reports",
+        "Hide": "0"
+    },
+    {
+        "Name": "Authorization",
+        "ContentType": "authorization",
+        "App": "core_users",
+        "Hide": "0"
+    },
+    {
+        "Name": "Distributorlocation",
+        "ContentType": "distributorlocation",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Notificationusers",
+        "ContentType": "notificationusers",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Group",
+        "ContentType": "group",
+        "App": "auth",
+        "Hide": "0"
+    },
+    {
+        "Name": "Salesorderitem",
+        "ContentType": "salesorderitem",
+        "App": "Sales",
+        "Hide": "0"
+    },
+    {
+        "Name": "Filterpreset",
+        "ContentType": "filterpreset",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Taskexecutionlog",
+        "ContentType": "taskexecutionlog",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "State",
+        "ContentType": "state",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Setting",
+        "ContentType": "setting",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Assigneedefnition",
+        "ContentType": "assigneedefnition",
+        "App": "core_users",
+        "Hide": "0"
+    },
+    {
+        "Name": "Invoiceitem",
+        "ContentType": "invoiceitem",
+        "App": "Invoice",
+        "Hide": "0"
+    },
+    {
+        "Name": "Warehouse",
+        "ContentType": "warehouse",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Menuitem",
+        "ContentType": "menuitem",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Dispatchplan",
+        "ContentType": "dispatchplan",
+        "App": "Dispatch",
+        "Hide": "0"
+    },
+    {
+        "Name": "Groupdetails",
+        "ContentType": "groupdetails",
+        "App": "core_users",
+        "Hide": "0"
+    },
+    {
+        "Name": "Area",
+        "ContentType": "area",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Proofofdeliveryfile",
+        "ContentType": "proofofdeliveryfile",
+        "App": "Delivery",
+        "Hide": "0"
+    },
+    {
+        "Name": "Alertconfigusers",
+        "ContentType": "alertconfigusers",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Superstockistlocation",
+        "ContentType": "superstockistlocation",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Device",
+        "ContentType": "device",
+        "App": "core_users",
+        "Hide": "0"
+    },
+    {
+        "Name": "Item UOM Conversion",
+        "ContentType": "itemuomconversion",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Assignee",
+        "ContentType": "assignee",
+        "App": "core_users",
+        "Hide": "0"
+    },
+    {
+        "Name": "Backup",
+        "ContentType": "backup",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Permissiondetail",
+        "ContentType": "permissiondetail",
+        "App": "core_users",
+        "Hide": "0"
+    },
+    {
+        "Name": "Pricebookhistory",
+        "ContentType": "pricebookhistory",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Permission",
+        "ContentType": "permission",
+        "App": "auth",
+        "Hide": "0"
+    },
+    {
+        "Name": "Location",
+        "ContentType": "location",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Usertype",
+        "ContentType": "usertype",
+        "App": "core_users",
+        "Hide": "0"
+    },
+    {
+        "Name": "Contenttype",
+        "ContentType": "contenttype",
+        "App": "contenttypes",
+        "Hide": "0"
+    },
+    {
+        "Name": "Submenu",
+        "ContentType": "submenu",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Item Field Configuration",
+        "ContentType": "itemfieldconfiguration",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Dispatchorderitem",
+        "ContentType": "dispatchorderitem",
+        "App": "Dispatch",
+        "Hide": "0"
+    },
+    {
+        "Name": "Formula",
+        "ContentType": "formula",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "UOM",
+        "ContentType": "uom",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Activitylog",
+        "ContentType": "activitylog",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Taskscheduler",
+        "ContentType": "taskscheduler",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Menu",
+        "ContentType": "menu",
+        "App": "System",
+        "Hide": "0"
+    },
+    {
+        "Name": "Codetemplate",
+        "ContentType": "codetemplate",
+        "App": "core_users",
+        "Hide": "0"
+    },
+    {
+        "Name": "Session",
+        "ContentType": "session",
+        "App": "sessions",
+        "Hide": "0"
+    },
+    {
+        "Name": "Retailerlocation",
+        "ContentType": "retailerlocation",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Category",
+        "ContentType": "category",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Channelpartnerattachment",
+        "ContentType": "channelpartnerattachment",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Salesorderitemscheme",
+        "ContentType": "salesorderitemscheme",
+        "App": "Sales",
+        "Hide": "0"
+    },
+    {
+        "Name": "Salesorderattachment",
+        "ContentType": "salesorderattachment",
+        "App": "Sales",
+        "Hide": "0"
+    },
+    {
+        "Name": "Schemebenefit",
+        "ContentType": "schemebenefit",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Schemecondition",
+        "ContentType": "schemecondition",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Schemeitem",
+        "ContentType": "schemeitem",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Dispatchplanattachment",
+        "ContentType": "dispatchplanattachment",
+        "App": "Dispatch",
+        "Hide": "0"
+    },
+    {
+        "Name": "Schemehistory",
+        "ContentType": "schemehistory",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Scheme",
+        "ContentType": "scheme",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Salesorderscheme",
+        "ContentType": "salesorderscheme",
+        "App": "Sales",
+        "Hide": "0"
+    },
+    {
+        "Name": "Schemeapplicability",
+        "ContentType": "schemeapplicability",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Distributorcontact",
+        "ContentType": "distributorcontact",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Creditutilization",
+        "ContentType": "creditutilization",
+        "App": "Receipts",
+        "Hide": "0"
+    },
+    {
+        "Name": "Receiptallocation",
+        "ContentType": "receiptallocation",
+        "App": "Receipts",
+        "Hide": "0"
+    },
+    {
+        "Name": "Superstockistcontact",
+        "ContentType": "superstockistcontact",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Customercredit",
+        "ContentType": "customercredit",
+        "App": "Receipts",
+        "Hide": "0"
+    },
+    {
+        "Name": "Receipt",
+        "ContentType": "receipt",
+        "App": "Receipts",
+        "Hide": "0"
+    },
+    {
+        "Name": "Locationcontact",
+        "ContentType": "locationcontact",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Receiptattachment",
+        "ContentType": "receiptattachment",
+        "App": "Receipts",
+        "Hide": "0"
+    },
+    {
+        "Name": "Retailercontact",
+        "ContentType": "retailercontact",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Outstandingtoken",
+        "ContentType": "outstandingtoken",
+        "App": "token_blacklist",
+        "Hide": "0"
+    },
+    {
+        "Name": "Blacklistedtoken",
+        "ContentType": "blacklistedtoken",
+        "App": "token_blacklist",
+        "Hide": "0"
+    },
+    {
+        "Name": "Route",
+        "ContentType": "route",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Customerledgerentry",
+        "ContentType": "customerledgerentry",
+        "App": "Receipts",
+        "Hide": "0"
+    },
+    {
+        "Name": "Routecoverage",
+        "ContentType": "routecoverage",
+        "App": "Masters",
+        "Hide": "0"
+    },
+    {
+        "Name": "Generalsettings",
+        "ContentType": "generalsettings",
+        "App": "General",
+        "Hide": "0"
+    }
+]

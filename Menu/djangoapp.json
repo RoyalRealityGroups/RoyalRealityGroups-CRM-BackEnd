@@ -1,0 +1,110 @@
+[
+    {
+        "Name": "Dispatch",
+        "App_Label": "Dispatch",
+        "Hide": "0",
+        "sequence": "0"
+    },
+    {
+        "Name": "General",
+        "App_Label": "General",
+        "Hide": "0",
+        "sequence": "0"
+    },
+    {
+        "Name": "Invoice",
+        "App_Label": "Invoice",
+        "Hide": "0",
+        "sequence": "0"
+    },
+    {
+        "Name": "Receipts",
+        "App_Label": "Receipts",
+        "Hide": "0",
+        "sequence": "0"
+    },
+    {
+        "Name": "Reports",
+        "App_Label": "Reports",
+        "Hide": "0",
+        "sequence": "0"
+    },
+    {
+        "Name": "Sales",
+        "App_Label": "Sales",
+        "Hide": "0",
+        "sequence": "0"
+    },
+    {
+        "Name": "System",
+        "App_Label": "System",
+        "Hide": "0",
+        "sequence": "0"
+    },
+    {
+        "Name": "Users",
+        "App_Label": "Users",
+        "Hide": "0",
+        "sequence": "0"
+    },
+    {
+        "Name": "admin",
+        "App_Label": "admin",
+        "Hide": "0",
+        "sequence": "0"
+    },
+    {
+        "Name": "auth",
+        "App_Label": "auth",
+        "Hide": "0",
+        "sequence": "0"
+    },
+    {
+        "Name": "contenttypes",
+        "App_Label": "contenttypes",
+        "Hide": "0",
+        "sequence": "0"
+    },
+    {
+        "Name": "core_users",
+        "App_Label": "core_users",
+        "Hide": "0",
+        "sequence": "0"
+    },
+    {
+        "Name": "dynamic_preferences",
+        "App_Label": "dynamic_preferences",
+        "Hide": "0",
+        "sequence": "0"
+    },
+    {
+        "Name": "sessions",
+        "App_Label": "sessions",
+        "Hide": "0",
+        "sequence": "0"
+    },
+    {
+        "Name": "thirdparty",
+        "App_Label": "thirdparty",
+        "Hide": "0",
+        "sequence": "0"
+    },
+    {
+        "Name": "token_blacklist",
+        "App_Label": "token_blacklist",
+        "Hide": "0",
+        "sequence": "0"
+    },
+    {
+        "Name": "Masters",
+        "App_Label": "Masters",
+        "Hide": "0",
+        "sequence": "10"
+    },
+    {
+        "Name": "Delivery",
+        "App_Label": "Delivery",
+        "Hide": "0",
+        "sequence": "60"
+    }
+]

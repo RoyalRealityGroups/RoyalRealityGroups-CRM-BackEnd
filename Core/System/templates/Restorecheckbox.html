@@ -1,0 +1,22 @@
+{% extends "admin/base_site.html" %}
+{% block object-tools %}
+        <head>
+        <script>
+        function myFunction()
+        {
+                document. getElementById('submitButton').style.visibility = 'hidden';
+        }
+        
+        </script>
+        </head>
+
+        <form action="" method="POST">
+        {% csrf_token %}
+            {{form}}
+            <input type="Submit" id="submitButton" onclick="myFunction()>
+        </form>
+        
+    {{ block.super }}
+{% endblock %}
+
+

@@ -1,0 +1,59 @@
+
+*.log
+*.pot
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+/venv
+/env
+/.venv
+
+# Environment Variables - CRITICAL: Never commit these
+/.env
+/.env.local
+/.env.production
+/.env.*.local
+
+# Database
+*.sqlite3
+*.db
+/test_db.sqlite3
+
+# Media Files
+/media/*/*.*
+/media/*/*/*.*
+/media/*/*/*/*.*
+!/media/web_icons/
+!/media/web_icons/*.svg
+
+# Static Files
+/static
+
+# Sync Files
+/focus_last_sync.json
+/collections_last_sync.json
+/centers_last_sync.json
+/farmers_last_sync.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backup Files
+*.bak
+*.backup
+/db/backup/
+
+# Logs
+/.log/
+server.log

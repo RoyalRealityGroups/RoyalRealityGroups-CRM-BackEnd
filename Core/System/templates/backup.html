@@ -1,0 +1,24 @@
+<!-- backup.html -->
+{% extends 'admin/change_list.html' %}
+
+{% block object-tools %}
+    {{ block.super }}
+    
+{% endblock %}
+
+{% block object-tools-items %}
+    <li><a href="release/"  >Release Built</a></li>
+    <li><a href="backupfile/"  >Backup File</a></li>
+
+    <li><a href="Databackup/" method="POST" class="export_link">Make Backup</a></li>
+    <li>
+        {% if global_preferences.DEVLOPER__MAINTENANCEMODE %}
+            <a href="maintainence_off/" class="btn btn-danger">Maintenance off</a>
+        {% else %}
+            <a href="maintainence_on/" class="btn btn-success">Maintenance on</a>
+        {% endif %}
+    </li>
+    {{ block.super }}
+{% endblock %}
+
+

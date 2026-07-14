@@ -62,6 +62,10 @@ def custom_exception_handler(exc, context):
     
     # Enhance validation errors
     if isinstance(exc, ValidationError) and response:
+        # Pass through duplicate-detection responses (Lead, etc.) untouched
+        if isinstance(response.data, dict) and response.data.get('has_duplicates'):
+            return response
+
         # Check if it's a simple detail message
         if isinstance(response.data, dict) and 'detail' in response.data and len(response.data) == 1:
             # Return just the detail message for better frontend display

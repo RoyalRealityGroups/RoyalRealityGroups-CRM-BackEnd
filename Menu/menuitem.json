@@ -656,5 +656,19 @@
         "Description": "Manage real estate projects (SRS Module 6)",
         "Created On": "2026-07-11 00:00:00",
         "Modified On": "2026-07-11 00:00:00"
+    },
+    {
+        "Code": "SVM-001",
+        "Name": "Site Visits",
+        "Icon": "place",
+        "Link": "/sitevisit",
+        "Sequence": "1",
+        "Click": "",
+        "Menu": "MENU-001",
+        "Submenu": "SBM-007",
+        "Permission": "SiteVisit.view_sitevisit",
+        "Description": "Manage site visits (SRS Module 5)",
+        "Created On": "2026-07-14 00:00:00",
+        "Modified On": "2026-07-14 00:00:00"
     }
 ]

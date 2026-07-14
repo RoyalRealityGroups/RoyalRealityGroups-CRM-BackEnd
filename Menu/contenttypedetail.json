@@ -754,5 +754,11 @@
         "ContentType": "projectstatushistory",
         "App": "ProjectManagement",
         "Hide": "0"
+    },
+    {
+        "Name": "Sitevisit",
+        "ContentType": "sitevisit",
+        "App": "SiteVisit",
+        "Hide": "0"
     }
 ]

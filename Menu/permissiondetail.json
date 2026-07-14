@@ -6918,5 +6918,25 @@
         "Name": "Download",
         "Permission": "Masters.download_projectstatushistory",
         "Hide": "0"
+    },
+    {
+        "Name": "Add",
+        "Permission": "SiteVisit.add_sitevisit",
+        "Hide": "0"
+    },
+    {
+        "Name": "Change",
+        "Permission": "SiteVisit.change_sitevisit",
+        "Hide": "0"
+    },
+    {
+        "Name": "Delete",
+        "Permission": "SiteVisit.delete_sitevisit",
+        "Hide": "0"
+    },
+    {
+        "Name": "View",
+        "Permission": "SiteVisit.view_sitevisit",
+        "Hide": "0"
     }
 ]

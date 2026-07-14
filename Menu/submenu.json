@@ -64,5 +64,16 @@
         "Submenu": "",
         "Created On": "2026-07-12 00:00:00",
         "Modified On": "2026-07-12 00:00:00"
+    },
+    {
+        "Code": "SBM-007",
+        "Name": "Site Visit Management",
+        "Sequence": "6",
+        "Icon": "place",
+        "Click": "/sitevisit",
+        "Menu": "MENU-001",
+        "Submenu": "",
+        "Created On": "2026-07-14 00:00:00",
+        "Modified On": "2026-07-14 00:00:00"
     }
 ]

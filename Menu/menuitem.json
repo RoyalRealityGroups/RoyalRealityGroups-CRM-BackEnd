@@ -140,20 +140,6 @@
         "Modified On": "2026-03-06 11:47:09"
     },
     {
-        "Code": "MIM-019A",
-        "Name": "Authorizations",
-        "Icon": "check_circle",
-        "Link": "/settings/authorizations",
-        "Sequence": "5",
-        "Click": "",
-        "Menu": "MENU-001",
-        "Submenu": "SBM-003",
-        "Permission": "core_users.view_authorization",
-        "Description": "Manage approval workflows and authorization levels",
-        "Created On": "2026-02-03 10:35:06",
-        "Modified On": "2026-03-06 11:47:11"
-    },
-    {
         "Code": "IMP-SCR-014",
         "Name": "Retailer",
         "Icon": "storefront",
@@ -321,21 +307,7 @@
         "Created On": "2026-02-24 18:55:22",
         "Modified On": "2026-03-06 11:47:09"
     },
-    {
-        "Code": "MIM-011",
-        "Name": "Product Settings",
-        "Icon": "tune",
-        "Link": "/masters/settings/item-settings",
-        "Sequence": "1",
-        "Click": "",
-        "Menu": "MENU-001",
-        "Submenu": "SBM-003",
-        "Permission": "Masters.change_itemfieldconfiguration",
-        "Description": "Configure product Master field settings",
-        "Created On": "2026-01-23 11:08:04",
-        "Modified On": "2026-03-27 15:47:45"
-    },
-    {
+{
         "Code": "IMP-SCR-009",
         "Name": "UOM",
         "Icon": "straighten",
@@ -489,21 +461,7 @@
         "Created On": "2026-01-23 11:08:04",
         "Modified On": "2026-03-06 11:47:10"
     },
-    {
-        "Code": "MIM-016",
-        "Name": "Channel Configuration",
-        "Icon": "account_tree",
-        "Link": "/settings/channel-configuration",
-        "Sequence": "2",
-        "Click": "",
-        "Menu": "MENU-001",
-        "Submenu": "SBM-003",
-        "Permission": "Masters.change_channelpartnerconfiguration",
-        "Description": "Configure Channel Partner settings and hierarchy",
-        "Created On": "2026-01-23 11:08:04",
-        "Modified On": "2026-03-06 11:47:10"
-    },
-    {
+{
         "Code": "MIM-009",
         "Name": "Tax",
         "Icon": "tax.svg",
@@ -614,20 +572,6 @@
         "Description": "Import Item data",
         "Created On": "2026-01-23 11:08:04",
         "Modified On": "2026-03-26 12:05:09"
-    },
-    {
-        "Code": "MIM-029",
-        "Name": "Dashboard Builder",
-        "Icon": "dashboard",
-        "Link": "/dashboard-builder",
-        "Sequence": "100",
-        "Click": "",
-        "Menu": "MENU-001",
-        "Submenu": "SBM-003",
-        "Permission": "dashboards.view_dashboard",
-        "Description": "",
-        "Created On": "2026-03-12 11:28:30",
-        "Modified On": "2026-03-12 11:28:30"
     },
     {
         "Code": "MIM-015",

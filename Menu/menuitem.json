@@ -670,5 +670,33 @@
         "Description": "Manage site visits (SRS Module 5)",
         "Created On": "2026-07-14 00:00:00",
         "Modified On": "2026-07-14 00:00:00"
+    },
+    {
+        "Code": "INV-001",
+        "Name": "Plots",
+        "Icon": "landscape",
+        "Link": "/inventory/plots",
+        "Sequence": "1",
+        "Click": "",
+        "Menu": "MENU-001",
+        "Submenu": "SBM-008",
+        "Permission": "Inventory.view_plot",
+        "Description": "Manage plot inventory (SRS Module 7)",
+        "Created On": "2026-07-15 00:00:00",
+        "Modified On": "2026-07-15 00:00:00"
+    },
+    {
+        "Code": "INV-002",
+        "Name": "Flats",
+        "Icon": "apartment",
+        "Link": "/inventory/flats",
+        "Sequence": "2",
+        "Click": "",
+        "Menu": "MENU-001",
+        "Submenu": "SBM-008",
+        "Permission": "Inventory.view_flat",
+        "Description": "Manage flat inventory (SRS Module 7)",
+        "Created On": "2026-07-15 00:00:00",
+        "Modified On": "2026-07-15 00:00:00"
     }
 ]

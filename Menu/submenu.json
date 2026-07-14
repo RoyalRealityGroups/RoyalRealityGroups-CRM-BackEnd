@@ -55,25 +55,36 @@
         "Modified On": "2026-07-14 00:00:00"
     },
     {
+        "Code": "SBM-007",
+        "Name": "Site Visit Management",
+        "Sequence": "5",
+        "Icon": "place",
+        "Click": "/sitevisit",
+        "Menu": "MENU-001",
+        "Submenu": "",
+        "Created On": "2026-07-14 00:00:00",
+        "Modified On": "2026-07-14 00:00:00"
+    },
+    {
+        "Code": "SBM-008",
+        "Name": "Inventory Management",
+        "Sequence": "6",
+        "Icon": "inventory",
+        "Click": "/inventory/plots",
+        "Menu": "MENU-001",
+        "Submenu": "",
+        "Created On": "2026-07-15 00:00:00",
+        "Modified On": "2026-07-15 00:00:00"
+    },
+    {
         "Code": "SBM-004",
         "Name": "Reports",
-        "Sequence": "5",
+        "Sequence": "7",
         "Icon": "reports",
         "Click": "/reports",
         "Menu": "MENU-001",
         "Submenu": "",
         "Created On": "2026-05-01 00:00:00",
         "Modified On": "2026-05-01 00:00:00"
-    },
-    {
-        "Code": "SBM-003",
-        "Name": "Settings",
-        "Sequence": "6",
-        "Icon": "settings",
-        "Click": "/settings",
-        "Menu": "MENU-001",
-        "Submenu": "",
-        "Created On": "2026-07-12 00:00:00",
-        "Modified On": "2026-07-12 00:00:00"
     }
 ]

@@ -50,6 +50,7 @@ if not settings.DYNAMICS_SAFE_MODE:
     path('api/sales/', include('Sales.urls')),
     path('api/lead/', include('Lead.urls')),
     path('api/sitevisit/', include('SiteVisit.urls')),
+    path('api/inventory/', include('Inventory.urls')),
     path('api/dispatch/', include('Dispatch.urls')),
         path('api/invoice/', include('Invoice.urls')),
         path('api/receipts/', include('Receipts.urls')),

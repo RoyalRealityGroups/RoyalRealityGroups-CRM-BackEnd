@@ -760,5 +760,17 @@
         "ContentType": "sitevisit",
         "App": "SiteVisit",
         "Hide": "0"
+    },
+    {
+        "Name": "Plot",
+        "ContentType": "plot",
+        "App": "Inventory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Flat",
+        "ContentType": "flat",
+        "App": "Inventory",
+        "Hide": "0"
     }
 ]

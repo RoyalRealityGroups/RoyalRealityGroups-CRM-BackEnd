@@ -6938,5 +6938,45 @@
         "Name": "View",
         "Permission": "SiteVisit.view_sitevisit",
         "Hide": "0"
+    },
+    {
+        "Name": "Add",
+        "Permission": "Inventory.add_plot",
+        "Hide": "0"
+    },
+    {
+        "Name": "Change",
+        "Permission": "Inventory.change_plot",
+        "Hide": "0"
+    },
+    {
+        "Name": "Delete",
+        "Permission": "Inventory.delete_plot",
+        "Hide": "0"
+    },
+    {
+        "Name": "View",
+        "Permission": "Inventory.view_plot",
+        "Hide": "0"
+    },
+    {
+        "Name": "Add",
+        "Permission": "Inventory.add_flat",
+        "Hide": "0"
+    },
+    {
+        "Name": "Change",
+        "Permission": "Inventory.change_flat",
+        "Hide": "0"
+    },
+    {
+        "Name": "Delete",
+        "Permission": "Inventory.delete_flat",
+        "Hide": "0"
+    },
+    {
+        "Name": "View",
+        "Permission": "Inventory.view_flat",
+        "Hide": "0"
     }
 ]

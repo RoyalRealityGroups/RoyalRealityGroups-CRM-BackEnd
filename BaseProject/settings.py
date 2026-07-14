@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'Invoice',
     'Receipts',
     'SiteVisit',
+    'Inventory',
 
     'Delivery',
     # 'advanced_filters',

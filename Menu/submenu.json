@@ -43,10 +43,21 @@
         "Created On": "2026-07-11 00:00:00",
         "Modified On": "2026-07-11 00:00:00"
     },
+        {
+        "Code": "SBM-007",
+        "Name": "Site Visit Management",
+        "Sequence": "4",
+        "Icon": "place",
+        "Click": "/sitevisit",
+        "Menu": "MENU-001",
+        "Submenu": "",
+        "Created On": "2026-07-14 00:00:00",
+        "Modified On": "2026-07-14 00:00:00"
+    },
     {
         "Code": "SBM-004",
         "Name": "Reports",
-        "Sequence": "4",
+        "Sequence": "5",
         "Icon": "reports",
         "Click": "/reports",
         "Menu": "MENU-001",
@@ -57,23 +68,12 @@
     {
         "Code": "SBM-003",
         "Name": "Settings",
-        "Sequence": "5",
+        "Sequence": "6",
         "Icon": "settings",
         "Click": "/settings",
         "Menu": "MENU-001",
         "Submenu": "",
         "Created On": "2026-07-12 00:00:00",
         "Modified On": "2026-07-12 00:00:00"
-    },
-    {
-        "Code": "SBM-007",
-        "Name": "Site Visit Management",
-        "Sequence": "6",
-        "Icon": "place",
-        "Click": "/sitevisit",
-        "Menu": "MENU-001",
-        "Submenu": "",
-        "Created On": "2026-07-14 00:00:00",
-        "Modified On": "2026-07-14 00:00:00"
     }
 ]

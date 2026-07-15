@@ -603,7 +603,7 @@
     },
     {
         "Code": "LM-001",
-        "Name": "Add Lead",
+        "Name": "Lead",
         "Icon": "lead",
         "Link": "/lead/add",
         "Sequence": "1",

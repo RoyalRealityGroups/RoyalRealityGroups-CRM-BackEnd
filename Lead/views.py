@@ -34,6 +34,27 @@ class LeadViewSet(viewsets.ModelViewSet):
         # Let serializer handle modified_by
         serializer.save()
     
+    @action(detail=True, methods=['post'])
+    def update_status(self, request, pk=None):
+        """Update lead status with history tracking"""
+        lead = self.get_object()
+        status = request.data.get('status')
+        remarks = request.data.get('remarks', '')
+        if not status:
+            return Response({'error': 'Status is required'}, status=400)
+        lead._previous_status = lead.status
+        lead.status = status
+        lead.save(update_fields=['status'])
+        LeadStatusHistory.objects.create(
+            lead=lead,
+            from_status=lead._previous_status,
+            to_status=status,
+            remarks=remarks,
+            changed_by=request.user,
+        )
+        serializer = self.get_serializer(lead)
+        return Response(serializer.data)
+
     @action(detail=False, methods=['post'])
     def cross_check(self, request):
         """

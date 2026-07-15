@@ -43,17 +43,6 @@
         "Created On": "2026-07-11 00:00:00",
         "Modified On": "2026-07-11 00:00:00"
     },
-        {
-        "Code": "SBM-007",
-        "Name": "Site Visit Management",
-        "Sequence": "4",
-        "Icon": "place",
-        "Click": "/sitevisit",
-        "Menu": "MENU-001",
-        "Submenu": "",
-        "Created On": "2026-07-14 00:00:00",
-        "Modified On": "2026-07-14 00:00:00"
-    },
     {
         "Code": "SBM-007",
         "Name": "Site Visit Management",
@@ -77,9 +66,20 @@
         "Modified On": "2026-07-15 00:00:00"
     },
     {
+        "Code": "SBM-003",
+        "Name": "Settings",
+        "Sequence": "5",
+        "Icon": "settings",
+        "Click": "",
+        "Menu": "MENU-001",
+        "Submenu": "",
+        "Created On": "2025-12-29 00:00:00",
+        "Modified On": "2026-03-06 11:47:06"
+    },
+    {
         "Code": "SBM-004",
         "Name": "Reports",
-        "Sequence": "7",
+        "Sequence": "8",
         "Icon": "reports",
         "Click": "/reports",
         "Menu": "MENU-001",

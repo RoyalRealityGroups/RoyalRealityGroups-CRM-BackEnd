@@ -603,33 +603,19 @@
     },
     {
         "Code": "LM-001",
-        "Name": "Lead List",
+        "Name": "Add Lead",
         "Icon": "lead",
-        "Link": "/lead",
+        "Link": "/lead/add",
         "Sequence": "1",
         "Click": "",
         "Menu": "MENU-001",
         "Submenu": "SBM-005",
         "Permission": "Lead.view_lead",
-        "Description": "View and manage leads",
+        "Description": "Add a new lead",
         "Created On": "2026-07-11 00:00:00",
         "Modified On": "2026-07-11 00:00:00"
     },
-    {
-        "Code": "LM-002",
-        "Name": "Cross Lead Check",
-        "Icon": "compare_arrows",
-        "Link": "/lead/cross-check",
-        "Sequence": "2",
-        "Click": "",
-        "Menu": "MENU-001",
-        "Submenu": "SBM-005",
-        "Permission": "Lead.view_lead",
-        "Description": "Check for duplicate leads",
-        "Created On": "2026-07-11 00:00:00",
-        "Modified On": "2026-07-11 00:00:00"
-    },
-    {
+{
         "Code": "LM-003",
         "Name": "Follow-ups",
         "Icon": "follow",

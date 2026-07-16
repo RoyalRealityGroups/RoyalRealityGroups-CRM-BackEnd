@@ -83,13 +83,7 @@ jobs:
             echo "Waiting for PostgreSQL..."
             sleep 2
           done
- 
-      - name: Wait for Redis
-        run: |
-          until redis-cli -h localhost ping; do
-            echo "Waiting for Redis..."
-            sleep 2
-          done
+     
  
       - name: Run migrations
         run: python manage.py migrate --noinput

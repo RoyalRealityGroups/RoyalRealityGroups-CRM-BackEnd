@@ -18,6 +18,14 @@ class SiteVisit(models.Model):
         on_delete=models.PROTECT,
         related_name='assigned_site_visits',
     )
+    # ponytail: nullable FK keeps existing rows valid during migration; add lead
+    # sync + LeadStatusHistory write in the same iteration when wiring the UI.
+    lead = models.ForeignKey(
+        'Lead.Lead',
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='site_visits',
+    )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='SCHEDULED')
 
     customer_feedback = models.TextField(blank=True, default='')

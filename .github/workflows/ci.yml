@@ -24,6 +24,15 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
  
     env:
       DEBUG: "True"
@@ -83,7 +92,13 @@ jobs:
             echo "Waiting for PostgreSQL..."
             sleep 2
           done
-     
+
+      - name: Wait for Redis
+        run: |
+          until redis-cli -h localhost -p 6379 ping; do
+            echo "Waiting for Redis..."
+            sleep 2
+          done
  
       - name: Run migrations
         run: python manage.py migrate --noinput
@@ -110,4 +125,3 @@ jobs:
             manage.py
             requirements.txt
           if-no-files-found: warn 
-        

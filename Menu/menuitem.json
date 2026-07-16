@@ -603,15 +603,15 @@
     },
     {
         "Code": "LM-001",
-        "Name": "Lead",
+        "Name": "Leads",
         "Icon": "lead",
-        "Link": "/lead/add",
+        "Link": "/lead/list",
         "Sequence": "1",
         "Click": "",
         "Menu": "MENU-001",
         "Submenu": "SBM-005",
         "Permission": "Lead.view_lead",
-        "Description": "Add a new lead",
+        "Description": "View and manage all leads",
         "Created On": "2026-07-11 00:00:00",
         "Modified On": "2026-07-11 00:00:00"
     },

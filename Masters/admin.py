@@ -674,7 +674,7 @@ class ProjectAdmin(admin.ModelAdmin):
     search_fields = ('code', 'name', 'developer_name', 'rera_number')
     ordering = ('name',)
     list_per_page = 25
-    raw_id_fields = ('location',)
+    raw_id_fields = ()
     readonly_fields = ('code', 'created_on', 'modified_on',
                       'created_by_identifier', 'modified_by_identifier')
 

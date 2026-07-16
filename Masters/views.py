@@ -5220,13 +5220,13 @@ class ProjectList(generics.ListCreateAPIView):
     serializer_class = ProjectSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['status', 'project_type', 'approval_type', 'is_active', 'location']
-    search_fields = ['name', 'code', 'developer_name', 'rera_number']
+    search_fields = ['name', 'code', 'developer_name']
     ordering_fields = ['name', 'created_on', 'status']
     ordering = ['name']
 
     def get_queryset(self):
         # Soft-delete aware: hide tombstoned rows from list views
-        return Project.objects.filter(is_deleted=False).select_related('location').all()
+        return Project.objects.filter(is_deleted=False).all()
 
 
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -5236,7 +5236,7 @@ class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'pk'
 
     def get_queryset(self):
-        return Project.objects.select_related('location').all()
+        return Project.objects.all()
 
     def perform_destroy(self, instance):
         # Soft delete: flip is_deleted, don't drop the row

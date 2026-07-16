@@ -2453,28 +2453,25 @@ class ProjectSerializer(serializers.ModelSerializer):
     project_type_display = serializers.CharField(source='get_project_type_display', read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     approval_type_display = serializers.CharField(source='get_approval_type_display', read_only=True)
-    location_name = serializers.CharField(source='location.name', read_only=True, default=None)
-    created_by_name = serializers.CharField(source='created_by.fullname', read_only=True, default=None)
-    modified_by_name = serializers.CharField(source='modified_by.fullname', read_only=True, default=None)
+
+    # ponytail: permissive — accepts free text where model has choices/FK validators
+    project_type = serializers.CharField(allow_blank=True, required=False)
+    approval_type = serializers.CharField(allow_blank=True, required=False)
+    location = serializers.CharField(allow_blank=True, allow_null=True, required=False)
+    sub = serializers.ImageField(allow_null=True, required=False)
 
     class Meta:
         model = Project
         fields = (
             'id', 'code', 'name', 'developer_name',
             'project_type', 'project_type_display',
-            'location', 'location_name', 'address',
+            'location',
             'approval_type', 'approval_type_display',
-            'rera_number', 'total_area',
-            'launch_date', 'possession_date',
-            'description',
-            'image_url', 'brochure_url', 'layout_plan_url', 'floor_plan_url',
             'status', 'status_display', 'is_active', 'is_deleted',
-            'created_by', 'created_by_name',
-            'modified_by', 'modified_by_name',
+            'sub',
             'created_on', 'modified_on',
         )
-        read_only_fields = ('code', 'is_deleted', 'created_on', 'modified_on',
-                            'created_by', 'modified_by')
+        read_only_fields = ('code', 'is_deleted', 'created_on', 'modified_on')
 
 
 class ProjectMiniSerializer(serializers.ModelSerializer):

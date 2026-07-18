@@ -149,15 +149,33 @@ def apply_company_location_filter_for_users(queryset, user):
     filters = Q()
 
     # Specific companies: show users who share at least one company or have all_companies access
-    if not has_all_companies:
+    # Only filter by companies if the model has a companies field
+    has_companies_field = False
+    try:
+        queryset.model._meta.get_field('companies')
+        has_companies_field = True
+    except Exception:
+        pass
+
+    if not has_all_companies and has_companies_field:
         company_manager = getattr(user, 'companies', None)
         company_ids = list(company_manager.values_list('id', flat=True)) if company_manager is not None else []
         filters &= (Q(companies__id__in=company_ids) | Q(has_all_companies=True))
 
     # Specific locations: show users who share at least one location or have all_locations access
-    if not has_all_locations:
+    # Only filter by locations if the model has a locations field
+    has_locations_field = False
+    try:
+        queryset.model._meta.get_field('locations')
+        has_locations_field = True
+    except Exception:
+        pass
+
+    if not has_all_locations and has_locations_field:
         location_manager = getattr(user, 'locations', None)
         location_ids = list(location_manager.values_list('id', flat=True)) if location_manager is not None else []
         filters &= (Q(locations__id__in=location_ids) | Q(has_all_locations=True))
 
-    return queryset.filter(filters).distinct()
+    if filters:
+        return queryset.filter(filters).distinct()
+    return queryset

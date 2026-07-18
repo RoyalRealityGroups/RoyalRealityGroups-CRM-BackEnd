@@ -7008,5 +7008,100 @@
         "Name": "Download",
         "Permission": "Masters.download_projectstatushistory",
         "Hide": "0"
+    },
+    {
+        "Name": "View",
+        "Permission": "Inventory.view_plotinventory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Add",
+        "Permission": "Inventory.add_plotinventory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Change",
+        "Permission": "Inventory.change_plotinventory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Delete",
+        "Permission": "Inventory.delete_plotinventory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Export",
+        "Permission": "Inventory.export_plotinventory",
+        "Hide": "0"
+    },
+    {
+        "Name": "View",
+        "Permission": "Inventory.view_flatinventory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Add",
+        "Permission": "Inventory.add_flatinventory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Change",
+        "Permission": "Inventory.change_flatinventory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Delete",
+        "Permission": "Inventory.delete_flatinventory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Export",
+        "Permission": "Inventory.export_flatinventory",
+        "Hide": "0"
+    },
+    {
+        "Name": "View",
+        "Permission": "Booking.view_booking",
+        "Hide": "0"
+    },
+    {
+        "Name": "Add",
+        "Permission": "Booking.add_booking",
+        "Hide": "0"
+    },
+    {
+        "Name": "Change",
+        "Permission": "Booking.change_booking",
+        "Hide": "0"
+    },
+    {
+        "Name": "Delete",
+        "Permission": "Booking.delete_booking",
+        "Hide": "0"
+    },
+    {
+        "Name": "Export",
+        "Permission": "Booking.export_booking",
+        "Hide": "0"
+    },
+    {
+        "Name": "View",
+        "Permission": "Booking.view_bookingstatushistory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Add",
+        "Permission": "Booking.add_bookingstatushistory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Change",
+        "Permission": "Booking.change_bookingstatushistory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Delete",
+        "Permission": "Booking.delete_bookingstatushistory",
+        "Hide": "0"
     }
 ]

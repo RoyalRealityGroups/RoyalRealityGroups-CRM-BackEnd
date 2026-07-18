@@ -77,6 +77,17 @@
         "Modified On": "2026-07-18 00:00:00"
     },
     {
+        "Code": "SBM-008",
+        "Name": "Inventory Management",
+        "Sequence": "5",
+        "Icon": "inventory_2",
+        "Click": "/inventory",
+        "Menu": "MENU-001",
+        "Submenu": "",
+        "Created On": "2026-07-18 00:00:00",
+        "Modified On": "2026-07-18 00:00:00"
+    },
+    {
         "Code": "SBM-009",
         "Name": "Follow-up Management",
         "Sequence": "3",

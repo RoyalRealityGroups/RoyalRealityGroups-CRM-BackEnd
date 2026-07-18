@@ -656,5 +656,33 @@
         "Description": "Manage real estate projects (SRS Module 6)",
         "Created On": "2026-07-11 00:00:00",
         "Modified On": "2026-07-11 00:00:00"
+    },
+    {
+        "Code": "INV-001",
+        "Name": "Plot Inventory",
+        "Icon": "landscape",
+        "Link": "/inventory/plots",
+        "Sequence": "1",
+        "Click": "",
+        "Menu": "MENU-001",
+        "Submenu": "SBM-008",
+        "Permission": "Inventory.view_plotinventory",
+        "Description": "Manage plot inventory",
+        "Created On": "2026-07-18 00:00:00",
+        "Modified On": "2026-07-18 00:00:00"
+    },
+    {
+        "Code": "INV-002",
+        "Name": "Flat Inventory",
+        "Icon": "apartment",
+        "Link": "/inventory/flats",
+        "Sequence": "2",
+        "Click": "",
+        "Menu": "MENU-001",
+        "Submenu": "SBM-008",
+        "Permission": "Inventory.view_flatinventory",
+        "Description": "Manage flat inventory",
+        "Created On": "2026-07-18 00:00:00",
+        "Modified On": "2026-07-18 00:00:00"
     }
 ]

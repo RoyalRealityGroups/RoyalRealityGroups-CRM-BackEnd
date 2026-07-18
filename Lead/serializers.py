@@ -205,6 +205,14 @@ class LeadFollowUpSerializer(serializers.ModelSerializer):
                 or lead.assigned_employee.username
             ) if lead.assigned_employee else None,
         }
+        user = instance.created_by
+        if user:
+            data['created_by'] = {
+                'id': str(user.id),
+                'name': getattr(user, 'name', None) or f"{user.first_name} {user.last_name}".strip() or user.username,
+            }
+        else:
+            data['created_by'] = None
         return data
 
     def get_created_by_name(self, obj):

@@ -35,6 +35,7 @@ class LeadViewSet(viewsets.ModelViewSet):
         instance._previous_status = instance.status
         serializer.save()
 
+
     @action(detail=False, methods=['post'])
     def cross_check(self, request):
         """Module 3: Cross Lead Check"""

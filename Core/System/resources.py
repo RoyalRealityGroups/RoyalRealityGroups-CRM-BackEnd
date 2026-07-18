@@ -7,6 +7,16 @@ from .models import Menu,Submenu,Menuitem,Notification,Backup,Formula, ActivityL
 from django.contrib.auth import get_user_model
 User = get_user_model()
 from Core.Core.imports_exports.resources import ModelImportExportResource
+from django.contrib.auth.models import Permission
+
+
+class SafeFKWidget(ForeignKeyWidget):
+    """ForeignKeyWidget that forces unfiltered queryset to bypass custom managers."""
+    def get_queryset(self, value, row, *args, **kwargs):
+        return self.model._default_manager.db_manager('default').all()
+from django.contrib.auth import get_user_model
+User = get_user_model()
+from Core.Core.imports_exports.resources import ModelImportExportResource
 from django.contrib.auth.models import Permission 
 from django.contrib.contenttypes.models import ContentType
 
@@ -33,8 +43,8 @@ class SubmenuResource(ModelImportExportResource):
     sequence = Field(column_name='Sequence', attribute='sequence', )
     icon = Field(column_name='Icon', attribute='icon', )
     click = Field(column_name='Click', attribute='click', )
-    menu = Field(column_name='Menu', attribute='menu', widget=ForeignKeyWidget(Menu, field='code'))
-    submenu = Field(column_name='Submenu', attribute='submenu', widget=ForeignKeyWidget(Submenu, field='code'))
+    menu = Field(column_name='Menu', attribute='menu', widget=SafeFKWidget(Menu, field='code'))
+    submenu = Field(column_name='Submenu', attribute='submenu', widget=SafeFKWidget(Submenu, field='code'))
     created_on = Field(column_name='Created On', attribute='created_on',widget=DateTimeWidget())
     modified_on = Field(column_name='Modified On', attribute='modified_on',widget=DateTimeWidget())
     
@@ -54,8 +64,8 @@ class MenuitemResource(ModelImportExportResource):
     link = Field(column_name='Link', attribute='link', )
     sequence = Field(column_name='Sequence', attribute='sequence', )
     click = Field(column_name='Click', attribute='click', )
-    menu = Field(column_name='Menu', attribute='menu', widget=ForeignKeyWidget(Menu, field='code'))
-    submenu = Field(column_name='Submenu', attribute='submenu', widget=ForeignKeyWidget(Submenu, field='code'))
+    menu = Field(column_name='Menu', attribute='menu', widget=SafeFKWidget(Menu, field='code'))
+    submenu = Field(column_name='Submenu', attribute='submenu', widget=SafeFKWidget(Submenu, field='code'))
     permission = Field(column_name='Permission', attribute='permission', widget=PermissionCodeWidget(Permission,))
     # permission = Field(column_name='Permission', attribute='permission', widget=ForeignKeyWidget(Permission, field='codename'))
     description = Field(column_name='Description', attribute='description', )

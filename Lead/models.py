@@ -124,6 +124,7 @@ class LeadFollowUp(CoreModel):
     follow_up_date = models.DateField(db_index=True)
     follow_up_type = models.CharField(max_length=20, choices=FOLLOW_UP_TYPE_CHOICES)
     discussion_notes = models.TextField(blank=True, null=True)
+    follow_up_time = models.TimeField(blank=True, null=True)
     next_follow_up_date = models.DateField(blank=True, null=True, db_index=True)
     created_by = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='lead_follow_ups')
 

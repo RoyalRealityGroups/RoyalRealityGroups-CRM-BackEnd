@@ -32,7 +32,7 @@ if not DEBUG and not os.getenv("DJANGO_SECRET_KEY"):
 
 
 URL_SCHEMA = os.getenv('URL_SCHEMA', "http")
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = [ URL_SCHEMA +'://'+host for host in ALLOWED_HOSTS ] + [
     'http://localhost:5174',
     'http://127.0.0.1:5174',
@@ -71,7 +71,6 @@ INSTALLED_APPS = [
     'Dispatch',
     'Invoice',
     'Receipts',
-
     'Delivery',
     # 'advanced_filters',
     'thirdparty',

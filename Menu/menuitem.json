@@ -603,33 +603,19 @@
     },
     {
         "Code": "LM-001",
-        "Name": "Lead List",
+        "Name": "Leads",
         "Icon": "lead",
-        "Link": "/lead",
+        "Link": "/lead/list",
         "Sequence": "1",
         "Click": "",
         "Menu": "MENU-001",
         "Submenu": "SBM-005",
         "Permission": "Lead.view_lead",
-        "Description": "View and manage leads",
+        "Description": "View and manage all leads",
         "Created On": "2026-07-11 00:00:00",
         "Modified On": "2026-07-11 00:00:00"
     },
-    {
-        "Code": "LM-002",
-        "Name": "Cross Lead Check",
-        "Icon": "compare_arrows",
-        "Link": "/lead/cross-check",
-        "Sequence": "2",
-        "Click": "",
-        "Menu": "MENU-001",
-        "Submenu": "SBM-005",
-        "Permission": "Lead.view_lead",
-        "Description": "Check for duplicate leads",
-        "Created On": "2026-07-11 00:00:00",
-        "Modified On": "2026-07-11 00:00:00"
-    },
-    {
+{
         "Code": "LM-003",
         "Name": "Follow-ups",
         "Icon": "follow",
@@ -656,5 +642,47 @@
         "Description": "Manage real estate projects (SRS Module 6)",
         "Created On": "2026-07-11 00:00:00",
         "Modified On": "2026-07-11 00:00:00"
+    },
+    {
+        "Code": "SVM-001",
+        "Name": "Site Visits",
+        "Icon": "place",
+        "Link": "/sitevisit",
+        "Sequence": "1",
+        "Click": "",
+        "Menu": "MENU-001",
+        "Submenu": "SBM-007",
+        "Permission": "SiteVisit.view_sitevisit",
+        "Description": "Manage site visits (SRS Module 5)",
+        "Created On": "2026-07-14 00:00:00",
+        "Modified On": "2026-07-14 00:00:00"
+    },
+    {
+        "Code": "INV-001",
+        "Name": "Plots",
+        "Icon": "landscape",
+        "Link": "/inventory/plots",
+        "Sequence": "1",
+        "Click": "",
+        "Menu": "MENU-001",
+        "Submenu": "SBM-008",
+        "Permission": "Inventory.view_plot",
+        "Description": "Manage plot inventory (SRS Module 7)",
+        "Created On": "2026-07-15 00:00:00",
+        "Modified On": "2026-07-15 00:00:00"
+    },
+    {
+        "Code": "INV-002",
+        "Name": "Flats",
+        "Icon": "apartment",
+        "Link": "/inventory/flats",
+        "Sequence": "2",
+        "Click": "",
+        "Menu": "MENU-001",
+        "Submenu": "SBM-008",
+        "Permission": "Inventory.view_flat",
+        "Description": "Manage flat inventory (SRS Module 7)",
+        "Created On": "2026-07-15 00:00:00",
+        "Modified On": "2026-07-15 00:00:00"
     }
 ]

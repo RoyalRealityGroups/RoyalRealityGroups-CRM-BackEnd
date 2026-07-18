@@ -864,7 +864,7 @@ class CoreModel(CodeModel):
             else:
                 auth_def_query = auth_def_query.filter(has_all_companies=True)
 
-            if location:
+            if location and hasattr(location, 'pk'):
                 auth_def_query = auth_def_query.filter(
                     models.Q(has_all_locations=True) | models.Q(locations=location)
                 )

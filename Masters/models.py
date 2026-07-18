@@ -2583,29 +2583,18 @@ class Project(DuplicateValidationMixin, CoreModel):
     project_type = models.CharField(
         max_length=20, choices=PROJECT_TYPE_CHOICES, default='PLOT', db_index=True,
     )
-    location = models.ForeignKey(
-        'Masters.Location', on_delete=models.RESTRICT,
-        related_name='projects', null=True, blank=True,
+    location = models.CharField(
+        max_length=255, blank=True, null=True,
+        help_text='Project location (free text)',
     )
-    address = models.TextField(blank=True, null=True)
     approval_type = models.CharField(
         max_length=20, choices=APPROVAL_TYPE_CHOICES, default='PENDING',
     )
-    rera_number = models.CharField(max_length=100, blank=True, null=True)
-    total_area = models.CharField(max_length=100, blank=True, null=True, help_text='e.g. "5 acres"')
-    launch_date = models.DateField(null=True, blank=True)
-    possession_date = models.DateField(null=True, blank=True)
-    description = models.TextField(blank=True, null=True)
-
-    # Marketing assets (URLs to media files / brochures / plans)
-    image_url = models.URLField(max_length=500, blank=True, null=True, help_text='Primary project image')
-    brochure_url = models.URLField(max_length=500, blank=True, null=True)
-    layout_plan_url = models.URLField(max_length=500, blank=True, null=True)
-    floor_plan_url = models.URLField(max_length=500, blank=True, null=True)
 
     status = models.CharField(
         max_length=20, choices=PROJECT_STATUS_CHOICES, default='UPCOMING', db_index=True,
     )
+    sub = models.ImageField(upload_to='projects/', null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
     class Meta:

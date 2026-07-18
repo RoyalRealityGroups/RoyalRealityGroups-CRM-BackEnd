@@ -16,6 +16,11 @@ Including another URLconf
 from . import views
 from .test_views import TestUserSerializerView
 from django.urls import path
+from .views import (
+    EmployeeListView,
+    EmployeeDetailView,
+    EmployeePerformanceView,
+)
 
 urlpatterns = [
 
@@ -25,27 +30,31 @@ urlpatterns = [
     path('mini/users/', views.UserMini.as_view()),
     path('mini/users/<str:user_type>/', views.UserMiniByUserType.as_view()),
     path('userpermissions/', views.UserPermissionList.as_view(), name='userpermissions'),
-    
+
     # Test endpoint
     path('test/<str:user_id>/', TestUserSerializerView.as_view(), name='test_user_serializer'),
-    
+
     # Channel Partner endpoints
     path('channel-partners/superstockists/', views.SuperstockistListView.as_view(), name='superstockists_list'),
     path('channel-partners/distributors/', views.DistributorListView.as_view(), name='distributors_list'),
     path('channel-partners/retailers/', views.RetailerListView.as_view(), name='retailers_list'),
-    
+
     path('dropdowns/companies/', views.CompanyDropdownView.as_view(), name='companies_dropdown'),
     path('dropdowns/locations/', views.LocationDropdownView.as_view(), name='locations_dropdown'),
     path('dropdowns/reporting-managers/', views.ReportingManagerDropdownView.as_view(), name='reporting_managers_dropdown'),
-    
+
     path('screens/', views.ScreenListView.as_view(), name='screen_list'),
     path('permissions/my/', views.MyPermissionsView.as_view(), name='my_permissions'),
     path('permissions/<uuid:user_id>/', views.UserPermissionView.as_view(), name='user_permissions'),
     path('permissions/<uuid:user_id>/audit/', views.PermissionAuditLogView.as_view(), name='permission_audit'),
 
+    # Module 10 - Employee Management
+    path('employees/', EmployeeListView.as_view(), name='employee_list'),
+    path('employees/<str:pk>/performance/', EmployeePerformanceView.as_view(), name='employee_performance'),
+    path('employees/<str:pk>/', EmployeeDetailView.as_view(), name='employee_detail'),
+
     # Catch-all pattern MUST be last
     path('<str:pk>/', views.UserDetails.as_view(), name='users'),
-
 ]
 
 

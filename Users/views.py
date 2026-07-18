@@ -612,3 +612,109 @@ class PermissionAuditLogView(generics.ListAPIView):
     def get_queryset(self):
         user_id = self.kwargs.get('user_id')
         return PermissionAuditLog.objects.filter(target_user_id=user_id)
+
+
+# =============================================================================
+# MODULE 10 - EMPLOYEE MANAGEMENT
+# =============================================================================
+
+class EmployeeListView(generics.ListCreateAPIView):
+    """
+    Module 10: Employee Management — list all employees with performance stats.
+    GET  /api/usermanagement/employees/
+    POST /api/usermanagement/employees/   (create)
+    """
+    from Users.serializers import UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['first_name', 'last_name', 'username', 'email', 'designation']
+    ordering_fields = ['first_name', 'last_name', 'joining_date', 'leads_assigned']
+    ordering = ['first_name', 'last_name']
+
+    def get_queryset(self):
+        qs = User.objects.filter(is_active=True, is_superuser=False).select_related('reporting_manager')
+        reporting_manager = self.request.query_params.get('reporting_manager')
+        user_status = self.request.query_params.get('user_status')
+        designation = self.request.query_params.get('designation')
+        if reporting_manager:
+            qs = qs.filter(reporting_manager_id=reporting_manager)
+        if user_status:
+            qs = qs.filter(user_status=user_status)
+        if designation:
+            qs = qs.filter(designation__icontains=designation)
+        return qs
+
+
+class EmployeeDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Module 10: Single employee CRUD.
+    GET/PATCH/DELETE /api/usermanagement/employees/<pk>/
+    """
+    from Users.serializers import UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserSerializer
+    queryset = User.objects.filter(is_active=True, is_superuser=False)
+
+
+class EmployeePerformanceView(APIView):
+    """
+    Module 10: Live performance stats for one employee.
+    GET /api/usermanagement/employees/<pk>/performance/
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+        from django.utils import timezone
+        from django.db.models import Count
+
+        try:
+            employee = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response({'error': 'Employee not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        today = timezone.now().date()
+
+        # Live counts from related models
+        try:
+            from Lead.models import Lead, SiteVisit
+            leads_total = Lead.objects.filter(assigned_employee=employee, is_deleted=False).count()
+            leads_this_month = Lead.objects.filter(
+                assigned_employee=employee, is_deleted=False,
+                created_on__year=today.year, created_on__month=today.month
+            ).count()
+            site_visits_total = SiteVisit.objects.filter(
+                assigned_employee=employee, is_deleted=False
+            ).count()
+            site_visits_completed = SiteVisit.objects.filter(
+                assigned_employee=employee, is_deleted=False, status='COMPLETED'
+            ).count()
+        except Exception:
+            leads_total = leads_this_month = site_visits_total = site_visits_completed = 0
+
+        try:
+            from Booking.models import Booking
+            bookings_total = Booking.objects.filter(
+                sales_executive=employee, is_deleted=False
+            ).exclude(status='CANCELLED').count()
+            registrations = Booking.objects.filter(
+                sales_executive=employee, is_deleted=False, status='REGISTERED'
+            ).count()
+        except Exception:
+            bookings_total = registrations = 0
+
+        return Response({
+            'employee_id': str(employee.id),
+            'employee_name': f"{employee.first_name} {employee.last_name}".strip() or employee.username,
+            'designation': getattr(employee, 'designation', None),
+            'joining_date': getattr(employee, 'joining_date', None),
+            'user_status': getattr(employee, 'user_status', None),
+            'performance': {
+                'leads_total': leads_total,
+                'leads_this_month': leads_this_month,
+                'site_visits_total': site_visits_total,
+                'site_visits_completed': site_visits_completed,
+                'bookings_total': bookings_total,
+                'registrations': registrations,
+            }
+        })

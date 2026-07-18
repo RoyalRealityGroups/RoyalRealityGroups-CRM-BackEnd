@@ -46,6 +46,38 @@ class WidgetDataService:
         'masters.distributors_count': {'model': 'Masters.Distributor', 'field': None, 'type': 'count'},
         'masters.retailers_count': {'model': 'Masters.Retailer', 'field': None, 'type': 'count'},
         'masters.superstockists_count': {'model': 'Masters.Superstockist', 'field': None, 'type': 'count'},
+
+        # ====================================================================
+        # Real Estate — Phase 1 data sources
+        # ====================================================================
+
+        # Lead
+        'leads.count': {'model': 'Lead.Lead', 'field': None, 'type': 'count'},
+        'leads.by_status': {'model': 'Lead.Lead', 'field': 'status', 'type': 'group_by'},
+        'leads.by_source': {'model': 'Lead.Lead', 'field': 'lead_source', 'type': 'group_by'},
+        'leads.recent': {'model': 'Lead.Lead', 'field': None, 'type': 'list'},
+        'leads.over_time': {'model': 'Lead.Lead', 'field': 'created_on', 'type': 'time_series'},
+
+        # Site Visits
+        'site_visits.count': {'model': 'Lead.SiteVisit', 'field': None, 'type': 'count'},
+        'site_visits.by_status': {'model': 'Lead.SiteVisit', 'field': 'status', 'type': 'group_by'},
+        'site_visits.recent': {'model': 'Lead.SiteVisit', 'field': None, 'type': 'list'},
+
+        # Bookings
+        'bookings.count': {'model': 'Booking.Booking', 'field': None, 'type': 'count'},
+        'bookings.by_status': {'model': 'Booking.Booking', 'field': 'status', 'type': 'group_by'},
+        'bookings.recent': {'model': 'Booking.Booking', 'field': None, 'type': 'list'},
+        'bookings.over_time': {'model': 'Booking.Booking', 'field': 'booking_date', 'type': 'time_series'},
+
+        # Projects
+        'projects.count': {'model': 'Masters.Project', 'field': None, 'type': 'count'},
+        'projects.by_status': {'model': 'Masters.Project', 'field': 'status', 'type': 'group_by'},
+
+        # Inventory
+        'plots.count': {'model': 'Inventory.PlotInventory', 'field': None, 'type': 'count'},
+        'plots.by_status': {'model': 'Inventory.PlotInventory', 'field': 'status', 'type': 'group_by'},
+        'flats.count': {'model': 'Inventory.FlatInventory', 'field': None, 'type': 'count'},
+        'flats.by_status': {'model': 'Inventory.FlatInventory', 'field': 'status', 'type': 'group_by'},
     }
 
     @staticmethod

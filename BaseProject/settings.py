@@ -77,9 +77,11 @@ INSTALLED_APPS = [
     'thirdparty',
     'General',
     'dashboards',
-   
-
-    
+    # Phase 1 - New apps
+    'Inventory',
+    'Booking',
+    'Documents',
+    'RealEstateReports',
 ]
 
 

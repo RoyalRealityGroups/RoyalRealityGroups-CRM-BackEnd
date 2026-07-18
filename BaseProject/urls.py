@@ -56,6 +56,11 @@ if not settings.DYNAMICS_SAFE_MODE:
         path('api/thirdparty/', include('thirdparty.urls')),
         path('api/general/', include('General.urls')),
         path('api/dashboards/', include('dashboards.urls')),
+        # Phase 1 — new modules
+        path('api/inventory/', include('Inventory.urls')),
+        path('api/booking/', include('Booking.urls')),
+        path('api/documents/', include('Documents.urls')),
+        path('api/re-reports/', include('RealEstateReports.urls')),
 
     ]
 

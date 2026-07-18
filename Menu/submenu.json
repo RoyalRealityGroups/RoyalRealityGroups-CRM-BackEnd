@@ -22,61 +22,6 @@
         "Modified On": "2026-03-06 11:47:06"
     },
     {
-        "Code": "SBM-005",
-        "Name": "Lead Management",
-        "Sequence": "2",
-        "Icon": "lead",
-        "Click": "/lead",
-        "Menu": "MENU-001",
-        "Submenu": "",
-        "Created On": "2026-07-11 00:00:00",
-        "Modified On": "2026-07-11 00:00:00"
-    },
-    {
-        "Code": "SBM-009",
-        "Name": "Follow-up Management",
-        "Sequence": "3",
-        "Icon": "followup",
-        "Click": "/lead/followups",
-        "Menu": "MENU-001",
-        "Submenu": "SBM-005",
-        "Created On": "2026-07-15 00:00:00",
-        "Modified On": "2026-07-15 00:00:00"
-    },
-    {
-        "Code": "SBM-007",
-        "Name": "Site Visit Management",
-        "Sequence": "3",
-        "Icon": "place",
-        "Click": "/sitevisit",
-        "Menu": "MENU-001",
-        "Submenu": "",
-        "Created On": "2026-07-14 00:00:00",
-        "Modified On": "2026-07-14 00:00:00"
-    },
-    {
-        "Code": "SBM-006",
-        "Name": "Project Management",
-        "Sequence": "4",
-        "Icon": "business",
-        "Click": "/masters/projects",
-        "Menu": "MENU-001",
-        "Submenu": "",
-        "Created On": "2026-07-11 00:00:00",
-        "Modified On": "2026-07-11 00:00:00"
-    },
-    {
-        "Code": "SBM-008",
-        "Name": "Inventory Management",
-        "Sequence": "5",
-        "Icon": "inventory",
-        "Click": "/inventory/plots",
-        "Menu": "MENU-001",
-        "Submenu": "",
-        "Created On": "2026-07-15 00:00:00",
-        "Modified On": "2026-07-15 00:00:00"
-    },
-    {
         "Code": "SBM-003",
         "Name": "Settings",
         "Sequence": "6",
@@ -97,5 +42,49 @@
         "Submenu": "",
         "Created On": "2026-05-01 00:00:00",
         "Modified On": "2026-05-01 00:00:00"
+    },
+    {
+        "Code": "SBM-005",
+        "Name": "Lead Management",
+        "Sequence": "2",
+        "Icon": "lead",
+        "Click": "/lead",
+        "Menu": "MENU-001",
+        "Submenu": "",
+        "Created On": "2026-07-11 00:00:00",
+        "Modified On": "2026-07-11 00:00:00"
+    },
+    {
+        "Code": "SBM-006",
+        "Name": "Project Management",
+        "Sequence": "4",
+        "Icon": "business",
+        "Click": "/masters/projects",
+        "Menu": "MENU-001",
+        "Submenu": "",
+        "Created On": "2026-07-11 00:00:00",
+        "Modified On": "2026-07-11 00:00:00"
+    },
+    {
+        "Code": "SBM-007",
+        "Name": "Site Visit Management",
+        "Sequence": "7",
+        "Icon": "site_visit",
+        "Click": "/sitevisit",
+        "Menu": "MENU-001",
+        "Submenu": "",
+        "Created On": "2026-07-18 00:00:00",
+        "Modified On": "2026-07-18 00:00:00"
+    },
+    {
+        "Code": "SBM-009",
+        "Name": "Follow-up Management",
+        "Sequence": "3",
+        "Icon": "followup",
+        "Click": "/lead/followups",
+        "Menu": "MENU-001",
+        "Submenu": "SBM-005",
+        "Created On": "2026-07-15 00:00:00",
+        "Modified On": "2026-07-15 00:00:00"
     }
 ]

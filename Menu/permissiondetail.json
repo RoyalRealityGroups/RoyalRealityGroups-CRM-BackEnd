@@ -6831,6 +6831,96 @@
     },
     {
         "Name": "Add",
+        "Permission": "Lead.add_sitevisit",
+        "Hide": "0"
+    },
+    {
+        "Name": "Change",
+        "Permission": "Lead.change_sitevisit",
+        "Hide": "0"
+    },
+    {
+        "Name": "Delete",
+        "Permission": "Lead.delete_sitevisit",
+        "Hide": "0"
+    },
+    {
+        "Name": "View",
+        "Permission": "Lead.view_sitevisit",
+        "Hide": "0"
+    },
+    {
+        "Name": "Reports",
+        "Permission": "Lead.reports_sitevisit",
+        "Hide": "0"
+    },
+    {
+        "Name": "Export",
+        "Permission": "Lead.export_sitevisit",
+        "Hide": "0"
+    },
+    {
+        "Name": "Import",
+        "Permission": "Lead.import_sitevisit",
+        "Hide": "0"
+    },
+    {
+        "Name": "Print",
+        "Permission": "Lead.print_sitevisit",
+        "Hide": "0"
+    },
+    {
+        "Name": "Download",
+        "Permission": "Lead.download_sitevisit",
+        "Hide": "0"
+    },
+    {
+        "Name": "Add",
+        "Permission": "Lead.add_sitevisitphoto",
+        "Hide": "0"
+    },
+    {
+        "Name": "Change",
+        "Permission": "Lead.change_sitevisitphoto",
+        "Hide": "0"
+    },
+    {
+        "Name": "Delete",
+        "Permission": "Lead.delete_sitevisitphoto",
+        "Hide": "0"
+    },
+    {
+        "Name": "View",
+        "Permission": "Lead.view_sitevisitphoto",
+        "Hide": "0"
+    },
+    {
+        "Name": "Reports",
+        "Permission": "Lead.reports_sitevisitphoto",
+        "Hide": "0"
+    },
+    {
+        "Name": "Export",
+        "Permission": "Lead.export_sitevisitphoto",
+        "Hide": "0"
+    },
+    {
+        "Name": "Import",
+        "Permission": "Lead.import_sitevisitphoto",
+        "Hide": "0"
+    },
+    {
+        "Name": "Print",
+        "Permission": "Lead.print_sitevisitphoto",
+        "Hide": "0"
+    },
+    {
+        "Name": "Download",
+        "Permission": "Lead.download_sitevisitphoto",
+        "Hide": "0"
+    },
+    {
+        "Name": "Add",
         "Permission": "Masters.add_project",
         "Hide": "0"
     },
@@ -6917,66 +7007,6 @@
     {
         "Name": "Download",
         "Permission": "Masters.download_projectstatushistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "SiteVisit.add_sitevisit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "SiteVisit.change_sitevisit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "SiteVisit.delete_sitevisit",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "SiteVisit.view_sitevisit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Inventory.add_plot",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Inventory.change_plot",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Inventory.delete_plot",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Inventory.view_plot",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Inventory.add_flat",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Inventory.change_flat",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Inventory.delete_flat",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Inventory.view_flat",
         "Hide": "0"
     }
 ]

@@ -744,6 +744,18 @@
         "Hide": "0"
     },
     {
+        "Name": "Sitevisit",
+        "ContentType": "sitevisit",
+        "App": "Lead",
+        "Hide": "0"
+    },
+    {
+        "Name": "Sitevisitphoto",
+        "ContentType": "sitevisitphoto",
+        "App": "Lead",
+        "Hide": "0"
+    },
+    {
         "Name": "Project",
         "ContentType": "project",
         "App": "ProjectManagement",
@@ -753,24 +765,6 @@
         "Name": "Projectstatushistory",
         "ContentType": "projectstatushistory",
         "App": "ProjectManagement",
-        "Hide": "0"
-    },
-    {
-        "Name": "Sitevisit",
-        "ContentType": "sitevisit",
-        "App": "SiteVisit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Plot",
-        "ContentType": "plot",
-        "App": "Inventory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Flat",
-        "ContentType": "flat",
-        "App": "Inventory",
         "Hide": "0"
     }
 ]

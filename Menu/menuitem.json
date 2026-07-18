@@ -615,6 +615,20 @@
         "Created On": "2026-07-11 00:00:00",
         "Modified On": "2026-07-11 00:00:00"
     },
+    {
+        "Code": "LM-002",
+        "Name": "Site Visits",
+        "Icon": "site_visit",
+        "Link": "/sitevisit",
+        "Sequence": "2",
+        "Click": "",
+        "Menu": "MENU-001",
+        "Submenu": "SBM-007",
+        "Permission": "Lead.view_sitevisit",
+        "Description": "Manage site visits for leads",
+        "Created On": "2026-07-18 00:00:00",
+        "Modified On": "2026-07-18 00:00:00"
+    },
 {
         "Code": "LM-003",
         "Name": "Follow-ups",
@@ -642,47 +656,5 @@
         "Description": "Manage real estate projects (SRS Module 6)",
         "Created On": "2026-07-11 00:00:00",
         "Modified On": "2026-07-11 00:00:00"
-    },
-    {
-        "Code": "SVM-001",
-        "Name": "Site Visits",
-        "Icon": "place",
-        "Link": "/sitevisit",
-        "Sequence": "1",
-        "Click": "",
-        "Menu": "MENU-001",
-        "Submenu": "SBM-007",
-        "Permission": "SiteVisit.view_sitevisit",
-        "Description": "Manage site visits (SRS Module 5)",
-        "Created On": "2026-07-14 00:00:00",
-        "Modified On": "2026-07-14 00:00:00"
-    },
-    {
-        "Code": "INV-001",
-        "Name": "Plots",
-        "Icon": "landscape",
-        "Link": "/inventory/plots",
-        "Sequence": "1",
-        "Click": "",
-        "Menu": "MENU-001",
-        "Submenu": "SBM-008",
-        "Permission": "Inventory.view_plot",
-        "Description": "Manage plot inventory (SRS Module 7)",
-        "Created On": "2026-07-15 00:00:00",
-        "Modified On": "2026-07-15 00:00:00"
-    },
-    {
-        "Code": "INV-002",
-        "Name": "Flats",
-        "Icon": "apartment",
-        "Link": "/inventory/flats",
-        "Sequence": "2",
-        "Click": "",
-        "Menu": "MENU-001",
-        "Submenu": "SBM-008",
-        "Permission": "Inventory.view_flat",
-        "Description": "Manage flat inventory (SRS Module 7)",
-        "Created On": "2026-07-15 00:00:00",
-        "Modified On": "2026-07-15 00:00:00"
     }
 ]

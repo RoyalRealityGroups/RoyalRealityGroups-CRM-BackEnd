@@ -18,6 +18,7 @@ from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
+from rest_framework.routers import DefaultRouter
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
@@ -26,6 +27,7 @@ from drf_spectacular.views import (
 
 from BaseProject.views import index_view, privacy_view
 from Core.Core.views.health import health_check
+from Lead.views import SiteVisitViewSet
 
 from django.contrib.auth.decorators import login_required
 
@@ -39,6 +41,9 @@ if settings.DEBUG:
     urlpatterns += [path('__debug__/', include(debug_toolbar.urls))]
 
 if not settings.DYNAMICS_SAFE_MODE:
+    site_visit_router = DefaultRouter()
+    site_visit_router.register(r'site-visits', SiteVisitViewSet, basename='site-visit')
+
     app_urlpatterns = [
 
         path('api/users/', include('Core.Users.urls')),
@@ -49,6 +54,7 @@ if not settings.DYNAMICS_SAFE_MODE:
         path('api/masters/', include('Masters.urls')),
     path('api/sales/', include('Sales.urls')),
     path('api/lead/', include('Lead.urls')),
+    path('api/sitevisit/', include(site_visit_router.urls)),
     path('api/inventory/', include('Inventory.urls')),
     path('api/dispatch/', include('Dispatch.urls')),
         path('api/invoice/', include('Invoice.urls')),

@@ -22,28 +22,6 @@
         "Modified On": "2026-03-06 11:47:06"
     },
     {
-        "Code": "SBM-003",
-        "Name": "Settings",
-        "Sequence": "6",
-        "Icon": "settings",
-        "Click": "",
-        "Menu": "MENU-001",
-        "Submenu": "",
-        "Created On": "2025-12-29 00:00:00",
-        "Modified On": "2026-03-06 11:47:06"
-    },
-    {
-        "Code": "SBM-004",
-        "Name": "Reports",
-        "Sequence": "7",
-        "Icon": "reports",
-        "Click": "/reports",
-        "Menu": "MENU-001",
-        "Submenu": "",
-        "Created On": "2026-05-01 00:00:00",
-        "Modified On": "2026-05-01 00:00:00"
-    },
-    {
         "Code": "SBM-005",
         "Name": "Lead Management",
         "Sequence": "2",
@@ -66,6 +44,28 @@
         "Modified On": "2026-07-11 00:00:00"
     },
     {
+        "Code": "SBM-008",
+        "Name": "Inventory Management",
+        "Sequence": "5",
+        "Icon": "inventory_2",
+        "Click": "/inventory",
+        "Menu": "MENU-001",
+        "Submenu": "",
+        "Created On": "2026-07-18 00:00:00",
+        "Modified On": "2026-07-18 00:00:00"
+    },
+    {
+        "Code": "SBM-010",
+        "Name": "Booking Management",
+        "Sequence": "6",
+        "Icon": "booking",
+        "Click": "/booking",
+        "Menu": "MENU-001",
+        "Submenu": "",
+        "Created On": "2026-07-18 00:00:00",
+        "Modified On": "2026-07-18 00:00:00"
+    },
+    {
         "Code": "SBM-007",
         "Name": "Site Visit Management",
         "Sequence": "7",
@@ -77,15 +77,26 @@
         "Modified On": "2026-07-18 00:00:00"
     },
     {
-        "Code": "SBM-008",
-        "Name": "Inventory Management",
-        "Sequence": "5",
-        "Icon": "inventory_2",
-        "Click": "/inventory",
+        "Code": "SBM-003",
+        "Name": "Settings",
+        "Sequence": "9",
+        "Icon": "settings",
+        "Click": "",
         "Menu": "MENU-001",
         "Submenu": "",
-        "Created On": "2026-07-18 00:00:00",
-        "Modified On": "2026-07-18 00:00:00"
+        "Created On": "2025-12-29 00:00:00",
+        "Modified On": "2026-03-06 11:47:06"
+    },
+    {
+        "Code": "SBM-004",
+        "Name": "Reports",
+        "Sequence": "10",
+        "Icon": "reports",
+        "Click": "/reports",
+        "Menu": "MENU-001",
+        "Submenu": "",
+        "Created On": "2026-05-01 00:00:00",
+        "Modified On": "2026-05-01 00:00:00"
     },
     {
         "Code": "SBM-009",
@@ -98,4 +109,4 @@
         "Created On": "2026-07-15 00:00:00",
         "Modified On": "2026-07-15 00:00:00"
     }
-]
+] 

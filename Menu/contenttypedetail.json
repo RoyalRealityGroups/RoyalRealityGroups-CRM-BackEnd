@@ -746,13 +746,13 @@
     {
         "Name": "Sitevisit",
         "ContentType": "sitevisit",
-        "App": "Lead",
+        "App": "SiteVisit",
         "Hide": "0"
     },
     {
         "Name": "Sitevisitphoto",
         "ContentType": "sitevisitphoto",
-        "App": "Lead",
+        "App": "SiteVisit",
         "Hide": "0"
     },
     {
@@ -765,6 +765,30 @@
         "Name": "Projectstatushistory",
         "ContentType": "projectstatushistory",
         "App": "ProjectManagement",
+        "Hide": "0"
+    },
+    {
+        "Name": "Plotinventory",
+        "ContentType": "plotinventory",
+        "App": "Inventory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Flatinventory",
+        "ContentType": "flatinventory",
+        "App": "Inventory",
+        "Hide": "0"
+    },
+    {
+        "Name": "Booking",
+        "ContentType": "booking",
+        "App": "Booking",
+        "Hide": "0"
+    },
+    {
+        "Name": "Bookingstatushistory",
+        "ContentType": "bookingstatushistory",
+        "App": "Booking",
         "Hide": "0"
     }
 ]

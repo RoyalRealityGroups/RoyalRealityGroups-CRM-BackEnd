@@ -114,6 +114,24 @@
         "sequence": "70"
     },
     {
+        "Name": "Inventory Management",
+        "App_Label": "Inventory",
+        "Hide": "0",
+        "sequence": "71"
+    },
+    {
+        "Name": "Booking Management",
+        "App_Label": "Booking",
+        "Hide": "0",
+        "sequence": "72"
+    },
+    {
+        "Name": "Site Visit",
+        "App_Label": "SiteVisit",
+        "Hide": "0",
+        "sequence": "75"
+    },
+    {
         "Name": "Project Management",
         "App_Label": "ProjectManagement",
         "Hide": "0",

@@ -33,6 +33,17 @@
         "Modified On": "2026-07-11 00:00:00"
     },
     {
+        "Code": "SBM-007",
+        "Name": "Site Visit Management",
+        "Sequence": "3",
+        "Icon": "site_visit",
+        "Click": "/sitevisit",
+        "Menu": "MENU-001",
+        "Submenu": "",
+        "Created On": "2026-07-18 00:00:00",
+        "Modified On": "2026-07-18 00:00:00"
+    },
+    {
         "Code": "SBM-006",
         "Name": "Project Management",
         "Sequence": "4",
@@ -55,22 +66,33 @@
         "Modified On": "2026-07-18 00:00:00"
     },
     {
-        "Code": "SBM-010",
-        "Name": "Booking Management",
+        "Code": "SBM-004",
+        "Name": "Reports",
         "Sequence": "6",
-        "Icon": "booking",
-        "Click": "/booking",
+        "Icon": "reports",
+        "Click": "/reports",
         "Menu": "MENU-001",
         "Submenu": "",
-        "Created On": "2026-07-18 00:00:00",
-        "Modified On": "2026-07-18 00:00:00"
+        "Created On": "2026-05-01 00:00:00",
+        "Modified On": "2026-05-01 00:00:00"
     },
     {
-        "Code": "SBM-007",
-        "Name": "Site Visit Management",
+        "Code": "SBM-009",
+        "Name": "Follow-up Management",
         "Sequence": "7",
-        "Icon": "site_visit",
-        "Click": "/sitevisit",
+        "Icon": "followup",
+        "Click": "/lead/followups",
+        "Menu": "MENU-001",
+        "Submenu": "SBM-005",
+        "Created On": "2026-07-15 00:00:00",
+        "Modified On": "2026-07-15 00:00:00"
+    },
+    {
+        "Code": "SBM-010",
+        "Name": "Booking Management",
+        "Sequence": "8",
+        "Icon": "booking",
+        "Click": "/booking",
         "Menu": "MENU-001",
         "Submenu": "",
         "Created On": "2026-07-18 00:00:00",
@@ -86,27 +108,5 @@
         "Submenu": "",
         "Created On": "2025-12-29 00:00:00",
         "Modified On": "2026-03-06 11:47:06"
-    },
-    {
-        "Code": "SBM-004",
-        "Name": "Reports",
-        "Sequence": "10",
-        "Icon": "reports",
-        "Click": "/reports",
-        "Menu": "MENU-001",
-        "Submenu": "",
-        "Created On": "2026-05-01 00:00:00",
-        "Modified On": "2026-05-01 00:00:00"
-    },
-    {
-        "Code": "SBM-009",
-        "Name": "Follow-up Management",
-        "Sequence": "3",
-        "Icon": "followup",
-        "Click": "/lead/followups",
-        "Menu": "MENU-001",
-        "Submenu": "SBM-005",
-        "Created On": "2026-07-15 00:00:00",
-        "Modified On": "2026-07-15 00:00:00"
     }
-] 
+]

@@ -77,17 +77,6 @@
         "Modified On": "2026-05-01 00:00:00"
     },
     {
-        "Code": "SBM-009",
-        "Name": "Follow-up Management",
-        "Sequence": "7",
-        "Icon": "followup",
-        "Click": "/lead/followups",
-        "Menu": "MENU-001",
-        "Submenu": "SBM-005",
-        "Created On": "2026-07-15 00:00:00",
-        "Modified On": "2026-07-15 00:00:00"
-    },
-    {
         "Code": "SBM-010",
         "Name": "Booking Management",
         "Sequence": "8",

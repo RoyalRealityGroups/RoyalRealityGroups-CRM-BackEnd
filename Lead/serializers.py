@@ -261,7 +261,7 @@ class SiteVisitPhotoSerializer(serializers.ModelSerializer):
 class SiteVisitSerializer(serializers.ModelSerializer):
     lead_name = serializers.CharField(source='lead.name', read_only=True)
     lead_mobile = serializers.CharField(source='lead.mobile', read_only=True)
-    project_name = serializers.CharField(source='project.name', read_only=True)
+    project_name = serializers.CharField(required=False, allow_blank=True)
     assigned_employee_name = serializers.SerializerMethodField(read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     photos = SiteVisitPhotoSerializer(many=True, read_only=True)
@@ -290,6 +290,13 @@ class SiteVisitSerializer(serializers.ModelSerializer):
                 or obj.assigned_employee.username
             )
         return None
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        # Fallback to FK project name if stored project_name is empty
+        if not data.get('project_name') and instance.project:
+            data['project_name'] = instance.project.name
+        return data
 
     def create(self, validated_data):
         user = self.context['request'].user

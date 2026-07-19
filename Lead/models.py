@@ -183,6 +183,7 @@ class SiteVisit(CoreModel):
         null=True,
         blank=True
     )
+    project_name = models.CharField(max_length=200, blank=True, null=True)
     visit_date = models.DateField(db_index=True)
     visit_time = models.TimeField(null=True, blank=True)
     assigned_employee = models.ForeignKey(

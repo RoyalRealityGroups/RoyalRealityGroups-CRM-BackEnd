@@ -211,6 +211,24 @@ class SiteVisitViewSet(viewsets.ModelViewSet):
     ordering = ['-visit_date']
     permission_classes = [permissions.IsAuthenticated]
 
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        self._handle_photos(instance)
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        self._handle_photos(instance)
+
+    def _handle_photos(self, instance):
+        files = self.request.FILES.getlist("photos")
+        if not files:
+            return
+        for photo in files:
+            SiteVisitPhoto.objects.create(
+                site_visit=instance,
+                photo=photo,
+            )
+
     @action(detail=True, methods=['post'])
     def upload_photos(self, request, pk=None):
         """Upload photos for a completed site visit"""

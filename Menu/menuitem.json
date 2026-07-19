@@ -619,7 +619,7 @@
         "Code": "LM-002",
         "Name": "Site Visits",
         "Icon": "site_visit",
-        "Link": "/sitevisit",
+        "Link": "/sitevisit/list",
         "Sequence": "2",
         "Click": "",
         "Menu": "MENU-001",

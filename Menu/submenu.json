@@ -37,7 +37,7 @@
         "Name": "Site Visit Management",
         "Sequence": "3",
         "Icon": "site_visit",
-        "Click": "/sitevisit",
+        "Click": "/sitevisit/list",
         "Menu": "MENU-001",
         "Submenu": "",
         "Created On": "2026-07-18 00:00:00",

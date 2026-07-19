@@ -647,7 +647,7 @@
         "Code": "PROJ-001",
         "Name": "Projects",
         "Icon": "business",
-        "Link": "/masters/projects",
+        "Link": "/projects/list",
         "Sequence": "1",
         "Click": "",
         "Menu": "MENU-001",

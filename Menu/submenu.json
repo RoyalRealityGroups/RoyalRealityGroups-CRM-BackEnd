@@ -37,7 +37,7 @@
         "Name": "Project Management",
         "Sequence": "4",
         "Icon": "business",
-        "Click": "/masters/projects",
+        "Click": "/projects/list",
         "Menu": "MENU-001",
         "Submenu": "",
         "Created On": "2026-07-11 00:00:00",

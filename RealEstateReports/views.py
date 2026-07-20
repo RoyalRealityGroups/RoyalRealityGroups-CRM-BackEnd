@@ -311,6 +311,50 @@ class DashboardSummaryView(APIView):
             row['project_name'] = row.pop('project__name', '') or ''
             row['revenue'] = float(row['revenue'] or 0)
 
+        # Monthly trend (last 6 months)
+        from django.db.models.functions import TruncMonth
+        from datetime import timedelta
+        six_months_ago = today - timedelta(days=180)
+
+        monthly_leads = list(
+            lead_qs.filter(created_on__date__gte=six_months_ago)
+            .annotate(month=TruncMonth('created_on'))
+            .values('month')
+            .annotate(count=Count('id'))
+            .order_by('month')
+        )
+        monthly_bookings = list(
+            active_bkg.filter(booking_date__gte=six_months_ago)
+            .annotate(month=TruncMonth('booking_date'))
+            .values('month')
+            .annotate(count=Count('id'))
+            .order_by('month')
+        )
+        monthly_visits = list(
+            sv_qs.filter(visit_date__gte=six_months_ago)
+            .annotate(month=TruncMonth('visit_date'))
+            .values('month')
+            .annotate(count=Count('id'))
+            .order_by('month')
+        )
+
+        # Merge into single trend array
+        months_map = {}
+        for row in monthly_leads:
+            key = row['month'].strftime('%b %Y')
+            months_map.setdefault(key, {'month': key, 'leads': 0, 'site_visits': 0, 'bookings': 0})
+            months_map[key]['leads'] = row['count']
+        for row in monthly_visits:
+            key = row['month'].strftime('%b %Y')
+            months_map.setdefault(key, {'month': key, 'leads': 0, 'site_visits': 0, 'bookings': 0})
+            months_map[key]['site_visits'] = row['count']
+        for row in monthly_bookings:
+            key = row['month'].strftime('%b %Y')
+            months_map.setdefault(key, {'month': key, 'leads': 0, 'site_visits': 0, 'bookings': 0})
+            months_map[key]['bookings'] = row['count']
+
+        monthly_trend = sorted(months_map.values(), key=lambda x: x['month'])
+
         return Response({
             'leads': {
                 'total': lead_qs.count(),
@@ -347,4 +391,5 @@ class DashboardSummaryView(APIView):
             },
             'employee_performance': employee_performance[:10],
             'project_performance': project_performance,
+            'monthly_trend': monthly_trend,
         })

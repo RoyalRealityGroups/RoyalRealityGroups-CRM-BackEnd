@@ -624,7 +624,7 @@
         "Click": "",
         "Menu": "MENU-001",
         "Submenu": "SBM-007",
-        "Permission": "Lead.view_sitevisit",
+        "Permission": "SiteVisit.view_sitevisit",
         "Description": "Manage site visits for leads",
         "Created On": "2026-07-18 00:00:00",
         "Modified On": "2026-07-18 00:00:00"

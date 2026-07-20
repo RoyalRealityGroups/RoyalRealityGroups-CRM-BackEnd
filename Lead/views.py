@@ -1,17 +1,16 @@
 from rest_framework import viewsets, status, generics, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from django.utils import timezone
 
-from .models import Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck, SiteVisit, SiteVisitPhoto
+from .models import Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck
 from .serializers import (
     LeadSerializer, LeadStatusHistorySerializer, LeadFollowUpSerializer,
-    LeadCrossCheckSerializer, SiteVisitSerializer, SiteVisitPhotoSerializer,
+    LeadCrossCheckSerializer,
     LEAD_SOURCE_CHOICES_LIST, LEAD_STATUS_CHOICES_LIST,
-    FOLLOW_UP_TYPE_CHOICES_LIST, SITE_VISIT_STATUS_CHOICES_LIST,
+    FOLLOW_UP_TYPE_CHOICES_LIST,
 )
 
 
@@ -34,7 +33,6 @@ class LeadViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         instance._previous_status = instance.status
         serializer.save()
-
 
     @action(detail=False, methods=['post'])
     def cross_check(self, request):
@@ -191,98 +189,3 @@ class LeadFollowUpViewSet(viewsets.ModelViewSet):
         ).exclude(lead__status__in=['LOST', 'REGISTRATION'])
         serializer = LeadFollowUpSerializer(followups, many=True)
         return Response(serializer.data)
-
-
-# ============================================================================
-# MODULE 5 - SITE VISIT VIEWS
-# ============================================================================
-
-class SiteVisitViewSet(viewsets.ModelViewSet):
-    """ViewSet for Site Visit Management - Module 5"""
-    queryset = SiteVisit.objects.select_related(
-        'lead', 'project', 'assigned_employee'
-    ).filter(is_deleted=False)
-    serializer_class = SiteVisitSerializer
-    parser_classes = [MultiPartParser, FormParser, JSONParser]
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['status', 'project', 'assigned_employee']
-    search_fields = ['customer_name', 'customer_mobile', 'code']
-    ordering_fields = ['visit_date', 'created_on']
-    ordering = ['-visit_date']
-    permission_classes = [permissions.IsAuthenticated]
-
-    def perform_create(self, serializer):
-        instance = serializer.save()
-        self._handle_photos(instance)
-
-    def perform_update(self, serializer):
-        instance = serializer.save()
-        self._handle_photos(instance)
-
-    def _handle_photos(self, instance):
-        files = self.request.FILES.getlist("photos")
-        if not files:
-            return
-        for photo in files:
-            SiteVisitPhoto.objects.create(
-                site_visit=instance,
-                photo=photo,
-            )
-
-    @action(detail=True, methods=['post'])
-    def upload_photos(self, request, pk=None):
-        """Upload photos for a completed site visit"""
-        site_visit = self.get_object()
-        photos = request.FILES.getlist('photos')
-        if not photos:
-            return Response({'error': 'No photos provided'}, status=status.HTTP_400_BAD_REQUEST)
-
-        created = []
-        for photo in photos:
-            obj = SiteVisitPhoto.objects.create(
-                site_visit=site_visit,
-                photo=photo,
-                caption=request.data.get('caption', ''),
-            )
-            created.append(SiteVisitPhotoSerializer(obj).data)
-
-        return Response({'photos': created, 'count': len(created)}, status=status.HTTP_201_CREATED)
-
-    @action(detail=True, methods=['patch'])
-    def update_status(self, request, pk=None):
-        """Update site visit status"""
-        sv = self.get_object()
-        new_status = request.data.get('status')
-        if not new_status:
-            return Response({'error': 'status is required'}, status=status.HTTP_400_BAD_REQUEST)
-
-        sv.status = new_status
-        if new_status == 'COMPLETED':
-            sv.customer_feedback = request.data.get('customer_feedback', sv.customer_feedback)
-            sv.remarks = request.data.get('remarks', sv.remarks)
-        sv.save()
-
-        # Also update linked lead status
-        if sv.lead and new_status == 'COMPLETED' and sv.lead.status == 'SITE_VISIT_SCHEDULED':
-            sv.lead.status = 'SITE_VISIT_COMPLETED'
-            sv.lead.save(update_fields=['status'])
-
-        return Response(SiteVisitSerializer(sv, context={'request': request}).data)
-
-    @action(detail=False, methods=['get'])
-    def choices(self, request):
-        return Response({'site_visit_statuses': SITE_VISIT_STATUS_CHOICES_LIST})
-
-    @action(detail=False, methods=['get'])
-    def stats(self, request):
-        """Site visit statistics"""
-        today = timezone.now().date()
-        qs = SiteVisit.objects.filter(is_deleted=False)
-        return Response({
-            'total': qs.count(),
-            'today': qs.filter(visit_date=today).count(),
-            'scheduled': qs.filter(status='SCHEDULED').count(),
-            'confirmed': qs.filter(status='CONFIRMED').count(),
-            'completed': qs.filter(status='COMPLETED').count(),
-            'cancelled': qs.filter(status='CANCELLED').count(),
-        })

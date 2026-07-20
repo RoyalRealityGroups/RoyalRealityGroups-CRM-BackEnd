@@ -6831,92 +6831,92 @@
     },
     {
         "Name": "Add",
-        "Permission": "Lead.add_sitevisit",
+        "Permission": "SiteVisit.add_sitevisit",
         "Hide": "0"
     },
     {
         "Name": "Change",
-        "Permission": "Lead.change_sitevisit",
+        "Permission": "SiteVisit.change_sitevisit",
         "Hide": "0"
     },
     {
         "Name": "Delete",
-        "Permission": "Lead.delete_sitevisit",
+        "Permission": "SiteVisit.delete_sitevisit",
         "Hide": "0"
     },
     {
         "Name": "View",
-        "Permission": "Lead.view_sitevisit",
+        "Permission": "SiteVisit.view_sitevisit",
         "Hide": "0"
     },
     {
         "Name": "Reports",
-        "Permission": "Lead.reports_sitevisit",
+        "Permission": "SiteVisit.reports_sitevisit",
         "Hide": "0"
     },
     {
         "Name": "Export",
-        "Permission": "Lead.export_sitevisit",
+        "Permission": "SiteVisit.export_sitevisit",
         "Hide": "0"
     },
     {
         "Name": "Import",
-        "Permission": "Lead.import_sitevisit",
+        "Permission": "SiteVisit.import_sitevisit",
         "Hide": "0"
     },
     {
         "Name": "Print",
-        "Permission": "Lead.print_sitevisit",
+        "Permission": "SiteVisit.print_sitevisit",
         "Hide": "0"
     },
     {
         "Name": "Download",
-        "Permission": "Lead.download_sitevisit",
+        "Permission": "SiteVisit.download_sitevisit",
         "Hide": "0"
     },
     {
         "Name": "Add",
-        "Permission": "Lead.add_sitevisitphoto",
+        "Permission": "SiteVisit.add_sitevisitphoto",
         "Hide": "0"
     },
     {
         "Name": "Change",
-        "Permission": "Lead.change_sitevisitphoto",
+        "Permission": "SiteVisit.change_sitevisitphoto",
         "Hide": "0"
     },
     {
         "Name": "Delete",
-        "Permission": "Lead.delete_sitevisitphoto",
+        "Permission": "SiteVisit.delete_sitevisitphoto",
         "Hide": "0"
     },
     {
         "Name": "View",
-        "Permission": "Lead.view_sitevisitphoto",
+        "Permission": "SiteVisit.view_sitevisitphoto",
         "Hide": "0"
     },
     {
         "Name": "Reports",
-        "Permission": "Lead.reports_sitevisitphoto",
+        "Permission": "SiteVisit.reports_sitevisitphoto",
         "Hide": "0"
     },
     {
         "Name": "Export",
-        "Permission": "Lead.export_sitevisitphoto",
+        "Permission": "SiteVisit.export_sitevisitphoto",
         "Hide": "0"
     },
     {
         "Name": "Import",
-        "Permission": "Lead.import_sitevisitphoto",
+        "Permission": "SiteVisit.import_sitevisitphoto",
         "Hide": "0"
     },
     {
         "Name": "Print",
-        "Permission": "Lead.print_sitevisitphoto",
+        "Permission": "SiteVisit.print_sitevisitphoto",
         "Hide": "0"
     },
     {
         "Name": "Download",
-        "Permission": "Lead.download_sitevisitphoto",
+        "Permission": "SiteVisit.download_sitevisitphoto",
         "Hide": "0"
     },
     {

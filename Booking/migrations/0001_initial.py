@@ -2,7 +2,6 @@
 
 import django.db.models.deletion
 import uuid
-from django.conf import settings
 from django.db import migrations, models
 
 
@@ -11,14 +10,25 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('Lead', '0001_initial'),
-        ('Masters', '0045_change_project_location_to_charfield'),
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('Inventory', '0001_phase1_new_modules'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SiteVisit',
+            name='BookingStatusHistory',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('from_status', models.CharField(blank=True, choices=[('BOOKED', 'Booked'), ('AGREEMENT', 'Agreement'), ('REGISTERED', 'Registered'), ('CANCELLED', 'Cancelled')], max_length=15, null=True)),
+                ('to_status', models.CharField(choices=[('BOOKED', 'Booked'), ('AGREEMENT', 'Agreement'), ('REGISTERED', 'Registered'), ('CANCELLED', 'Cancelled')], max_length=15)),
+                ('remarks', models.TextField(blank=True, null=True)),
+                ('changed_on', models.DateTimeField(auto_now_add=True)),
+            ],
+            options={
+                'ordering': ['-changed_on'],
+            },
+        ),
+        migrations.CreateModel(
+            name='Booking',
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('erp_id', models.IntegerField(blank=True, default=None, null=True)),
@@ -42,31 +52,22 @@ class Migration(migrations.Migration):
                 ('current_authorized_on', models.DateTimeField(auto_now_add=True, null=True)),
                 ('authorized_status', models.SmallIntegerField(blank=True, choices=[(1, 'Pending'), (2, 'Approved'), (3, 'Rejected')], default=1, null=True)),
                 ('customer_name', models.CharField(db_index=True, max_length=200)),
-                ('project_name', models.CharField(blank=True, help_text='Denormalized project name for display', max_length=200, null=True)),
-                ('visit_date', models.DateField(db_index=True)),
-                ('status', models.CharField(choices=[('SCHEDULED', 'Scheduled'), ('CONFIRMED', 'Confirmed'), ('COMPLETED', 'Completed'), ('CANCELLED', 'Cancelled')], db_index=True, default='SCHEDULED', max_length=20)),
-                ('customer_feedback', models.TextField(blank=True, null=True)),
+                ('customer_mobile', models.CharField(blank=True, max_length=15, null=True)),
+                ('customer_email', models.EmailField(blank=True, max_length=254, null=True)),
+                ('unit_type', models.CharField(choices=[('PLOT', 'Plot'), ('FLAT', 'Flat / Unit')], default='PLOT', max_length=10)),
+                ('unit_number', models.CharField(blank=True, help_text='Denormalised unit number for quick display', max_length=50, null=True)),
+                ('agreed_price', models.DecimalField(blank=True, decimal_places=2, max_digits=14, null=True)),
+                ('booking_amount', models.DecimalField(decimal_places=2, max_digits=14)),
+                ('booking_date', models.DateField(db_index=True)),
+                ('status', models.CharField(choices=[('BOOKED', 'Booked'), ('AGREEMENT', 'Agreement'), ('REGISTERED', 'Registered'), ('CANCELLED', 'Cancelled')], db_index=True, default='BOOKED', max_length=15)),
+                ('cancellation_reason', models.TextField(blank=True, null=True)),
+                ('cancelled_date', models.DateField(blank=True, null=True)),
                 ('remarks', models.TextField(blank=True, null=True)),
-                ('assigned_employee', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.RESTRICT, related_name='assigned_site_visits', to=settings.AUTH_USER_MODEL)),
-                ('lead', models.ForeignKey(blank=True, help_text='Linked lead (optional)', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='site_visits', to='Lead.lead')),
-                ('project', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.RESTRICT, related_name='site_visits', to='Masters.project')),
+                ('flat', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.RESTRICT, related_name='bookings', to='Inventory.flatinventory')),
             ],
             options={
-                'ordering': ['-visit_date', '-created_on'],
-                'permissions': [('export_sitevisit', 'Can export site visits')],
-            },
-        ),
-        migrations.CreateModel(
-            name='SiteVisitPhoto',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('photo', models.ImageField(upload_to='site_visits/photos/')),
-                ('caption', models.CharField(blank=True, max_length=200, null=True)),
-                ('uploaded_on', models.DateTimeField(auto_now_add=True)),
-                ('site_visit', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='photos', to='SiteVisit.sitevisit')),
-            ],
-            options={
-                'ordering': ['-uploaded_on'],
+                'ordering': ['-booking_date', '-created_on'],
+                'permissions': [('export_booking', 'Can export bookings')],
             },
         ),
     ]

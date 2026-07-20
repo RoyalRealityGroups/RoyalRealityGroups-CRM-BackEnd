@@ -59,9 +59,9 @@ class WidgetDataService:
         'leads.over_time': {'model': 'Lead.Lead', 'field': 'created_on', 'type': 'time_series'},
 
         # Site Visits
-        'site_visits.count': {'model': 'Lead.SiteVisit', 'field': None, 'type': 'count'},
-        'site_visits.by_status': {'model': 'Lead.SiteVisit', 'field': 'status', 'type': 'group_by'},
-        'site_visits.recent': {'model': 'Lead.SiteVisit', 'field': None, 'type': 'list'},
+        'site_visits.count': {'model': 'SiteVisit.SiteVisit', 'field': None, 'type': 'count'},
+        'site_visits.by_status': {'model': 'SiteVisit.SiteVisit', 'field': 'status', 'type': 'group_by'},
+        'site_visits.recent': {'model': 'SiteVisit.SiteVisit', 'field': None, 'type': 'list'},
 
         # Bookings
         'bookings.count': {'model': 'Booking.Booking', 'field': None, 'type': 'count'},

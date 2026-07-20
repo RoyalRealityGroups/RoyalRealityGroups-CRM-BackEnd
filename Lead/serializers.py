@@ -3,8 +3,7 @@ from django.db.models import Q
 from django.apps import apps
 from .models import (
     Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck,
-    SiteVisit, SiteVisitPhoto,
-    LEAD_SOURCE_CHOICES, LEAD_STATUS_CHOICES, SITE_VISIT_STATUS_CHOICES
+    LEAD_SOURCE_CHOICES, LEAD_STATUS_CHOICES,
 )
 
 
@@ -248,75 +247,9 @@ class LeadCrossCheckSerializer(serializers.ModelSerializer):
         return None
 
 
-# ============================================================================
-# MODULE 5 - SITE VISIT SERIALIZERS
-# ============================================================================
-
-class SiteVisitPhotoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SiteVisitPhoto
-        fields = ['id', 'photo', 'caption', 'uploaded_on']
-
-
-class SiteVisitSerializer(serializers.ModelSerializer):
-    lead_name = serializers.CharField(source='lead.name', read_only=True)
-    lead_mobile = serializers.CharField(source='lead.mobile', read_only=True)
-    project_name = serializers.CharField(required=False, allow_blank=True)
-    assigned_employee_name = serializers.SerializerMethodField(read_only=True)
-    status_display = serializers.CharField(source='get_status_display', read_only=True)
-    photos = SiteVisitPhotoSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = SiteVisit
-        fields = [
-            'id', 'code',
-            'lead', 'lead_name', 'lead_mobile',
-            'customer_name', 'customer_mobile',
-            'project', 'project_name',
-            'visit_date', 'visit_time',
-            'assigned_employee', 'assigned_employee_name',
-            'status', 'status_display',
-            'customer_feedback', 'remarks',
-            'photos',
-            'created_on', 'modified_on',
-            'created_by_type', 'created_by_identifier',
-        ]
-        read_only_fields = ('code', 'created_on', 'modified_on')
-
-    def get_assigned_employee_name(self, obj):
-        if obj.assigned_employee:
-            return (
-                f"{obj.assigned_employee.first_name} {obj.assigned_employee.last_name}".strip()
-                or obj.assigned_employee.username
-            )
-        return None
-
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        # Fallback to FK project name if stored project_name is empty
-        if not data.get('project_name') and instance.project:
-            data['project_name'] = instance.project.name
-        return data
-
-    def create(self, validated_data):
-        user = self.context['request'].user
-        validated_data['created_by_type'] = 'User'
-        validated_data['created_by_identifier'] = str(user.id)
-        validated_data['modified_by_type'] = 'User'
-        validated_data['modified_by_identifier'] = str(user.id)
-        return super().create(validated_data)
-
-    def update(self, instance, validated_data):
-        user = self.context['request'].user
-        validated_data['modified_by_type'] = 'User'
-        validated_data['modified_by_identifier'] = str(user.id)
-        return super().update(instance, validated_data)
-
-
 # Choices for reference
 LEAD_SOURCE_CHOICES_LIST = [{'value': k, 'label': v} for k, v in LEAD_SOURCE_CHOICES]
 LEAD_STATUS_CHOICES_LIST = [{'value': k, 'label': v} for k, v in LEAD_STATUS_CHOICES]
-SITE_VISIT_STATUS_CHOICES_LIST = [{'value': k, 'label': v} for k, v in SITE_VISIT_STATUS_CHOICES]
 
 FOLLOW_UP_TYPE_CHOICES = [
     ('CALL', 'Call'),

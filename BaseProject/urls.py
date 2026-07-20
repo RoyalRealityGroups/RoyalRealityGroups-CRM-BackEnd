@@ -27,7 +27,7 @@ from drf_spectacular.views import (
 
 from BaseProject.views import index_view, privacy_view
 from Core.Core.views.health import health_check
-from Lead.views import SiteVisitViewSet
+from SiteVisit.views import SiteVisitViewSet
 
 from django.contrib.auth.decorators import login_required
 

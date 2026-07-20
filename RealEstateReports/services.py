@@ -107,7 +107,7 @@ def lead_report_by_status(period=None):
 
 def site_visit_report(period='this_month', project_id=None, employee_id=None):
     """Site visit summary."""
-    from Lead.models import SiteVisit
+    from SiteVisit.models import SiteVisit
     qs = SiteVisit.objects.filter(is_deleted=False)
     if period:
         qs = qs.filter(**_date_range_filter(period, date_field='visit_date'))
@@ -213,7 +213,8 @@ def revenue_report(period='this_year'):
 def employee_performance_report(period='this_month'):
     """Per-employee: leads, site visits, bookings, registrations."""
     from Users.models import User
-    from Lead.models import Lead, SiteVisit
+    from Lead.models import Lead
+    from SiteVisit.models import SiteVisit
     from Booking.models import Booking
 
     date_filter = _date_range_filter(period)

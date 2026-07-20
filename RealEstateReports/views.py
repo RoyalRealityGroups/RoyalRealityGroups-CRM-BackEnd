@@ -216,7 +216,8 @@ class DashboardSummaryView(APIView):
 
     def get(self, request):
         from django.utils import timezone
-        from Lead.models import Lead, SiteVisit
+        from Lead.models import Lead
+        from SiteVisit.models import SiteVisit
         from Booking.models import Booking
         from django.db.models import Sum, Count
 

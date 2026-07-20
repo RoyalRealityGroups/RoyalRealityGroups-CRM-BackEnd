@@ -103,10 +103,16 @@ jobs:
       - name: Run migrations
         run: python manage.py migrate --noinput
  
-      - name: Run custom management commands
+      - name: Run UpdateContentTypeDetail commands
         run: |
           python manage.py UpdateContentTypeDetail
+
+      - name: Run UpdatePermissionDetail commands
+        run: |
           python manage.py UpdatePermissionDetail
+
+      - name: Run import_menu_data commands
+        run: |
           python manage.py import_menu_data
  
       # Uncomment if your project has tests

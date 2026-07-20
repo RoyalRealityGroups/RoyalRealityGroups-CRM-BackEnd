@@ -677,7 +677,8 @@ class EmployeePerformanceView(APIView):
 
         # Live counts from related models
         try:
-            from Lead.models import Lead, SiteVisit
+            from Lead.models import Lead
+            from SiteVisit.models import SiteVisit
             leads_total = Lead.objects.filter(assigned_employee=employee, is_deleted=False).count()
             leads_this_month = Lead.objects.filter(
                 assigned_employee=employee, is_deleted=False,

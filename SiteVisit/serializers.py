@@ -1,53 +1,95 @@
 from rest_framework import serializers
-from .models import SiteVisit
+from .models import SiteVisit, SiteVisitPhoto, SITE_VISIT_STATUS_CHOICES, SITE_VISIT_STATUS_TRANSITIONS
 
-# ponytail: only CONFIRMED can flip back to SCHEDULED (rebook); COMPLETED +
-# CANCELLED are terminal. Keeps the field editable for the lead so they can fix
-# accidental clicks without bypassing the API.
-_STATUS_TRANSITIONS = {
-    'SCHEDULED': {'CONFIRMED', 'CANCELLED'},
-    'CONFIRMED': {'SCHEDULED', 'COMPLETED', 'CANCELLED'},
-    'COMPLETED': set(),
-    'CANCELLED': set(),
-}
+
+class SiteVisitPhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SiteVisitPhoto
+        fields = ['id', 'photo', 'caption', 'uploaded_on']
 
 
 class SiteVisitSerializer(serializers.ModelSerializer):
-    assigned_employee_name = serializers.SerializerMethodField()
-    created_by_name = serializers.SerializerMethodField()
+    """
+    Site Visit serializer — Module 5.
+
+    Schedule fields: customer_name, project, visit_date, assigned_employee
+    Completion fields: customer_feedback, remarks, photos (read-only nested)
+    """
+    lead_name = serializers.CharField(source='lead.name', read_only=True)
+    project_name = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    assigned_employee_name = serializers.SerializerMethodField(read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    photos = SiteVisitPhotoSerializer(many=True, read_only=True)
 
     class Meta:
         model = SiteVisit
         fields = [
-            'id', 'lead', 'customer_name', 'project_name', 'visit_date',
+            'id', 'code',
+            'lead', 'lead_name',
+            'customer_name',
+            'project', 'project_name',
+            'visit_date',
             'assigned_employee', 'assigned_employee_name',
-            'status', 'customer_feedback', 'remarks', 'photos',
-            'created_by', 'created_by_name',
+            'status', 'status_display',
+            'customer_feedback', 'remarks',
+            'photos',
             'created_on', 'modified_on',
+            'created_by_type', 'created_by_identifier',
         ]
-        read_only_fields = ['id', 'created_on', 'modified_on', 'created_by']
-
-    def _full_name(self, user):
-        if not user:
-            return None
-        full = f"{user.first_name} {user.last_name}".strip()
-        return full or user.username
+        read_only_fields = ('code', 'created_on', 'modified_on')
 
     def get_assigned_employee_name(self, obj):
-        return self._full_name(obj.assigned_employee)
-
-    def get_created_by_name(self, obj):
-        return self._full_name(obj.created_by)
+        if obj.assigned_employee:
+            return (
+                f"{obj.assigned_employee.first_name} {obj.assigned_employee.last_name}".strip()
+                or obj.assigned_employee.username
+            )
+        return None
 
     def validate_status(self, value):
-        # ponytail: only enforced on PATCH/PUT (when the instance exists).
+        """Enforce status transition rules on update."""
         instance = self.instance
         if instance is None:
             return value
-        allowed = _STATUS_TRANSITIONS.get(instance.status, set())
-        if value != instance.status and value not in allowed:
+        if value == instance.status:
+            return value
+        allowed = SITE_VISIT_STATUS_TRANSITIONS.get(instance.status, set())
+        if value not in allowed:
             raise serializers.ValidationError(
                 f"Cannot transition from {instance.status} to {value}. "
-                f"Allowed: {sorted(allowed) or 'none (terminal)'}"
+                f"Allowed transitions: {sorted(allowed) or 'none (terminal state)'}."
             )
         return value
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        # Fallback to FK project name if stored project_name is empty
+        if not data.get('project_name') and instance.project:
+            data['project_name'] = instance.project.name
+        return data
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        validated_data['created_by_type'] = 'User'
+        validated_data['created_by_identifier'] = str(user.id)
+        validated_data['modified_by_type'] = 'User'
+        validated_data['modified_by_identifier'] = str(user.id)
+        # Auto-populate project_name from FK if not provided
+        project = validated_data.get('project')
+        if project and not validated_data.get('project_name'):
+            validated_data['project_name'] = project.name
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        user = self.context['request'].user
+        validated_data['modified_by_type'] = 'User'
+        validated_data['modified_by_identifier'] = str(user.id)
+        # Auto-populate project_name from FK if not provided
+        project = validated_data.get('project')
+        if project and not validated_data.get('project_name'):
+            validated_data['project_name'] = project.name
+        return super().update(instance, validated_data)
+
+
+# Choices list for API responses
+SITE_VISIT_STATUS_CHOICES_LIST = [{'value': k, 'label': v} for k, v in SITE_VISIT_STATUS_CHOICES]

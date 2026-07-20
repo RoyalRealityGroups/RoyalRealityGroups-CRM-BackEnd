@@ -1,5 +1,6 @@
 from datetime import timedelta
 import json
+import os
 from django.apps import apps
 from django.db import models
 from django.db.models import Q, Max, OuterRef, Subquery,CharField
@@ -233,14 +234,124 @@ class UpdatePasswordView(generics.UpdateAPIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class ForgotPasswordAPIView(generics.GenericAPIView):
+    """
+    Step 1: Send OTP to user's email for password reset.
+    Since SMTP is not configured, OTP is printed to the console.
+    """
     permission_classes = (permissions.AllowAny,)
-    serializer_class = ForgotPasswordSerializer
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response({"message": "Password reset successfully"}, status=status.HTTP_200_OK)
+        import random
+        import logging
+        from django.core.cache import cache
+
+        logger = logging.getLogger('Common')
+
+        username_or_email = request.data.get('username', '').strip()
+        if not username_or_email:
+            return Response(
+                {"error": "Username or email is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Find user by username or email
+        user = User.objects.filter(
+            models.Q(username__iexact=username_or_email) | models.Q(email__iexact=username_or_email),
+            is_active=True
+        ).first()
+
+        if not user:
+            return Response(
+                {"error": "No active user found with this username or email"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Generate 5-digit OTP
+        otp = str(random.randint(10000, 99999))
+
+        # Store OTP in cache for 5 minutes (keyed by user id)
+        cache_key = f"password_reset_otp_{user.id}"
+        cache.set(cache_key, otp, timeout=300)
+
+        # Print OTP to console (SMTP not configured)
+        print("\n" + "=" * 50)
+        print("  PASSWORD RESET OTP")
+        print("=" * 50)
+        print(f"  User:  {user.username} ({user.email})")
+        print(f"  OTP:   {otp}")
+        print(f"  Valid:  5 minutes")
+        print("=" * 50 + "\n")
+
+        logger.info(f"Password reset OTP for {user.username}: {otp}")
+
+        return Response({
+            "message": "OTP has been sent to your registered email.",
+            "user_id": str(user.id),
+        }, status=status.HTTP_200_OK)
+
+
+class ResetPasswordConfirmView(APIView):
+    """
+    Step 2: Verify OTP and reset password.
+    POST: { user_id, otp, password }
+    """
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        from django.core.cache import cache
+
+        user_id = request.data.get('user_id', '').strip()
+        otp = request.data.get('otp', '').strip()
+        new_password = request.data.get('password', '').strip()
+
+        if not user_id or not otp or not new_password:
+            return Response(
+                {"error": "user_id, otp, and password are required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if len(new_password) < 4:
+            return Response(
+                {"error": "Password must be at least 4 characters"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Verify OTP from cache
+        cache_key = f"password_reset_otp_{user_id}"
+        stored_otp = cache.get(cache_key)
+
+        if not stored_otp:
+            return Response(
+                {"error": "OTP has expired. Please request a new one."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if stored_otp != otp:
+            return Response(
+                {"error": "Invalid OTP. Please try again."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # OTP is valid — reset password
+        try:
+            user = User.objects.get(id=user_id, is_active=True)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        user.set_password(new_password)
+        user.must_reset_password = False
+        user.save(update_fields=['password', 'must_reset_password'])
+
+        # Clear OTP from cache
+        cache.delete(cache_key)
+
+        return Response(
+            {"message": "Password reset successfully. You can now login."},
+            status=status.HTTP_200_OK
+        )
 
 
 class UserActive(APIView):

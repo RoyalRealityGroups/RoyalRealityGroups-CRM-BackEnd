@@ -11,6 +11,7 @@ urlpatterns = [
     # path('resendotp/', views.OTPResendAPIView.as_view(), name="otpresend"),
     path('email-verify/', views.VerifyEmail.as_view(), name="email-verify"),
     path('forgot-password/', csrf_exempt(views.ForgotPasswordAPIView.as_view()), name="forgot-password"),
+    path('reset-password-confirm/', csrf_exempt(views.ResetPasswordConfirmView.as_view()), name="reset-password-confirm"),
     path('validate-username/', csrf_exempt(views.ValidateUsernameView.as_view()), name="validate-username"),
 
     # -------------------- User Management -------------------- #

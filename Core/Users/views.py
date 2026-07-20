@@ -250,19 +250,19 @@ class ForgotPasswordAPIView(generics.GenericAPIView):
         username_or_email = request.data.get('username', '').strip()
         if not username_or_email:
             return Response(
-                {"error": "Username or email is required"},
+                {"error": "Email is required"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Find user by username or email
+        # Find user by email
         user = User.objects.filter(
-            models.Q(username__iexact=username_or_email) | models.Q(email__iexact=username_or_email),
+            email__iexact=username_or_email,
             is_active=True
         ).first()
 
         if not user:
             return Response(
-                {"error": "No active user found with this username or email"},
+                {"error": "No active user found with this email"},
                 status=status.HTTP_404_NOT_FOUND
             )
 

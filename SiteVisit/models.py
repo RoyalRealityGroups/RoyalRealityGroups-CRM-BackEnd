@@ -88,6 +88,7 @@ class SiteVisit(CoreModel):
 
     class Meta:
         ordering = ['-visit_date', '-created_on']
+        db_table = 'Lead_sitevisit'
         permissions = [
             ("export_sitevisit", "Can export site visits"),
         ]
@@ -105,6 +106,7 @@ class SiteVisitPhoto(models.Model):
 
     class Meta:
         ordering = ['-uploaded_on']
+        db_table = 'Lead_sitevisitphoto'
 
     def __str__(self):
         return f"Photo for {self.site_visit}"

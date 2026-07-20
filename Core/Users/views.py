@@ -284,6 +284,15 @@ class ForgotPasswordAPIView(generics.GenericAPIView):
 
         logger.info(f"Password reset OTP for {user.username}: {otp}")
 
+        # Try sending via email (falls back to console if SMTP not configured)
+        from Core.System.email_service import send_email
+        if user.email:
+            send_email(
+                to=[user.email],
+                subject='Password Reset OTP',
+                body=f'Your password reset OTP is: {otp}\n\nThis OTP is valid for 5 minutes.\n\nIf you did not request this, please ignore this email.',
+            )
+
         return Response({
             "message": "OTP has been sent to your registered email.",
             "user_id": str(user.id),

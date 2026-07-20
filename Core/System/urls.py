@@ -116,6 +116,4 @@ urlpatterns = [
     # Advanced Filtering - Filter Presets
     path('filter-presets/', views.FilterPresetList.as_view(), name='filter-presets-list'),
     path('filter-presets/<int:pk>/', views.FilterPresetDetail.as_view(), name='filter-preset-detail'),
-
-    
 ]

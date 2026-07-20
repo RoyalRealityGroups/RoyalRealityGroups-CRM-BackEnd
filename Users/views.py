@@ -176,8 +176,12 @@ class UserDetails(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
 
     def get_queryset(self):
+        user = self.request.user
+        # Allow superusers to view their own profile
+        if user.is_superuser and self.kwargs.get('pk') == str(user.id):
+            return User.objects.filter(id=user.id)
         queryset = User.objects.filter(is_superuser=False)
-        return apply_company_location_filter_for_users(queryset, self.request.user)
+        return apply_company_location_filter_for_users(queryset, user)
 
     def perform_update(self, serializer):
         serializer.save(modified_by=self.request.user,)

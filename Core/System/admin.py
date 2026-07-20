@@ -642,3 +642,10 @@ class FilterPresetAdmin(admin.ModelAdmin):
     )
 
 
+
+
+@admin.register(SMTPConfig)
+class SMTPConfigAdmin(admin.ModelAdmin):
+    list_display = ['name', 'host', 'port', 'username', 'from_email', 'is_active']
+    list_filter = ['is_active']
+    search_fields = ['name', 'host', 'username']

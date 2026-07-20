@@ -484,3 +484,38 @@ class TaskExecutionLog(BaseModel):
 
     def __str__(self):
         return f"{self.task.name} executed at {self.start_time}"
+
+
+# ============================================================================
+# SMTP CONFIGURATION
+# ============================================================================
+
+class SMTPConfig(BaseModel):
+    """
+    Stores SMTP credentials for sending emails.
+    Only one active configuration is used at a time.
+    """
+    name = models.CharField(max_length=100, help_text='Configuration name (e.g. "Gmail", "SendGrid")')
+    host = models.CharField(max_length=255, help_text='SMTP server host (e.g. smtp.gmail.com)')
+    port = models.PositiveIntegerField(default=587, help_text='SMTP port (587 for TLS, 465 for SSL)')
+    username = models.CharField(max_length=255, help_text='SMTP username / email')
+    password = models.CharField(max_length=255, help_text='SMTP password / app password')
+    use_tls = models.BooleanField(default=True, help_text='Use TLS encryption')
+    use_ssl = models.BooleanField(default=False, help_text='Use SSL encryption')
+    from_email = models.EmailField(help_text='Default "From" email address')
+    from_name = models.CharField(max_length=100, blank=True, null=True, help_text='Display name for sender')
+    is_active = models.BooleanField(default=True, help_text='Active configuration (only one should be active)')
+
+    class Meta:
+        verbose_name = 'SMTP Configuration'
+        verbose_name_plural = 'SMTP Configurations'
+        ordering = ['-is_active', '-created_on']
+
+    def __str__(self):
+        return f"{self.name} ({self.host}:{self.port}) {'✓' if self.is_active else '✗'}"
+
+    def save(self, *args, **kwargs):
+        # Ensure only one active config
+        if self.is_active:
+            SMTPConfig.objects.filter(is_active=True).exclude(pk=self.pk).update(is_active=False)
+        super().save(*args, **kwargs)

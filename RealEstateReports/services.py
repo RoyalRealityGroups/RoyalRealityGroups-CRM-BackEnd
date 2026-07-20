@@ -284,3 +284,83 @@ def export_to_excel(data: list, columns: list, sheet_name: str = 'Report') -> by
         return buf.getvalue()
     except ImportError:
         raise ImportError("openpyxl is required for Excel export. Run: pip install openpyxl")
+
+
+# ============================================================================
+# PDF EXPORT HELPERS
+# ============================================================================
+
+def export_to_pdf(data: list, columns: list, title: str = 'Report') -> bytes:
+    """Convert list-of-dicts to a PDF file bytes using WeasyPrint."""
+    from io import BytesIO
+    from django.utils import timezone
+
+    # Build HTML table
+    header_cells = ''.join(f'<th>{col["label"]}</th>' for col in columns)
+    body_rows = ''
+    for row in data:
+        cells = ''.join(f'<td>{row.get(col["key"], "")}</td>' for col in columns)
+        body_rows += f'<tr>{cells}</tr>'
+
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {{ font-family: Arial, sans-serif; margin: 20px; font-size: 12px; }}
+            h1 {{ font-size: 18px; color: #1F4E79; margin-bottom: 5px; }}
+            .meta {{ color: #666; margin-bottom: 15px; font-size: 10px; }}
+            table {{ width: 100%; border-collapse: collapse; }}
+            th {{ background-color: #1F4E79; color: white; padding: 8px 6px; text-align: left; font-size: 11px; }}
+            td {{ padding: 6px; border-bottom: 1px solid #ddd; font-size: 11px; }}
+            tr:nth-child(even) {{ background-color: #f9f9f9; }}
+        </style>
+    </head>
+    <body>
+        <h1>{title}</h1>
+        <p class="meta">Generated on {timezone.now().strftime('%d %b %Y, %I:%M %p')}</p>
+        <table>
+            <thead><tr>{header_cells}</tr></thead>
+            <tbody>{body_rows}</tbody>
+        </table>
+    </body>
+    </html>
+    """
+
+    try:
+        from weasyprint import HTML
+        buf = BytesIO()
+        HTML(string=html).write_pdf(buf)
+        return buf.getvalue()
+    except ImportError:
+        raise ImportError("weasyprint is required for PDF export. Run: pip install weasyprint")
+
+
+# ============================================================================
+# REGISTRATION REPORT
+# ============================================================================
+
+def registration_report(period=None, project_id=None):
+    """Bookings that reached REGISTERED status."""
+    from Booking.models import Booking
+    qs = Booking.objects.filter(is_deleted=False, status='REGISTERED')
+    if period:
+        qs = qs.filter(**_date_range_filter(period, date_field='booking_date'))
+    if project_id:
+        qs = qs.filter(project_id=project_id)
+
+    by_project = list(
+        qs.values('project__id', 'project__name')
+          .annotate(count=Count('id'), revenue=Sum('agreed_price'))
+          .order_by('-count')
+    )
+    for row in by_project:
+        row['project_id'] = str(row.pop('project__id', '') or '')
+        row['project_name'] = row.pop('project__name', '') or ''
+        row['revenue'] = float(row['revenue'] or 0)
+
+    return {
+        'total': qs.count(),
+        'total_revenue': float(qs.aggregate(t=Sum('agreed_price'))['t'] or 0),
+        'by_project': by_project,
+    }

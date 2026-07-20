@@ -18,7 +18,9 @@ from .services import (
     booking_report,
     revenue_report,
     employee_performance_report,
+    registration_report,
     export_to_excel,
+    export_to_pdf,
 )
 
 
@@ -34,17 +36,29 @@ def _employee_id(request):
     return request.query_params.get('employee', None)
 
 
-def _excel_response(data, columns, filename, sheet_name):
-    try:
-        content = export_to_excel(data, columns, sheet_name)
-        resp = HttpResponse(
-            content,
-            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        )
-        resp['Content-Disposition'] = f'attachment; filename="{filename}.xlsx"'
-        return resp
-    except ImportError as e:
-        return Response({'error': str(e)}, status=status.HTTP_501_NOT_IMPLEMENTED)
+def _export_response(request, data, columns, filename, title):
+    """Handle export=excel or export=pdf."""
+    export_format = request.query_params.get('export')
+    if export_format == 'excel':
+        try:
+            content = export_to_excel(data, columns, title)
+            resp = HttpResponse(
+                content,
+                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            )
+            resp['Content-Disposition'] = f'attachment; filename="{filename}.xlsx"'
+            return resp
+        except ImportError as e:
+            return Response({'error': str(e)}, status=status.HTTP_501_NOT_IMPLEMENTED)
+    elif export_format == 'pdf':
+        try:
+            content = export_to_pdf(data, columns, title)
+            resp = HttpResponse(content, content_type='application/pdf')
+            resp['Content-Disposition'] = f'attachment; filename="{filename}.pdf"'
+            return resp
+        except ImportError as e:
+            return Response({'error': str(e)}, status=status.HTTP_501_NOT_IMPLEMENTED)
+    return None
 
 
 # ============================================================================
@@ -60,12 +74,13 @@ class LeadReportBySourceView(APIView):
             period=_period(request),
             project_id=_project_id(request),
         )
-        if request.query_params.get('export') == 'excel':
-            columns = [
-                {'key': 'lead_source', 'label': 'Lead Source'},
-                {'key': 'count', 'label': 'Count'},
-            ]
-            return _excel_response(data['data'], columns, 'lead_report_by_source', 'By Source')
+        columns = [
+            {'key': 'lead_source', 'label': 'Lead Source'},
+            {'key': 'count', 'label': 'Count'},
+        ]
+        export = _export_response(request, data['data'], columns, 'lead_report_by_source', 'Lead Report - Source Wise')
+        if export:
+            return export
         return Response(data)
 
 
@@ -78,12 +93,13 @@ class LeadReportByEmployeeView(APIView):
             period=_period(request),
             project_id=_project_id(request),
         )
-        if request.query_params.get('export') == 'excel':
-            columns = [
-                {'key': 'employee_name', 'label': 'Employee'},
-                {'key': 'count', 'label': 'Leads'},
-            ]
-            return _excel_response(data['data'], columns, 'lead_report_by_employee', 'By Employee')
+        columns = [
+            {'key': 'employee_name', 'label': 'Employee'},
+            {'key': 'count', 'label': 'Leads'},
+        ]
+        export = _export_response(request, data['data'], columns, 'lead_report_by_employee', 'Lead Report - Employee Wise')
+        if export:
+            return export
         return Response(data)
 
 
@@ -93,12 +109,13 @@ class LeadReportByProjectView(APIView):
 
     def get(self, request):
         data = lead_report_by_project(period=_period(request))
-        if request.query_params.get('export') == 'excel':
-            columns = [
-                {'key': 'project_name', 'label': 'Project'},
-                {'key': 'count', 'label': 'Leads'},
-            ]
-            return _excel_response(data['data'], columns, 'lead_report_by_project', 'By Project')
+        columns = [
+            {'key': 'project_name', 'label': 'Project'},
+            {'key': 'count', 'label': 'Leads'},
+        ]
+        export = _export_response(request, data['data'], columns, 'lead_report_by_project', 'Lead Report - Project Wise')
+        if export:
+            return export
         return Response(data)
 
 
@@ -108,12 +125,13 @@ class LeadReportByStatusView(APIView):
 
     def get(self, request):
         data = lead_report_by_status(period=_period(request))
-        if request.query_params.get('export') == 'excel':
-            columns = [
-                {'key': 'status', 'label': 'Status'},
-                {'key': 'count', 'label': 'Count'},
-            ]
-            return _excel_response(data['data'], columns, 'lead_report_by_status', 'By Status')
+        columns = [
+            {'key': 'status', 'label': 'Status'},
+            {'key': 'count', 'label': 'Count'},
+        ]
+        export = _export_response(request, data['data'], columns, 'lead_report_by_status', 'Lead Report - Status Wise')
+        if export:
+            return export
         return Response(data)
 
 
@@ -132,12 +150,13 @@ class SiteVisitReportView(APIView):
             project_id=_project_id(request),
             employee_id=_employee_id(request),
         )
-        if request.query_params.get('export') == 'excel':
-            columns = [
-                {'key': 'employee_name', 'label': 'Employee'},
-                {'key': 'count', 'label': 'Site Visits'},
-            ]
-            return _excel_response(data['by_employee'], columns, 'site_visit_report', 'Site Visits')
+        columns = [
+            {'key': 'employee_name', 'label': 'Employee'},
+            {'key': 'count', 'label': 'Site Visits'},
+        ]
+        export = _export_response(request, data['by_employee'], columns, 'site_visit_report', 'Site Visit Report')
+        if export:
+            return export
         return Response(data)
 
 
@@ -155,13 +174,14 @@ class BookingReportView(APIView):
             project_id=_project_id(request),
             employee_id=_employee_id(request),
         )
-        if request.query_params.get('export') == 'excel':
-            columns = [
-                {'key': 'project_name', 'label': 'Project'},
-                {'key': 'count', 'label': 'Bookings'},
-                {'key': 'revenue', 'label': 'Revenue (₹)'},
-            ]
-            return _excel_response(data['by_project'], columns, 'booking_report', 'Bookings')
+        columns = [
+            {'key': 'project_name', 'label': 'Project'},
+            {'key': 'count', 'label': 'Bookings'},
+            {'key': 'revenue', 'label': 'Revenue (₹)'},
+        ]
+        export = _export_response(request, data['by_project'], columns, 'booking_report', 'Booking Report')
+        if export:
+            return export
         return Response(data)
 
 
@@ -172,13 +192,34 @@ class RevenueReportView(APIView):
     def get(self, request):
         period = _period(request) or 'this_year'
         data = revenue_report(period=period)
-        if request.query_params.get('export') == 'excel':
-            columns = [
-                {'key': 'month', 'label': 'Month'},
-                {'key': 'bookings', 'label': 'Bookings'},
-                {'key': 'revenue', 'label': 'Revenue (₹)'},
-            ]
-            return _excel_response(data['monthly'], columns, 'revenue_report', 'Revenue')
+        columns = [
+            {'key': 'month', 'label': 'Month'},
+            {'key': 'bookings', 'label': 'Bookings'},
+            {'key': 'revenue', 'label': 'Revenue (₹)'},
+        ]
+        export = _export_response(request, data['monthly'], columns, 'revenue_report', 'Revenue Report')
+        if export:
+            return export
+        return Response(data)
+
+
+class RegistrationReportView(APIView):
+    """Registration report — bookings that reached REGISTERED status"""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        data = registration_report(
+            period=_period(request),
+            project_id=_project_id(request),
+        )
+        columns = [
+            {'key': 'project_name', 'label': 'Project'},
+            {'key': 'count', 'label': 'Registrations'},
+            {'key': 'revenue', 'label': 'Revenue (₹)'},
+        ]
+        export = _export_response(request, data['by_project'], columns, 'registration_report', 'Registration Report')
+        if export:
+            return export
         return Response(data)
 
 
@@ -193,16 +234,17 @@ class EmployeePerformanceReportView(APIView):
     def get(self, request):
         period = _period(request) or 'this_month'
         data = employee_performance_report(period=period)
-        if request.query_params.get('export') == 'excel':
-            columns = [
-                {'key': 'employee_name', 'label': 'Employee'},
-                {'key': 'designation', 'label': 'Designation'},
-                {'key': 'leads', 'label': 'Leads'},
-                {'key': 'site_visits', 'label': 'Site Visits'},
-                {'key': 'bookings', 'label': 'Bookings'},
-                {'key': 'registrations', 'label': 'Registrations'},
-            ]
-            return _excel_response(data, columns, 'employee_performance', 'Performance')
+        columns = [
+            {'key': 'employee_name', 'label': 'Employee'},
+            {'key': 'designation', 'label': 'Designation'},
+            {'key': 'leads', 'label': 'Leads'},
+            {'key': 'site_visits', 'label': 'Site Visits'},
+            {'key': 'bookings', 'label': 'Bookings'},
+            {'key': 'registrations', 'label': 'Registrations'},
+        ]
+        export = _export_response(request, data, columns, 'employee_performance', 'Employee Performance Report')
+        if export:
+            return export
         return Response({'period': period, 'data': data})
 
 

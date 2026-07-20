@@ -7,6 +7,7 @@ from .views import (
     SiteVisitReportView,
     BookingReportView,
     RevenueReportView,
+    RegistrationReportView,
     EmployeePerformanceReportView,
     DashboardSummaryView,
 )
@@ -23,6 +24,7 @@ urlpatterns = [
 
     # Sales / Booking Reports
     path('bookings/', BookingReportView.as_view(), name='report-bookings'),
+    path('registrations/', RegistrationReportView.as_view(), name='report-registrations'),
     path('revenue/', RevenueReportView.as_view(), name='report-revenue'),
 
     # Employee Performance

@@ -253,7 +253,10 @@ class EmployeePerformanceReportView(APIView):
 # ============================================================================
 
 class DashboardSummaryView(APIView):
-    """Single endpoint returning all KPIs for the Director/Team Leader dashboard"""
+    """
+    Module 12 - Dashboard KPIs.
+    Returns data for both Team Leader and Director dashboards.
+    """
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
@@ -261,14 +264,52 @@ class DashboardSummaryView(APIView):
         from Lead.models import Lead
         from SiteVisit.models import SiteVisit
         from Booking.models import Booking
+        from Users.models import User
         from django.db.models import Sum, Count
+        from django.db.models import Q as models_Q
 
         today = timezone.now().date()
+        user = request.user
 
         lead_qs = Lead.objects.filter(is_deleted=False)
         sv_qs = SiteVisit.objects.filter(is_deleted=False)
         bkg_qs = Booking.objects.filter(is_deleted=False)
         active_bkg = bkg_qs.exclude(status='CANCELLED')
+
+        # Employee performance (top performers)
+        employees = User.objects.filter(is_active=True, is_superuser=False)[:20]
+        employee_performance = []
+        for emp in employees:
+            leads = lead_qs.filter(assigned_employee=emp).count()
+            visits = sv_qs.filter(assigned_employee=emp).count()
+            bookings = active_bkg.filter(sales_executive=emp).count()
+            registrations = bkg_qs.filter(sales_executive=emp, status='REGISTERED').count()
+            if leads > 0 or visits > 0 or bookings > 0:
+                employee_performance.append({
+                    'employee_id': str(emp.id),
+                    'employee_name': f"{emp.first_name} {emp.last_name}".strip() or emp.username,
+                    'designation': getattr(emp, 'designation', None),
+                    'leads': leads,
+                    'site_visits': visits,
+                    'bookings': bookings,
+                    'registrations': registrations,
+                })
+        employee_performance.sort(key=lambda x: x['bookings'], reverse=True)
+
+        # Project performance
+        project_performance = list(
+            active_bkg.values('project__id', 'project__name')
+            .annotate(
+                bookings=Count('id'),
+                revenue=Sum('agreed_price'),
+                registrations=Count('id', filter=models_Q(status='REGISTERED')),
+            )
+            .order_by('-bookings')[:10]
+        )
+        for row in project_performance:
+            row['project_id'] = str(row.pop('project__id', '') or '')
+            row['project_name'] = row.pop('project__name', '') or ''
+            row['revenue'] = float(row['revenue'] or 0)
 
         return Response({
             'leads': {
@@ -278,19 +319,10 @@ class DashboardSummaryView(APIView):
                     created_on__year=today.year,
                     created_on__month=today.month
                 ).count(),
-                'new': lead_qs.filter(status='NEW_LEAD').count(),
-                'site_visit_scheduled': lead_qs.filter(status='SITE_VISIT_SCHEDULED').count(),
-                'booking': lead_qs.filter(status='BOOKING').count(),
-                'registration': lead_qs.filter(status='REGISTRATION').count(),
-                'lost': lead_qs.filter(status='LOST').count(),
             },
             'site_visits': {
                 'total': sv_qs.count(),
                 'today': sv_qs.filter(visit_date=today).count(),
-                'this_month': sv_qs.filter(
-                    visit_date__year=today.year,
-                    visit_date__month=today.month
-                ).count(),
                 'completed': sv_qs.filter(status='COMPLETED').count(),
                 'scheduled': sv_qs.filter(status='SCHEDULED').count(),
             },
@@ -300,8 +332,9 @@ class DashboardSummaryView(APIView):
                     booking_date__year=today.year,
                     booking_date__month=today.month
                 ).count(),
-                'registered': bkg_qs.filter(status='REGISTERED').count(),
-                'cancelled': bkg_qs.filter(status='CANCELLED').count(),
+            },
+            'registrations': {
+                'total': bkg_qs.filter(status='REGISTERED').count(),
             },
             'revenue': {
                 'total': float(active_bkg.aggregate(t=Sum('agreed_price'))['t'] or 0),
@@ -311,6 +344,7 @@ class DashboardSummaryView(APIView):
                         booking_date__month=today.month
                     ).aggregate(t=Sum('agreed_price'))['t'] or 0
                 ),
-                'collections': float(active_bkg.aggregate(t=Sum('booking_amount'))['t'] or 0),
             },
+            'employee_performance': employee_performance[:10],
+            'project_performance': project_performance,
         })

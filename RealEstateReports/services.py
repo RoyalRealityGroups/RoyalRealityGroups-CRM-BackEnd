@@ -291,7 +291,7 @@ def export_to_excel(data: list, columns: list, sheet_name: str = 'Report') -> by
 # ============================================================================
 
 def export_to_pdf(data: list, columns: list, title: str = 'Report') -> bytes:
-    """Convert list-of-dicts to a PDF file bytes using WeasyPrint."""
+    """Convert list-of-dicts to a PDF file bytes using xhtml2pdf."""
     from io import BytesIO
     from django.utils import timezone
 
@@ -327,13 +327,12 @@ def export_to_pdf(data: list, columns: list, title: str = 'Report') -> bytes:
     </html>
     """
 
-    try:
-        from weasyprint import HTML
-        buf = BytesIO()
-        HTML(string=html).write_pdf(buf)
-        return buf.getvalue()
-    except ImportError:
-        raise ImportError("weasyprint is required for PDF export. Run: pip install weasyprint")
+    from xhtml2pdf import pisa
+    buf = BytesIO()
+    pisa_status = pisa.CreatePDF(html, dest=buf)
+    if pisa_status.err:
+        raise RuntimeError(f'PDF generation failed with {pisa_status.err} errors')
+    return buf.getvalue()
 
 
 # ============================================================================

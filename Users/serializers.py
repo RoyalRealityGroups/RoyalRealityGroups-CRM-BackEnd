@@ -71,6 +71,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     
     profilepicture = serializers.ImageField(required=False, allow_null=True)
+    remove_profilepicture = serializers.BooleanField(required=False, write_only=True, default=False)
 
     designation = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     joining_date = serializers.DateField(required=False, allow_null=True)
@@ -159,7 +160,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         read_only_fields = ['otp', 'username']
-        fields = ['id', 'username', 'fullname', 'email', 'phone', 'groups', 'group_ids', 'password', 'first_name', 'last_name', 'otp', 'gender', 'gender_name', 'is_email_verified', 'is_phone_verified','receive_sms','receive_email','receive_notification', 'is_active', 'device_access', 'device_access_name', 'profilepicture', 'designation', 'joining_date', 'reporting_manager', 'reporting_manager_name', 'team_count', 'user_status', 'must_reset_password', 'leads_assigned', 'site_visits', 'bookings', 'registrations']
+        fields = ['id', 'username', 'fullname', 'email', 'phone', 'groups', 'group_ids', 'password', 'first_name', 'last_name', 'otp', 'gender', 'gender_name', 'is_email_verified', 'is_phone_verified','receive_sms','receive_email','receive_notification', 'is_active', 'device_access', 'device_access_name', 'profilepicture', 'remove_profilepicture', 'designation', 'joining_date', 'reporting_manager', 'reporting_manager_name', 'team_count', 'user_status', 'must_reset_password', 'leads_assigned', 'site_visits', 'bookings', 'registrations']
 
 
     def create(self, validated_data):
@@ -196,6 +197,12 @@ class UserSerializer(serializers.ModelSerializer):
         if 'group_ids' in validated_data:
             group_ids = validated_data.pop('group_ids')
             instance.groups.set(group_ids)
+
+        # Handle profile picture removal
+        if validated_data.pop('remove_profilepicture', False):
+            instance.profilepicture = None
+            instance.save(update_fields=['profilepicture'])
+        validated_data.pop('profilepicture', None) if 'profilepicture' not in validated_data else None
 
         password = validated_data.pop('password', None)
         user = super().update(instance, validated_data)

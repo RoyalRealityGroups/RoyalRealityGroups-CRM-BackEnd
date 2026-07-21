@@ -587,13 +587,11 @@ class IamUserSerializer(serializers.ModelSerializer):
         read_only_fields = ['otp']
         fields = [
             'id', 'username', 'fullname', 'email', 'phone',
-            # 'alternate_phone',  # not on Users.User model
             'groups', 'group_ids', 'password',
             'first_name', 'last_name', 'otp', 'gender', 'gender_name',
             'is_email_verified', 'is_phone_verified',
             'receive_sms', 'receive_email', 'receive_notification',
-            'is_active', 'device_access',
-            # 'address',  # not on Users.User model
+            'is_active', 'device_access', 'profilepicture',
         ]
 
 

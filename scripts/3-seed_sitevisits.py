@@ -1,11 +1,11 @@
 """
-Seed script: Create sample Site Visits.
+Seed script: Create 55+ sample Site Visits.
 
 Usage:
-    python manage.py shell < scripts/seed_sitevisits.py
+    python manage.py shell < scripts/3-seed_sitevisits.py
 
 Creates site visits linked to existing leads and projects.
-Requires: seed_leads.py and seed_projects.py to be run first.
+Requires: 1-seed_leads.py and 2-seed_projects.py to be run first.
 """
 import django
 import os
@@ -38,6 +38,16 @@ FEEDBACK_SAMPLES = [
     'Liked the gated community concept.',
     'Concerned about water supply, team clarified.',
     'Loved the greenery and park area.',
+    'Wants to check Vastu compliance for the plot.',
+    'Impressed with the clubhouse amenities.',
+    'Asking about school and hospital proximity.',
+    'Liked the wide roads and open spaces.',
+    'Interested in corner unit specifically.',
+    'Discussed payment plan options in detail.',
+    'Customer wants to bring builder friend for inspection.',
+    'Very satisfied with construction quality.',
+    'Wants higher floor, checking availability.',
+    'Comparing rates with neighboring projects.',
 ]
 
 REMARKS_SAMPLES = [
@@ -51,13 +61,18 @@ REMARKS_SAMPLES = [
     'Competitor offering lower rate, negotiate.',
     'Ready to book if corner plot available.',
     'Will bring family for final decision.',
+    'Hot lead — close within this week.',
+    'Needs time to arrange finances.',
+    'Interested in 2 plots for investment.',
+    'NRI customer, limited time window.',
+    'Wants possession within 6 months.',
 ]
 
 
 def seed_sitevisits():
-    """Create sample site visits."""
+    """Create 55+ sample site visits."""
     print(f"\n{'='*50}")
-    print("  SEEDING SITE VISITS")
+    print("  SEEDING SITE VISITS (55+ records)")
     print(f"{'='*50}\n")
 
     # Get assignable users
@@ -67,57 +82,59 @@ def seed_sitevisits():
     ).distinct())
 
     if not users:
-        print("  No assignable users found. Run seed_groups_users.py first.")
+        print("  No assignable users found. Run 0-seed_groups_users.py first.")
         return
 
     # Get leads
-    leads = list(Lead.objects.filter(is_deleted=False).order_by('?')[:20])
+    leads = list(Lead.objects.filter(is_deleted=False))
     if not leads:
-        print("  No leads found. Run seed_leads.py first.")
+        print("  No leads found. Run 1-seed_leads.py first.")
         return
 
     # Get projects
     projects = list(Project.objects.filter(is_deleted=False, is_active=True))
     if not projects:
-        print("  No projects found. Run seed_projects.py first.")
-        return
-
-    # Check existing
-    existing_count = SiteVisit.objects.filter(is_deleted=False).count()
-    if existing_count >= 15:
-        print(f"  Already have {existing_count} site visits. Skipping.")
+        print("  No projects found. Run 2-seed_projects.py first.")
         return
 
     today = date.today()
     created_count = 0
+    target_count = 55
 
-    for lead in leads:
-        # 60% chance of having a site visit
-        if random.random() > 0.6:
-            continue
+    # Use all leads, some get multiple visits
+    visit_leads = leads.copy()
+    # Add some repeat visits
+    repeat_leads = random.sample(leads, min(15, len(leads)))
+    visit_leads.extend(repeat_leads)
+    random.shuffle(visit_leads)
 
+    for lead in visit_leads[:target_count]:
         project = random.choice(projects)
         assigned = random.choice(users)
-        days_ago = random.randint(0, 45)
+        days_ago = random.randint(0, 75)
         visit_date = today - timedelta(days=days_ago)
 
         # Weight status based on how old the visit is
-        if days_ago > 20:
+        if days_ago > 30:
             status = random.choices(
-                ['COMPLETED', 'CANCELLED'], weights=[0.8, 0.2], k=1
+                ['COMPLETED', 'CANCELLED'], weights=[0.85, 0.15], k=1
             )[0]
-        elif days_ago > 7:
+        elif days_ago > 14:
             status = random.choices(
                 ['COMPLETED', 'CONFIRMED', 'CANCELLED'], weights=[0.5, 0.3, 0.2], k=1
             )[0]
+        elif days_ago > 3:
+            status = random.choices(
+                ['SCHEDULED', 'CONFIRMED', 'COMPLETED'], weights=[0.3, 0.4, 0.3], k=1
+            )[0]
         else:
             status = random.choices(
-                ['SCHEDULED', 'CONFIRMED', 'COMPLETED'], weights=[0.4, 0.4, 0.2], k=1
+                ['SCHEDULED', 'CONFIRMED'], weights=[0.6, 0.4], k=1
             )[0]
 
         # Completion details only for completed visits
         feedback = random.choice(FEEDBACK_SAMPLES) if status == 'COMPLETED' else ''
-        remarks = random.choice(REMARKS_SAMPLES) if status == 'COMPLETED' else ''
+        remarks = random.choice(REMARKS_SAMPLES) if status in ['COMPLETED', 'CONFIRMED'] else ''
 
         sv = SiteVisit.objects.create(
             lead=lead,
@@ -135,9 +152,8 @@ def seed_sitevisits():
             modified_by_identifier=str(assigned.id),
         )
         created_count += 1
-        print(f"  Created: {lead.name} → {project.name} ({visit_date}, {status})")
 
-    print(f"\n  Total created: {created_count}")
+    print(f"  Created {created_count} site visits")
 
 
 def run():

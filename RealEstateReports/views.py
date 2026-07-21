@@ -364,6 +364,11 @@ class DashboardSummaryView(APIView):
                     created_on__month=today.month
                 ).count(),
             },
+            'lead_pipeline': list(
+                lead_qs.values('status')
+                .annotate(count=Count('id'))
+                .order_by('-count')
+            ),
             'site_visits': {
                 'total': sv_qs.count(),
                 'today': sv_qs.filter(visit_date=today).count(),

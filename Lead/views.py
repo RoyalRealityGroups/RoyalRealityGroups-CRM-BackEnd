@@ -267,3 +267,55 @@ class LeadFollowUpViewSet(viewsets.ModelViewSet):
         ).exclude(lead__status__in=['LOST', 'REGISTRATION'])
         serializer = LeadFollowUpSerializer(followups, many=True)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def export(self, request):
+        """Export current filtered follow-ups as Excel or PDF"""
+        from django.http import HttpResponse
+        from RealEstateReports.services import export_to_excel, export_to_pdf
+
+        export_format = request.query_params.get('export_type', 'excel')
+
+        qs = self.filter_queryset(self.get_queryset())
+
+        data = []
+        for fu in qs[:5000]:
+            lead = fu.lead
+            created_by = fu.created_by
+            data.append({
+                'lead_code': lead.code if lead else '-',
+                'lead_name': lead.name if lead else '-',
+                'lead_mobile': lead.mobile if lead else '-',
+                'follow_up_date': fu.follow_up_date.strftime('%d-%b-%Y') if fu.follow_up_date else '-',
+                'follow_up_time': fu.follow_up_time.strftime('%H:%M') if fu.follow_up_time else '-',
+                'follow_up_type': fu.get_follow_up_type_display() if hasattr(fu, 'get_follow_up_type_display') else fu.follow_up_type,
+                'discussion_notes': fu.discussion_notes or '-',
+                'next_follow_up_date': fu.next_follow_up_date.strftime('%d-%b-%Y') if fu.next_follow_up_date else '-',
+                'created_by': f"{created_by.first_name} {created_by.last_name}".strip() or created_by.username if created_by else '-',
+            })
+
+        columns = [
+            {'key': 'lead_code', 'label': 'Lead ID'},
+            {'key': 'lead_name', 'label': 'Lead Name'},
+            {'key': 'lead_mobile', 'label': 'Mobile'},
+            {'key': 'follow_up_date', 'label': 'Follow-up Date'},
+            {'key': 'follow_up_time', 'label': 'Time'},
+            {'key': 'follow_up_type', 'label': 'Type'},
+            {'key': 'discussion_notes', 'label': 'Notes'},
+            {'key': 'next_follow_up_date', 'label': 'Next Follow-up'},
+            {'key': 'created_by', 'label': 'Created By'},
+        ]
+
+        if export_format == 'pdf':
+            content = export_to_pdf(data, columns, 'Follow-up Report')
+            response = HttpResponse(content, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="FollowUp_Report.pdf"'
+            return response
+        else:
+            content = export_to_excel(data, columns, 'Follow-ups')
+            response = HttpResponse(
+                content,
+                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            )
+            response['Content-Disposition'] = 'attachment; filename="FollowUp_Report.xlsx"'
+            return response

@@ -38,7 +38,19 @@ class GeneralSettingsView(APIView):
             return Response({'detail': 'You do not have permission to update general settings.'}, status=status.HTTP_403_FORBIDDEN)
 
         settings_obj = GeneralSettings.get_solo()
-        serializer = GeneralSettingsSerializer(settings_obj, data=request.data, partial=True)
+
+        # Handle logo removal
+        if 'company_logo' in request.data and (request.data['company_logo'] is None or request.data['company_logo'] == 'null'):
+            settings_obj.company_logo = None
+            settings_obj.save(update_fields=['company_logo'])
+            data = request.data.copy() if hasattr(request.data, 'copy') else dict(request.data)
+            data.pop('company_logo', None)
+            if not data:
+                return Response(GeneralSettingsSerializer(settings_obj).data, status=status.HTTP_200_OK)
+            serializer = GeneralSettingsSerializer(settings_obj, data=data, partial=True)
+        else:
+            serializer = GeneralSettingsSerializer(settings_obj, data=request.data, partial=True)
+
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)

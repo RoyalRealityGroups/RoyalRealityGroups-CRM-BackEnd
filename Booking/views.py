@@ -125,7 +125,11 @@ class BookingViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def export(self, request):
         from django.http import HttpResponse
+        from rest_framework.exceptions import PermissionDenied
         from RealEstateReports.services import export_to_excel, export_to_pdf
+
+        if not request.user.is_superuser and not request.user.has_perm('Booking.export_booking'):
+            raise PermissionDenied('You do not have permission to export bookings.')
 
         export_format = request.query_params.get('export_type', 'excel')
         qs = self.filter_queryset(self.get_queryset())

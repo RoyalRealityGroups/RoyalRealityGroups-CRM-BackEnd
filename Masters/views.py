@@ -5241,7 +5241,12 @@ class ProjectExportView(APIView):
 
     def get(self, request):
         from django.http import HttpResponse
+        from rest_framework.exceptions import PermissionDenied
         from RealEstateReports.services import export_to_excel, export_to_pdf
+
+        # Check export permission
+        if not request.user.is_superuser and not request.user.has_perm('Masters.export_project'):
+            raise PermissionDenied('You do not have permission to export projects.')
 
         export_format = request.query_params.get('export_type', 'excel')
 

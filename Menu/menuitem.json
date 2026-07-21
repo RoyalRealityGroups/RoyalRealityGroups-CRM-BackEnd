@@ -588,20 +588,6 @@
         "Modified On": "2026-03-06 11:47:09"
     },
     {
-        "Code": "RPT-001",
-        "Name": "Sales Order Report",
-        "Icon": "receipt_long",
-        "Link": "/reports/orders",
-        "Sequence": "1",
-        "Click": "",
-        "Menu": "MENU-001",
-        "Submenu": "SBM-004",
-        "Permission": "Sales.view_salesorder",
-        "Description": "Comprehensive sales order reporting with advanced filtering and export capabilities",
-        "Created On": "2026-05-01 00:00:00",
-        "Modified On": "2026-05-01 00:00:00"
-    },
-    {
         "Code": "LM-001",
         "Name": "Leads",
         "Icon": "lead",

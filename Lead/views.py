@@ -274,6 +274,46 @@ class LeadFollowUpViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=False, methods=['get'])
+    def reminders(self, request):
+        """
+        Notification reminders for the logged-in user.
+        Returns follow-ups where next_follow_up_date <= today (today + overdue).
+        Also returns server_now (ISO) so the frontend can classify
+        Upcoming vs Missed without relying on client clock.
+        - Superuser / staff: sees all
+        - Regular user: sees leads assigned to them OR created by them
+        Sorted by next_follow_up_date asc, then follow_up_time asc (nulls last).
+        """
+        from django.db.models import Q
+
+        now = timezone.now()
+        today = now.date()
+        user = request.user
+
+        qs = self.get_queryset().filter(
+            next_follow_up_date__lte=today
+        ).exclude(
+            lead__status__in=['LOST', 'REGISTRATION']
+        )
+
+        if not user.is_superuser and not user.is_staff:
+            qs = qs.filter(
+                Q(lead__assigned_employee=user) | Q(created_by=user)
+            )
+
+        # Sort: date asc (oldest overdue first), then time asc (nulls last)
+        qs = qs.order_by('next_follow_up_date', 'follow_up_time')
+
+        serializer = LeadFollowUpSerializer(qs, many=True)
+        data = serializer.data
+
+        return Response({
+            'server_now': now.isoformat(),   # e.g. "2026-07-21T13:45:00+05:30"
+            'count': len(data),
+            'results': data,
+        })
+
+    @action(detail=False, methods=['get'])
     def export(self, request):
         """Export current filtered follow-ups as Excel or PDF"""
         from django.http import HttpResponse

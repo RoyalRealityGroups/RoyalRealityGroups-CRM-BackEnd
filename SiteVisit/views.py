@@ -30,6 +30,16 @@ class SiteVisitViewSet(viewsets.ModelViewSet):
     ordering = ['-visit_date']
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        from_date = self.request.query_params.get('from_date')
+        to_date = self.request.query_params.get('to_date')
+        if from_date:
+            qs = qs.filter(visit_date__gte=from_date)
+        if to_date:
+            qs = qs.filter(visit_date__lte=to_date)
+        return qs
+
     # Lead status sync mapping
     LEAD_STATUS_BY_VISIT = {
         'SCHEDULED': 'SITE_VISIT_SCHEDULED',
@@ -152,3 +162,48 @@ class SiteVisitViewSet(viewsets.ModelViewSet):
             'completed': qs.filter(status='COMPLETED').count(),
             'cancelled': qs.filter(status='CANCELLED').count(),
         })
+
+    @action(detail=False, methods=['get'])
+    def export(self, request):
+        from django.http import HttpResponse
+        from RealEstateReports.services import export_to_excel, export_to_pdf
+
+        export_format = request.query_params.get('export_type', 'excel')
+        qs = self.filter_queryset(self.get_queryset())
+
+        data = []
+        for sv in qs[:5000]:
+            emp = sv.assigned_employee
+            emp_name = f"{emp.first_name} {emp.last_name}".strip() or emp.username if emp else '-'
+            data.append({
+                'code': sv.code or '',
+                'customer_name': sv.customer_name,
+                'project_name': sv.project_name or (sv.project.name if sv.project else '-'),
+                'visit_date': sv.visit_date.strftime('%d-%b-%Y') if sv.visit_date else '-',
+                'assigned_employee': emp_name,
+                'status': sv.get_status_display(),
+                'customer_feedback': sv.customer_feedback or '-',
+                'remarks': sv.remarks or '-',
+            })
+
+        columns = [
+            {'key': 'code', 'label': 'Code'},
+            {'key': 'customer_name', 'label': 'Customer Name'},
+            {'key': 'project_name', 'label': 'Project'},
+            {'key': 'visit_date', 'label': 'Visit Date'},
+            {'key': 'assigned_employee', 'label': 'Assigned To'},
+            {'key': 'status', 'label': 'Status'},
+            {'key': 'customer_feedback', 'label': 'Feedback'},
+            {'key': 'remarks', 'label': 'Remarks'},
+        ]
+
+        if export_format == 'pdf':
+            content = export_to_pdf(data, columns, 'Site Visit Report')
+            response = HttpResponse(content, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="SiteVisit_Report.pdf"'
+            return response
+        else:
+            content = export_to_excel(data, columns, 'Site Visits')
+            response = HttpResponse(content, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename="SiteVisit_Report.xlsx"'
+            return response

@@ -319,9 +319,12 @@ class ResetPasswordConfirmView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        if len(new_password) < 4:
+        # Validate password strength
+        from Core.Core.utils.password_validator import validate_password_strength
+        password_errors = validate_password_strength(new_password)
+        if password_errors:
             return Response(
-                {"error": "Password must be at least 4 characters"},
+                {"error": password_errors[0], "errors": password_errors},
                 status=status.HTTP_400_BAD_REQUEST
             )
 

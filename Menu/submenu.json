@@ -66,17 +66,6 @@
         "Modified On": "2026-07-18 00:00:00"
     },
     {
-        "Code": "SBM-004",
-        "Name": "Reports",
-        "Sequence": "7",
-        "Icon": "reports",
-        "Click": "/reports",
-        "Menu": "MENU-001",
-        "Submenu": "",
-        "Created On": "2026-05-01 00:00:00",
-        "Modified On": "2026-05-01 00:00:00"
-    },
-    {
         "Code": "SBM-010",
         "Name": "Booking Management",
         "Sequence": "6",

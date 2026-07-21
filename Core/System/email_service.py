@@ -10,11 +10,11 @@ Usage:
         body='Your OTP is 12345',
     )
 
-    # Or HTML email:
+    # Or  email:
     send_email(
         to=['user@example.com'],
         subject='Welcome',
-        html_body='<h1>Welcome!</h1>',
+        _body='<h1>Welcome!</h1>',
     )
 """
 import logging
@@ -51,7 +51,7 @@ def get_email_backend():
     return backend, from_email
 
 
-def send_email(to, subject, body='', html_body=None, cc=None, bcc=None, attachments=None):
+def send_email(to, subject, body='', _body=None, cc=None, bcc=None, attachments=None):
     """
     Send an email using the SMTP config stored in the database.
 
@@ -59,7 +59,7 @@ def send_email(to, subject, body='', html_body=None, cc=None, bcc=None, attachme
         to: list of recipient emails
         subject: email subject
         body: plain text body
-        html_body: optional HTML body
+        _body: optional  body
         cc: list of CC emails
         bcc: list of BCC emails
         attachments: list of (filename, content, mimetype) tuples
@@ -85,17 +85,17 @@ def send_email(to, subject, body='', html_body=None, cc=None, bcc=None, attachme
         return False
 
     try:
-        if html_body:
+        if _body:
             msg = EmailMultiAlternatives(
                 subject=subject,
-                body=body or 'Please view this email in an HTML-capable client.',
+                body=body or 'Please view this email in an -capable client.',
                 from_email=from_email,
                 to=to,
                 cc=cc,
                 bcc=bcc,
                 connection=backend,
             )
-            msg.attach_alternative(html_body, 'text/html')
+            msg.attach_alternative(_body, 'text/')
         else:
             msg = EmailMessage(
                 subject=subject,

@@ -2,6 +2,7 @@ from rest_framework import viewsets, status, generics, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import rest_framework as django_filters
 from rest_framework import filters
 from django.utils import timezone
 
@@ -14,6 +15,15 @@ from .serializers import (
 )
 
 
+class LeadFilter(django_filters.FilterSet):
+    from_date = django_filters.DateFilter(field_name='created_on', lookup_expr='date__gte')
+    to_date = django_filters.DateFilter(field_name='created_on', lookup_expr='date__lte')
+
+    class Meta:
+        model = Lead
+        fields = ['status', 'lead_source', 'assigned_employee', 'from_date', 'to_date']
+
+
 class LeadViewSet(viewsets.ModelViewSet):
     """ViewSet for Lead management - Module 2"""
     queryset = Lead.objects.select_related(
@@ -21,7 +31,7 @@ class LeadViewSet(viewsets.ModelViewSet):
     ).filter(is_deleted=False)
     serializer_class = LeadSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['status', 'lead_source', 'assigned_employee']
+    filterset_class = LeadFilter
     search_fields = ['name', 'mobile', 'email', 'code']
     ordering_fields = ['created_on', 'status', 'name']
     ordering = ['-created_on']
@@ -159,13 +169,81 @@ class LeadViewSet(viewsets.ModelViewSet):
             ),
         })
 
+    @action(detail=False, methods=['get'])
+    def export(self, request):
+        """Export current filtered leads as Excel or PDF"""
+        from django.http import HttpResponse
+        from RealEstateReports.services import export_to_excel, export_to_pdf
+
+        export_format = request.query_params.get('export_type', 'excel')
+
+        # Apply same filters as list view
+        qs = self.filter_queryset(self.get_queryset())
+
+        # Build export data
+        data = []
+        for lead in qs[:5000]:  # Cap at 5000 for performance
+            emp = lead.assigned_employee
+            emp_name = f"{emp.first_name} {emp.last_name}".strip() or emp.username if emp else '-'
+            data.append({
+                'code': lead.code or '',
+                'name': lead.name,
+                'mobile': lead.mobile,
+                'email': lead.email or '-',
+                'lead_source': lead.get_lead_source_display(),
+                'status': lead.get_status_display(),
+                'assigned_employee': emp_name,
+                'budget': lead.budget or '-',
+                'preferred_area': lead.preferred_area or '-',
+                'property_requirement': lead.property_requirement or '-',
+                'created_on': lead.created_on.strftime('%d-%b-%Y') if lead.created_on else '-',
+            })
+
+        columns = [
+            {'key': 'code', 'label': 'Lead ID'},
+            {'key': 'name', 'label': 'Name'},
+            {'key': 'mobile', 'label': 'Mobile'},
+            {'key': 'email', 'label': 'Email'},
+            {'key': 'lead_source', 'label': 'Source'},
+            {'key': 'status', 'label': 'Status'},
+            {'key': 'assigned_employee', 'label': 'Assigned To'},
+            {'key': 'budget', 'label': 'Budget'},
+            {'key': 'preferred_area', 'label': 'Preferred Area'},
+            {'key': 'property_requirement', 'label': 'Property Type'},
+            {'key': 'created_on', 'label': 'Created On'},
+        ]
+
+        if export_format == 'pdf':
+            content = export_to_pdf(data, columns, 'Lead Report')
+            response = HttpResponse(content, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="Lead_Report.pdf"'
+            return response
+        else:
+            content = export_to_excel(data, columns, 'Leads')
+            response = HttpResponse(
+                content,
+                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            )
+            response['Content-Disposition'] = 'attachment; filename="Lead_Report.xlsx"'
+            return response
+
+
+class FollowUpFilter(django_filters.FilterSet):
+    from_date = django_filters.DateFilter(field_name='follow_up_date', lookup_expr='gte')
+    to_date = django_filters.DateFilter(field_name='follow_up_date', lookup_expr='lte')
+
+    class Meta:
+        model = LeadFollowUp
+        fields = ['lead', 'follow_up_type', 'from_date', 'to_date']
+
 
 class LeadFollowUpViewSet(viewsets.ModelViewSet):
     """ViewSet for Lead Follow-ups - Module 4"""
     queryset = LeadFollowUp.objects.select_related('lead', 'created_by').filter(lead__is_deleted=False)
     serializer_class = LeadFollowUpSerializer
-    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
-    filterset_fields = ['lead', 'follow_up_type']
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_class = FollowUpFilter
+    search_fields = ['lead__name', 'lead__mobile', 'lead__code', 'discussion_notes']
     ordering_fields = ['follow_up_date', 'next_follow_up_date']
     ordering = ['-follow_up_date']
 
@@ -189,3 +267,55 @@ class LeadFollowUpViewSet(viewsets.ModelViewSet):
         ).exclude(lead__status__in=['LOST', 'REGISTRATION'])
         serializer = LeadFollowUpSerializer(followups, many=True)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def export(self, request):
+        """Export current filtered follow-ups as Excel or PDF"""
+        from django.http import HttpResponse
+        from RealEstateReports.services import export_to_excel, export_to_pdf
+
+        export_format = request.query_params.get('export_type', 'excel')
+
+        qs = self.filter_queryset(self.get_queryset())
+
+        data = []
+        for fu in qs[:5000]:
+            lead = fu.lead
+            created_by = fu.created_by
+            data.append({
+                'lead_code': lead.code if lead else '-',
+                'lead_name': lead.name if lead else '-',
+                'lead_mobile': lead.mobile if lead else '-',
+                'follow_up_date': fu.follow_up_date.strftime('%d-%b-%Y') if fu.follow_up_date else '-',
+                'follow_up_time': fu.follow_up_time.strftime('%H:%M') if fu.follow_up_time else '-',
+                'follow_up_type': fu.get_follow_up_type_display() if hasattr(fu, 'get_follow_up_type_display') else fu.follow_up_type,
+                'discussion_notes': fu.discussion_notes or '-',
+                'next_follow_up_date': fu.next_follow_up_date.strftime('%d-%b-%Y') if fu.next_follow_up_date else '-',
+                'created_by': f"{created_by.first_name} {created_by.last_name}".strip() or created_by.username if created_by else '-',
+            })
+
+        columns = [
+            {'key': 'lead_code', 'label': 'Lead ID'},
+            {'key': 'lead_name', 'label': 'Lead Name'},
+            {'key': 'lead_mobile', 'label': 'Mobile'},
+            {'key': 'follow_up_date', 'label': 'Follow-up Date'},
+            {'key': 'follow_up_time', 'label': 'Time'},
+            {'key': 'follow_up_type', 'label': 'Type'},
+            {'key': 'discussion_notes', 'label': 'Notes'},
+            {'key': 'next_follow_up_date', 'label': 'Next Follow-up'},
+            {'key': 'created_by', 'label': 'Created By'},
+        ]
+
+        if export_format == 'pdf':
+            content = export_to_pdf(data, columns, 'Follow-up Report')
+            response = HttpResponse(content, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="FollowUp_Report.pdf"'
+            return response
+        else:
+            content = export_to_excel(data, columns, 'Follow-ups')
+            response = HttpResponse(
+                content,
+                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            )
+            response['Content-Disposition'] = 'attachment; filename="FollowUp_Report.xlsx"'
+            return response

@@ -5225,8 +5225,75 @@ class ProjectList(generics.ListCreateAPIView):
     ordering = ['name']
 
     def get_queryset(self):
-        # Soft-delete aware: hide tombstoned rows from list views
-        return Project.objects.filter(is_deleted=False).all()
+        qs = Project.objects.filter(is_deleted=False).all()
+        from_date = self.request.query_params.get('from_date')
+        to_date = self.request.query_params.get('to_date')
+        if from_date:
+            qs = qs.filter(created_on__date__gte=from_date)
+        if to_date:
+            qs = qs.filter(created_on__date__lte=to_date)
+        return qs
+
+
+class ProjectExportView(APIView):
+    """Export projects as Excel or PDF"""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        from django.http import HttpResponse
+        from RealEstateReports.services import export_to_excel, export_to_pdf
+
+        export_format = request.query_params.get('export_type', 'excel')
+
+        qs = Project.objects.filter(is_deleted=False)
+        search = request.query_params.get('search')
+        status_filter = request.query_params.get('status')
+        from_date = request.query_params.get('from_date')
+        to_date = request.query_params.get('to_date')
+
+        if search:
+            qs = qs.filter(Q(name__icontains=search) | Q(code__icontains=search) | Q(developer_name__icontains=search))
+        if status_filter:
+            qs = qs.filter(status=status_filter)
+        if from_date:
+            qs = qs.filter(created_on__date__gte=from_date)
+        if to_date:
+            qs = qs.filter(created_on__date__lte=to_date)
+
+        data = []
+        for proj in qs[:5000]:
+            data.append({
+                'code': proj.code or '',
+                'name': proj.name,
+                'developer_name': proj.developer_name or '-',
+                'project_type': proj.get_project_type_display(),
+                'location': proj.location or '-',
+                'approval_type': proj.get_approval_type_display(),
+                'status': proj.get_status_display(),
+                'is_active': 'Yes' if proj.is_active else 'No',
+            })
+
+        columns = [
+            {'key': 'code', 'label': 'Code'},
+            {'key': 'name', 'label': 'Project Name'},
+            {'key': 'developer_name', 'label': 'Developer'},
+            {'key': 'project_type', 'label': 'Type'},
+            {'key': 'location', 'label': 'Location'},
+            {'key': 'approval_type', 'label': 'Approval'},
+            {'key': 'status', 'label': 'Status'},
+            {'key': 'is_active', 'label': 'Active'},
+        ]
+
+        if export_format == 'pdf':
+            content = export_to_pdf(data, columns, 'Project Report')
+            response = HttpResponse(content, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="Project_Report.pdf"'
+            return response
+        else:
+            content = export_to_excel(data, columns, 'Projects')
+            response = HttpResponse(content, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename="Project_Report.xlsx"'
+            return response
 
 
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):

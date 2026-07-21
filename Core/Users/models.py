@@ -43,7 +43,7 @@ class CoreUserManager(BaseUserManager):
         if password is None:
             raise TypeError('Password should not be none')
 
-        user = self.create_user(username, password)
+        user = self.create_user(username, password, **kwargs)
         user.is_superuser = True
         user.is_staff = True
         user.save()
@@ -109,7 +109,7 @@ class CoreUser(AbstractBaseUser, PermissionsMixin):
     erp_code = models.CharField(max_length=30, null=True, blank=True)
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['email', 'first_name', 'last_name', 'phone']
 
     objects = CoreUserManager()
 

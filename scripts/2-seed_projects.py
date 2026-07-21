@@ -1,10 +1,10 @@
 """
-Seed script: Create sample Projects.
+Seed script: Create sample Projects (15 projects).
 
 Usage:
-    python manage.py shell < scripts/seed_projects.py
+    python manage.py shell < scripts/2-seed_projects.py
 
-Creates 8 sample real estate projects (mix of Plot, Flat, Villa, Mixed).
+Creates 15 sample real estate projects (mix of Plot, Flat, Villa, Mixed).
 """
 import django
 import os
@@ -21,7 +21,7 @@ from Masters.models import Project
 User = get_user_model()
 
 # ============================================================================
-# SAMPLE PROJECTS
+# SAMPLE PROJECTS — 15 projects
 # ============================================================================
 
 PROJECTS = [
@@ -63,7 +63,7 @@ PROJECTS = [
         'project_type': 'FLAT',
         'location': 'Madhapur, Hyderabad',
         'approval_type': 'HMDA',
-        'status': 'UPCOMING',
+        'status': 'ACTIVE',
     },
     {
         'name': 'Palm Springs Township',
@@ -71,7 +71,7 @@ PROJECTS = [
         'project_type': 'MIXED',
         'location': 'Miyapur, Hyderabad',
         'approval_type': 'HMDA',
-        'status': 'UPCOMING',
+        'status': 'ACTIVE',
     },
     {
         'name': 'Golden Meadows Phase 1',
@@ -89,13 +89,69 @@ PROJECTS = [
         'approval_type': 'HMDA',
         'status': 'SOLD_OUT',
     },
+    {
+        'name': 'Emerald Gardens',
+        'developer_name': 'RR Group',
+        'project_type': 'PLOT',
+        'location': 'Tellapur, Hyderabad',
+        'approval_type': 'HMDA',
+        'status': 'ACTIVE',
+    },
+    {
+        'name': 'Azure Sky Apartments',
+        'developer_name': 'RR Group',
+        'project_type': 'FLAT',
+        'location': 'Nallagandla, Hyderabad',
+        'approval_type': 'HMDA',
+        'status': 'ACTIVE',
+    },
+    {
+        'name': 'Tranquil Meadows',
+        'developer_name': 'RR Group',
+        'project_type': 'VILLA',
+        'location': 'Mokila, Hyderabad',
+        'approval_type': 'DTCP',
+        'status': 'UPCOMING',
+    },
+    {
+        'name': 'Sapphire Residency',
+        'developer_name': 'RR Group',
+        'project_type': 'FLAT',
+        'location': 'Narsingi, Hyderabad',
+        'approval_type': 'HMDA',
+        'status': 'ACTIVE',
+    },
+    {
+        'name': 'Silver Oak Layout',
+        'developer_name': 'RR Group',
+        'project_type': 'PLOT',
+        'location': 'Yadagirigutta, Hyderabad',
+        'approval_type': 'DTCP',
+        'status': 'UPCOMING',
+    },
+    {
+        'name': 'Platinum Towers',
+        'developer_name': 'RR Group',
+        'project_type': 'FLAT',
+        'location': 'Financial District, Hyderabad',
+        'approval_type': 'HMDA',
+        'status': 'ACTIVE',
+    },
+    {
+        'name': "Nature's Nest Phase 2",
+        'developer_name': 'RR Group',
+        'project_type': 'MIXED',
+        'location': 'Kollur, Hyderabad',
+        'approval_type': 'HMDA',
+        'status': 'ACTIVE',
+    },
 ]
 
 
 def seed_projects():
     """Create sample projects."""
     print(f"\n{'='*50}")
-    print("  SEEDING PROJECTS")
+    print("  SEEDING PROJECTS (15 records)")
     print(f"{'='*50}\n")
 
     # Get a user for audit fields

@@ -3,6 +3,7 @@ from django.contrib.auth.models import Group
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from django.contrib.auth.password_validation import validate_password as django_validate_password
 from django.utils.crypto import get_random_string
 from rest_framework import serializers, status
 from Core.Users.models import DEVICE_ACCESS_CHOICES, GENDER_CHOICES, Groupdetails
@@ -136,6 +137,14 @@ class UserSerializer(serializers.ModelSerializer):
             return validate_contact_phone(value)
         except Exception as exc:
             raise serializers.ValidationError(str(exc))
+
+    def validate_password(self, value):
+        if value:
+            try:
+                django_validate_password(value)
+            except Exception as exc:
+                raise serializers.ValidationError(list(exc.messages))
+        return value
     
     def generate_username(self):
         last_user = User.objects.filter(username__startswith='EMP').order_by('-username').first()
@@ -188,12 +197,13 @@ class UserSerializer(serializers.ModelSerializer):
             group_ids = validated_data.pop('group_ids')
             instance.groups.set(group_ids)
 
+        password = validated_data.pop('password', None)
         user = super().update(instance, validated_data)
 
-        if 'password' in validated_data:
-            user.set_password(validated_data['password'])
+        if password:
+            user.set_password(password)
+            user.save()
 
-        user.save()
         return user
 
 class RegisterSerializer(serializers.ModelSerializer):

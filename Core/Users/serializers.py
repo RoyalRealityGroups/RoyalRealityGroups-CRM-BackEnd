@@ -936,20 +936,23 @@ class ValidateUsernameSerializer(serializers.Serializer):
             raise serializers.ValidationError("Username not found")
 
 class ChangePasswordSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, max_length=68, min_length=4, required=True)
-    old_password = serializers.CharField(write_only=True,max_length=68, min_length=4, required=True)
+    password = serializers.CharField(write_only=True, max_length=68, min_length=8, required=True)
+    old_password = serializers.CharField(write_only=True, max_length=68, min_length=4, required=True)
 
     class Meta:
         model = User
         fields = ('old_password', 'password',)
-
 
     def validate_old_password(self, value):
         user = self.context['request'].user
         if not user.check_password(value):
             raise serializers.ValidationError("Old password is not correct")
         return value
-    
+
+    def validate_password(self, value):
+        from Core.Core.utils.password_validator import validate_password_field
+        return validate_password_field(value)
+
     def validate(self, attrs):
         old_password = attrs.get('old_password', None)
         password = attrs.get('password', None)
@@ -959,28 +962,26 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
 
         return super().validate(attrs)
 
-
-    def update(self, instance, validated_data):       
-
+    def update(self, instance, validated_data):
         instance.set_password(validated_data['password'])
         instance.save()
-
         return instance
-    
+
 
 class UpdatePasswordSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, max_length=68, min_length=4, required=True)
+    password = serializers.CharField(write_only=True, max_length=68, min_length=8, required=True)
 
     class Meta:
         model = User
         fields = ('password',)
 
+    def validate_password(self, value):
+        from Core.Core.utils.password_validator import validate_password_field
+        return validate_password_field(value)
 
     def update(self, instance, validated_data):
-
         instance.set_password(validated_data['password'])
         instance.save()
-        
         return instance
 
 

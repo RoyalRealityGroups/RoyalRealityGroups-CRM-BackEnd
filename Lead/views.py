@@ -173,7 +173,12 @@ class LeadViewSet(viewsets.ModelViewSet):
     def export(self, request):
         """Export current filtered leads as Excel or PDF"""
         from django.http import HttpResponse
+        from rest_framework.exceptions import PermissionDenied
         from RealEstateReports.services import export_to_excel, export_to_pdf
+
+        # Check export permission
+        if not request.user.is_superuser and not request.user.has_perm('Lead.export_lead'):
+            raise PermissionDenied('You do not have permission to export leads.')
 
         export_format = request.query_params.get('export_type', 'excel')
 
@@ -272,7 +277,12 @@ class LeadFollowUpViewSet(viewsets.ModelViewSet):
     def export(self, request):
         """Export current filtered follow-ups as Excel or PDF"""
         from django.http import HttpResponse
+        from rest_framework.exceptions import PermissionDenied
         from RealEstateReports.services import export_to_excel, export_to_pdf
+
+        # Check export permission
+        if not request.user.is_superuser and not request.user.has_perm('Lead.export_leadfollowup'):
+            raise PermissionDenied('You do not have permission to export follow-ups.')
 
         export_format = request.query_params.get('export_type', 'excel')
 

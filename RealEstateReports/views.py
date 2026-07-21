@@ -311,27 +311,27 @@ class DashboardSummaryView(APIView):
             row['project_name'] = row.pop('project__name', '') or ''
             row['revenue'] = float(row['revenue'] or 0)
 
-        # Monthly trend (last 6 months)
+        # Monthly trend (last 12 months)
         from django.db.models.functions import TruncMonth
         from datetime import timedelta
-        six_months_ago = today - timedelta(days=180)
+        twelve_months_ago = today - timedelta(days=365)
 
         monthly_leads = list(
-            lead_qs.filter(created_on__date__gte=six_months_ago)
+            lead_qs.filter(created_on__date__gte=twelve_months_ago)
             .annotate(month=TruncMonth('created_on'))
             .values('month')
             .annotate(count=Count('id'))
             .order_by('month')
         )
         monthly_bookings = list(
-            active_bkg.filter(booking_date__gte=six_months_ago)
+            active_bkg.filter(booking_date__gte=twelve_months_ago)
             .annotate(month=TruncMonth('booking_date'))
             .values('month')
             .annotate(count=Count('id'))
             .order_by('month')
         )
         monthly_visits = list(
-            sv_qs.filter(visit_date__gte=six_months_ago)
+            sv_qs.filter(visit_date__gte=twelve_months_ago)
             .annotate(month=TruncMonth('visit_date'))
             .values('month')
             .annotate(count=Count('id'))

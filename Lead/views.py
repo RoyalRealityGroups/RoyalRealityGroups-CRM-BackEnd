@@ -2,6 +2,7 @@ from rest_framework import viewsets, status, generics, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import rest_framework as django_filters
 from rest_framework import filters
 from django.utils import timezone
 
@@ -14,6 +15,15 @@ from .serializers import (
 )
 
 
+class LeadFilter(django_filters.FilterSet):
+    from_date = django_filters.DateFilter(field_name='created_on', lookup_expr='date__gte')
+    to_date = django_filters.DateFilter(field_name='created_on', lookup_expr='date__lte')
+
+    class Meta:
+        model = Lead
+        fields = ['status', 'lead_source', 'assigned_employee', 'from_date', 'to_date']
+
+
 class LeadViewSet(viewsets.ModelViewSet):
     """ViewSet for Lead management - Module 2"""
     queryset = Lead.objects.select_related(
@@ -21,7 +31,7 @@ class LeadViewSet(viewsets.ModelViewSet):
     ).filter(is_deleted=False)
     serializer_class = LeadSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['status', 'lead_source', 'assigned_employee']
+    filterset_class = LeadFilter
     search_fields = ['name', 'mobile', 'email', 'code']
     ordering_fields = ['created_on', 'status', 'name']
     ordering = ['-created_on']
@@ -160,12 +170,22 @@ class LeadViewSet(viewsets.ModelViewSet):
         })
 
 
+class FollowUpFilter(django_filters.FilterSet):
+    from_date = django_filters.DateFilter(field_name='follow_up_date', lookup_expr='gte')
+    to_date = django_filters.DateFilter(field_name='follow_up_date', lookup_expr='lte')
+
+    class Meta:
+        model = LeadFollowUp
+        fields = ['lead', 'follow_up_type', 'from_date', 'to_date']
+
+
 class LeadFollowUpViewSet(viewsets.ModelViewSet):
     """ViewSet for Lead Follow-ups - Module 4"""
     queryset = LeadFollowUp.objects.select_related('lead', 'created_by').filter(lead__is_deleted=False)
     serializer_class = LeadFollowUpSerializer
-    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
-    filterset_fields = ['lead', 'follow_up_type']
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_class = FollowUpFilter
+    search_fields = ['lead__name', 'lead__mobile', 'lead__code', 'discussion_notes']
     ordering_fields = ['follow_up_date', 'next_follow_up_date']
     ordering = ['-follow_up_date']
 

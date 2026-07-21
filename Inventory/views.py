@@ -23,6 +23,16 @@ class PlotInventoryViewSet(viewsets.ModelViewSet):
     ordering_fields = ['plot_number', 'area_sqyd', 'total_price', 'status']
     ordering = ['plot_number']
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        from_date = self.request.query_params.get('from_date')
+        to_date = self.request.query_params.get('to_date')
+        if from_date:
+            qs = qs.filter(created_on__date__gte=from_date)
+        if to_date:
+            qs = qs.filter(created_on__date__lte=to_date)
+        return qs
+
     @action(detail=True, methods=['patch'])
     def update_status(self, request, pk=None):
         """Update plot status"""
@@ -69,6 +79,16 @@ class FlatInventoryViewSet(viewsets.ModelViewSet):
     search_fields = ['unit_number', 'code', 'tower']
     ordering_fields = ['tower', 'floor', 'unit_number', 'price', 'status']
     ordering = ['tower', 'floor', 'unit_number']
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        from_date = self.request.query_params.get('from_date')
+        to_date = self.request.query_params.get('to_date')
+        if from_date:
+            qs = qs.filter(created_on__date__gte=from_date)
+        if to_date:
+            qs = qs.filter(created_on__date__lte=to_date)
+        return qs
 
     @action(detail=True, methods=['patch'])
     def update_status(self, request, pk=None):

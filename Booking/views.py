@@ -23,6 +23,16 @@ class BookingViewSet(viewsets.ModelViewSet):
     ordering_fields = ['booking_date', 'created_on', 'booking_amount']
     ordering = ['-booking_date']
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        from_date = self.request.query_params.get('from_date')
+        to_date = self.request.query_params.get('to_date')
+        if from_date:
+            qs = qs.filter(booking_date__gte=from_date)
+        if to_date:
+            qs = qs.filter(booking_date__lte=to_date)
+        return qs
+
     @action(detail=True, methods=['patch'])
     def update_status(self, request, pk=None):
         """Update booking status and record history"""

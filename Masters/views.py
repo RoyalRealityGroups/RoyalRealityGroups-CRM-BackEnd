@@ -5225,8 +5225,14 @@ class ProjectList(generics.ListCreateAPIView):
     ordering = ['name']
 
     def get_queryset(self):
-        # Soft-delete aware: hide tombstoned rows from list views
-        return Project.objects.filter(is_deleted=False).all()
+        qs = Project.objects.filter(is_deleted=False).all()
+        from_date = self.request.query_params.get('from_date')
+        to_date = self.request.query_params.get('to_date')
+        if from_date:
+            qs = qs.filter(created_on__date__gte=from_date)
+        if to_date:
+            qs = qs.filter(created_on__date__lte=to_date)
+        return qs
 
 
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):

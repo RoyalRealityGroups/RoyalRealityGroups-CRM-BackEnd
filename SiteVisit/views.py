@@ -30,6 +30,16 @@ class SiteVisitViewSet(viewsets.ModelViewSet):
     ordering = ['-visit_date']
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        from_date = self.request.query_params.get('from_date')
+        to_date = self.request.query_params.get('to_date')
+        if from_date:
+            qs = qs.filter(visit_date__gte=from_date)
+        if to_date:
+            qs = qs.filter(visit_date__lte=to_date)
+        return qs
+
     # Lead status sync mapping
     LEAD_STATUS_BY_VISIT = {
         'SCHEDULED': 'SITE_VISIT_SCHEDULED',

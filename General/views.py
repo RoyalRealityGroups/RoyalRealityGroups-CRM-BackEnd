@@ -10,14 +10,12 @@ class GeneralSettingsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def _has_view_access(self, request):
+        """All authenticated users can view general settings."""
         user = request.user
-        return bool(
-            user
-            and user.is_authenticated
-            and (user.is_superuser or user.has_perm('General.view_general_settings'))
-        )
+        return bool(user and user.is_authenticated)
 
     def _has_update_access(self, request):
+        """Only superusers can modify general settings."""
         user = request.user
         return bool(
             user

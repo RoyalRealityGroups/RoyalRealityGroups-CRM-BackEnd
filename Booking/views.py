@@ -121,3 +121,54 @@ class BookingViewSet(viewsets.ModelViewSet):
                 active.aggregate(total=Sum('booking_amount'))['total'] or 0
             ),
         })
+
+    @action(detail=False, methods=['get'])
+    def export(self, request):
+        from django.http import HttpResponse
+        from RealEstateReports.services import export_to_excel, export_to_pdf
+
+        export_format = request.query_params.get('export_type', 'excel')
+        qs = self.filter_queryset(self.get_queryset())
+
+        data = []
+        for bkg in qs[:5000]:
+            emp = bkg.sales_executive
+            emp_name = f"{emp.first_name} {emp.last_name}".strip() or emp.username if emp else '-'
+            data.append({
+                'code': bkg.code or '',
+                'customer_name': bkg.customer_name,
+                'customer_mobile': bkg.customer_mobile or '-',
+                'project': bkg.project.name if bkg.project else '-',
+                'unit_number': bkg.unit_number or '-',
+                'unit_type': bkg.unit_type,
+                'agreed_price': f"Rs.{bkg.agreed_price:,.0f}" if bkg.agreed_price else '-',
+                'booking_amount': f"Rs.{bkg.booking_amount:,.0f}" if bkg.booking_amount else '-',
+                'booking_date': bkg.booking_date.strftime('%d-%b-%Y') if bkg.booking_date else '-',
+                'sales_executive': emp_name,
+                'status': bkg.get_status_display(),
+            })
+
+        columns = [
+            {'key': 'code', 'label': 'Booking ID'},
+            {'key': 'customer_name', 'label': 'Customer'},
+            {'key': 'customer_mobile', 'label': 'Mobile'},
+            {'key': 'project', 'label': 'Project'},
+            {'key': 'unit_number', 'label': 'Unit No.'},
+            {'key': 'unit_type', 'label': 'Type'},
+            {'key': 'agreed_price', 'label': 'Agreed Price'},
+            {'key': 'booking_amount', 'label': 'Booking Amt'},
+            {'key': 'booking_date', 'label': 'Date'},
+            {'key': 'sales_executive', 'label': 'Executive'},
+            {'key': 'status', 'label': 'Status'},
+        ]
+
+        if export_format == 'pdf':
+            content = export_to_pdf(data, columns, 'Booking Report')
+            response = HttpResponse(content, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="Booking_Report.pdf"'
+            return response
+        else:
+            content = export_to_excel(data, columns, 'Bookings')
+            response = HttpResponse(content, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename="Booking_Report.xlsx"'
+            return response

@@ -1,6 +1,7 @@
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 
 from .models import GeneralSettings
 from .serializers import GeneralSettingsSerializer
@@ -8,6 +9,7 @@ from .serializers import GeneralSettingsSerializer
 
 class GeneralSettingsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def _has_view_access(self, request):
         """All authenticated users can view general settings."""

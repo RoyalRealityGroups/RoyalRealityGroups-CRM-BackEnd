@@ -291,9 +291,11 @@ def export_to_excel(data: list, columns: list, sheet_name: str = 'Report') -> by
 # ============================================================================
 
 def export_to_pdf(data: list, columns: list, title: str = 'Report') -> bytes:
-    """Convert list-of-dicts to a PDF file bytes using xhtml2pdf."""
+    """Convert list-of-dicts to a PDF file bytes using xhtml2pdf (landscape A4)."""
     from io import BytesIO
     from django.utils import timezone
+
+    num_cols = len(columns)
 
     # Build HTML table
     header_cells = ''.join(f'<th>{col["label"]}</th>' for col in columns)
@@ -307,22 +309,72 @@ def export_to_pdf(data: list, columns: list, title: str = 'Report') -> bytes:
     <html>
     <head>
         <style>
-            body {{ font-family: Arial, sans-serif; margin: 20px; font-size: 12px; }}
-            h1 {{ font-size: 18px; color: #1F4E79; margin-bottom: 5px; }}
-            .meta {{ color: #666; margin-bottom: 15px; font-size: 10px; }}
-            table {{ width: 100%; border-collapse: collapse; }}
-            th {{ background-color: #1F4E79; color: white; padding: 8px 6px; text-align: left; font-size: 11px; }}
-            td {{ padding: 6px; border-bottom: 1px solid #ddd; font-size: 11px; }}
-            tr:nth-child(even) {{ background-color: #f9f9f9; }}
+            @page {{
+                size: A4 landscape;
+                margin: 1.5cm;
+            }}
+            body {{
+                font-family: Helvetica, Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                font-size: {'9px' if num_cols > 8 else '11px'};
+            }}
+            h1 {{
+                font-size: 16px;
+                color: #1F4E79;
+                margin: 0 0 4px 0;
+            }}
+            .meta {{
+                color: #666;
+                margin-bottom: 12px;
+                font-size: 9px;
+            }}
+            .summary {{
+                margin-bottom: 8px;
+                font-size: 10px;
+                color: #333;
+            }}
+            table {{
+                width: 100%;
+                border-collapse: collapse;
+                table-layout: fixed;
+                word-wrap: break-word;
+            }}
+            th {{
+                background-color: #1F4E79;
+                color: white;
+                padding: 6px 4px;
+                text-align: left;
+                font-size: {'8px' if num_cols > 8 else '10px'};
+                font-weight: bold;
+                border: 1px solid #16405e;
+            }}
+            td {{
+                padding: 5px 4px;
+                border-bottom: 1px solid #e0e0e0;
+                border-right: 1px solid #f0f0f0;
+                font-size: {'8px' if num_cols > 8 else '10px'};
+                overflow: hidden;
+            }}
+            tr:nth-child(even) {{
+                background-color: #f7f9fc;
+            }}
+            .footer {{
+                margin-top: 15px;
+                font-size: 8px;
+                color: #999;
+                text-align: center;
+            }}
         </style>
     </head>
     <body>
         <h1>{title}</h1>
-        <p class="meta">Generated on {timezone.now().strftime('%d %b %Y, %I:%M %p')}</p>
+        <p class="meta">Generated on {timezone.now().strftime('%d %b %Y, %I:%M %p')} | Total Records: {len(data)}</p>
         <table>
             <thead><tr>{header_cells}</tr></thead>
             <tbody>{body_rows}</tbody>
         </table>
+        <p class="footer">This is a system-generated report.</p>
     </body>
     </html>
     """

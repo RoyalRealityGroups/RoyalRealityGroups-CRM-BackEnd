@@ -169,6 +169,64 @@ class LeadViewSet(viewsets.ModelViewSet):
             ),
         })
 
+    @action(detail=False, methods=['get'])
+    def export(self, request):
+        """Export current filtered leads as Excel or PDF"""
+        from django.http import HttpResponse
+        from RealEstateReports.services import export_to_excel, export_to_pdf
+
+        export_format = request.query_params.get('export_type', 'excel')
+
+        # Apply same filters as list view
+        qs = self.filter_queryset(self.get_queryset())
+
+        # Build export data
+        data = []
+        for lead in qs[:5000]:  # Cap at 5000 for performance
+            emp = lead.assigned_employee
+            emp_name = f"{emp.first_name} {emp.last_name}".strip() or emp.username if emp else '-'
+            data.append({
+                'code': lead.code or '',
+                'name': lead.name,
+                'mobile': lead.mobile,
+                'email': lead.email or '-',
+                'lead_source': lead.get_lead_source_display(),
+                'status': lead.get_status_display(),
+                'assigned_employee': emp_name,
+                'budget': lead.budget or '-',
+                'preferred_area': lead.preferred_area or '-',
+                'property_requirement': lead.property_requirement or '-',
+                'created_on': lead.created_on.strftime('%d-%b-%Y') if lead.created_on else '-',
+            })
+
+        columns = [
+            {'key': 'code', 'label': 'Lead ID'},
+            {'key': 'name', 'label': 'Name'},
+            {'key': 'mobile', 'label': 'Mobile'},
+            {'key': 'email', 'label': 'Email'},
+            {'key': 'lead_source', 'label': 'Source'},
+            {'key': 'status', 'label': 'Status'},
+            {'key': 'assigned_employee', 'label': 'Assigned To'},
+            {'key': 'budget', 'label': 'Budget'},
+            {'key': 'preferred_area', 'label': 'Preferred Area'},
+            {'key': 'property_requirement', 'label': 'Property Type'},
+            {'key': 'created_on', 'label': 'Created On'},
+        ]
+
+        if export_format == 'pdf':
+            content = export_to_pdf(data, columns, 'Lead Report')
+            response = HttpResponse(content, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="Lead_Report.pdf"'
+            return response
+        else:
+            content = export_to_excel(data, columns, 'Leads')
+            response = HttpResponse(
+                content,
+                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            )
+            response['Content-Disposition'] = 'attachment; filename="Lead_Report.xlsx"'
+            return response
+
 
 class FollowUpFilter(django_filters.FilterSet):
     from_date = django_filters.DateFilter(field_name='follow_up_date', lookup_expr='gte')

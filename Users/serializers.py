@@ -172,6 +172,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         # Pop custom fields that are not model fields
         password = validated_data.pop('password', None)
+        validated_data.pop('remove_profilepicture', None)
         
         user = super().create(validated_data)
 

@@ -831,10 +831,17 @@ class MastersDetailList(generics.ListAPIView):
 
 class GroupList(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
-    queryset = Group.objects.all()
     serializer_class = GroupSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
+
+    def get_queryset(self):
+        user = self.request.user
+        # Superusers see all groups
+        if user.is_superuser:
+            return Group.objects.all()
+        # Non-superusers can only assign groups they belong to
+        return user.groups.all()
 
 class GroupDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Group.objects.all()

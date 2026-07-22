@@ -143,6 +143,8 @@ class UserList(generics.ListAPIView):
         queryset = User.objects.filter(is_superuser=False)
 
         if not user.is_superuser:
+            # Exclude self — non-superusers cannot manage their own account from this screen
+            queryset = queryset.exclude(id=user.id)
             queryset = apply_company_location_filter_for_users(queryset, user)
 
         queryset = queryset.order_by('-created_at')

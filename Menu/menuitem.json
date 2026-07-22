@@ -670,5 +670,19 @@
         "Description": "Manage flat inventory",
         "Created On": "2026-07-18 00:00:00",
         "Modified On": "2026-07-18 00:00:00"
+    },
+    {
+        "Code": "BKG-001",
+        "Name": "Bookings",
+        "Icon": "booking",
+        "Link": "/booking/list",
+        "Sequence": "1",
+        "Click": "",
+        "Menu": "MENU-001",
+        "Submenu": "SBM-010",
+        "Permission": "Booking.view_booking",
+        "Description": "Manage bookings",
+        "Created On": "2026-07-22 00:00:00",
+        "Modified On": "2026-07-22 00:00:00"
     }
 ]

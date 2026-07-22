@@ -510,7 +510,7 @@ class ReportingManagerDropdownView(generics.ListAPIView):
     search_fields = ['username', 'email', 'phone', 'first_name', 'last_name']
 
     def get_queryset(self):
-        return User.objects.filter(is_active=True, is_superuser=False).order_by('first_name', 'last_name')
+        return User.objects.filter(is_active=True).order_by('first_name', 'last_name')
 
 
 # =============================================================================

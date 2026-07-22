@@ -431,14 +431,13 @@ if USE_S3:
     
     if not AWS_ACCESS_KEY_ID or not AWS_SECRET_ACCESS_KEY or not AWS_STORAGE_BUCKET_NAME:
         raise Exception("AWS credentials must be set when USE_S3=True")
-    AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+    AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'ap-south-1')
+    AWS_S3_CUSTOM_DOMAIN = '%s.s3.%s.amazonaws.com' % (AWS_STORAGE_BUCKET_NAME, AWS_S3_REGION_NAME)
+    AWS_S3_ENDPOINT_URL = 'https://s3.%s.amazonaws.com' % AWS_S3_REGION_NAME
 
-    # ap-south-1
     AWS_S3_OBJECT_PARAMETERS = {
         'CacheControl': 'max-age=86400',
     }
-
-    AWS_S3_REGION_NAME = 'ap-south-1' #change to your region
     AWS_S3_SIGNATURE_VERSION = 's3v4'
 
     AWS_STATIC_LOCATION = 'static'
@@ -447,10 +446,10 @@ if USE_S3:
     STATIC_URL = '/static/'
 
     AWS_PUBLIC_MEDIA_LOCATION = 'media/public'
-    PUBLIC_FILE_STORAGE = 'Common.storage_backends.PublicMediaStorage'
+    PUBLIC_FILE_STORAGE = 'Core.Core.storage.storage_backends.PublicMediaStorage'
 
     AWS_PRIVATE_MEDIA_LOCATION = 'media'
-    PRIVATE_FILE_STORAGE = 'Common.storage_backends.PrivateMediaStorage'
+    PRIVATE_FILE_STORAGE = 'Core.Core.storage.storage_backends.PrivateMediaStorage'
 
     STORAGES = {
         "default": {
@@ -470,7 +469,7 @@ if USE_S3:
     # ]
     
     AWS_DBBACKUP_MEDIA_LOCATION = r'db/backups/'
-    DBBACKUP_STORAGE = 'Common.storage_backends.DBBackupStorage'
+    DBBACKUP_STORAGE = 'Core.Core.storage.storage_backends.DBBackupMediaStorage'
     # DBBACKUP_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
     DBBACKUP_STORAGE_OPTIONS = {
         'access_key': AWS_ACCESS_KEY_ID,

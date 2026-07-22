@@ -15,11 +15,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Print",
-        "Permission": "Reports.print_importrequest",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "thirdparty.export_synctrigger",
         "Hide": "0"
@@ -175,11 +170,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "Reports.assignee_bypass_pdftemplate",
-        "Hide": "0"
-    },
-    {
         "Name": "Download",
         "Permission": "System.download_activitylog",
         "Hide": "0"
@@ -242,11 +232,6 @@
     {
         "Name": "Assignee",
         "Permission": "sessions.assignee_bypass_session",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Reports.delete_importrequest",
         "Hide": "0"
     },
     {
@@ -605,33 +590,13 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Reports.add_reportrequest",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Users.print_user",
-        "Hide": "0"
-    },
-    {
         "Name": "Download",
         "Permission": "System.download_temporaryverification",
         "Hide": "0"
     },
     {
-        "Name": "Download",
-        "Permission": "Users.download_user",
-        "Hide": "0"
-    },
-    {
         "Name": "Print",
         "Permission": "Masters.print_itemfieldconfiguration",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Reports.delete_pdftemplate",
         "Hide": "0"
     },
     {
@@ -662,11 +627,6 @@
     {
         "Name": "Export",
         "Permission": "System.export_formulavariables",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Reports.change_importrequest",
         "Hide": "0"
     },
     {
@@ -745,16 +705,6 @@
         "Hide": "1"
     },
     {
-        "Name": "Import",
-        "Permission": "Reports.import_pdftemplate",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Reports.view_pdftemplate",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "Masters.add_assignee_country",
         "Hide": "1"
@@ -825,11 +775,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Download",
-        "Permission": "Reports.download_scheduledemail",
-        "Hide": "0"
-    },
-    {
         "Name": "Import",
         "Permission": "System.import_download",
         "Hide": "0"
@@ -842,11 +787,6 @@
     {
         "Name": "Reports",
         "Permission": "thirdparty.reports_synclog",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Reports.print_scheduledemail",
         "Hide": "0"
     },
     {
@@ -917,16 +857,6 @@
     {
         "Name": "Assignee",
         "Permission": "core_users.assignee_bypass_groupdetails",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Reports.reports_pdftemplate",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Reports.reports_scheduledemail",
         "Hide": "0"
     },
     {
@@ -1002,11 +932,6 @@
     {
         "Name": "Reports",
         "Permission": "System.reports_submenu",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Users.reports_user",
         "Hide": "0"
     },
     {
@@ -1295,11 +1220,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Print",
-        "Permission": "Reports.print_reportrequest",
-        "Hide": "0"
-    },
-    {
         "Name": "Change",
         "Permission": "sessions.change_session",
         "Hide": "0"
@@ -1392,16 +1312,6 @@
     {
         "Name": "Add",
         "Permission": "Invoice.add_invoice",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Reports.change_pdftemplate",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Reports.export_scheduledemail",
         "Hide": "0"
     },
     {
@@ -1530,11 +1440,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Reports.add_assignee_reportrequest",
-        "Hide": "0"
-    },
-    {
         "Name": "Delete",
         "Permission": "System.delete_filterpreset",
         "Hide": "0"
@@ -1632,11 +1537,6 @@
     {
         "Name": "Export",
         "Permission": "Masters.export_itemuomconversion",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Reports.delete_scheduledemail",
         "Hide": "0"
     },
     {
@@ -1742,11 +1642,6 @@
     {
         "Name": "Can change distributor",
         "Permission": "Masters.change_distributor",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Reports.add_scheduledemail",
         "Hide": "0"
     },
     {
@@ -1875,11 +1770,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Reports.reports_reportrequest",
-        "Hide": "0"
-    },
-    {
         "Name": "Change",
         "Permission": "core_users.change_djangoapp",
         "Hide": "0"
@@ -1897,11 +1787,6 @@
     {
         "Name": "Change",
         "Permission": "Masters.change_category",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Reports.export_reportrequest",
         "Hide": "0"
     },
     {
@@ -1977,11 +1862,6 @@
     {
         "Name": "Import",
         "Permission": "System.import_alertconfigusers",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Reports.download_reportrequest",
         "Hide": "0"
     },
     {
@@ -2065,11 +1945,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Reports.add_assignee_pdftemplate",
-        "Hide": "0"
-    },
-    {
         "Name": "Delete",
         "Permission": "System.delete_notificationusers",
         "Hide": "0"
@@ -2082,11 +1957,6 @@
     {
         "Name": "Reports",
         "Permission": "System.reports_notificationusers",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Reports.assignee_bypass_scheduledemail",
         "Hide": "0"
     },
     {
@@ -2425,11 +2295,6 @@
         "Hide": "0"
     },
     {
-        "Name": "View",
-        "Permission": "Reports.view_importrequest",
-        "Hide": "0"
-    },
-    {
         "Name": "Download",
         "Permission": "Masters.download_uom",
         "Hide": "0"
@@ -2605,11 +2470,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Reports.add_assignee_scheduledemail",
-        "Hide": "0"
-    },
-    {
         "Name": "Can delete city",
         "Permission": "Masters.delete_city",
         "Hide": "0"
@@ -2676,11 +2536,6 @@
     },
     {
         "Name": "Import",
-        "Permission": "Users.import_user",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
         "Permission": "Invoice.import_invoice",
         "Hide": "0"
     },
@@ -2712,11 +2567,6 @@
     {
         "Name": "Assignee",
         "Permission": "System.assignee_bypass_recentactivity",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Reports.reports_importrequest",
         "Hide": "0"
     },
     {
@@ -2810,11 +2660,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "Reports.assignee_bypass_importrequest",
-        "Hide": "0"
-    },
-    {
         "Name": "Import",
         "Permission": "thirdparty.import_synclog",
         "Hide": "0"
@@ -2842,11 +2687,6 @@
     {
         "Name": "Reports",
         "Permission": "Dispatch.reports_dispatchplan",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Reports.view_scheduledemail",
         "Hide": "0"
     },
     {
@@ -2925,11 +2765,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Export",
-        "Permission": "Reports.export_pdftemplate",
-        "Hide": "0"
-    },
-    {
         "Name": "Print",
         "Permission": "Masters.print_distributor",
         "Hide": "0"
@@ -2995,11 +2830,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Import",
-        "Permission": "Reports.import_scheduledemail",
-        "Hide": "0"
-    },
-    {
         "Name": "Delete",
         "Permission": "Masters.delete_itemfieldconfiguration",
         "Hide": "0"
@@ -3037,11 +2867,6 @@
     {
         "Name": "Reports",
         "Permission": "System.reports_taskscheduler",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Reports.print_pdftemplate",
         "Hide": "0"
     },
     {
@@ -3375,11 +3200,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Reports.add_importrequest",
-        "Hide": "0"
-    },
-    {
         "Name": "Print",
         "Permission": "core_users.print_device",
         "Hide": "0"
@@ -3505,11 +3325,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Reports.add_pdftemplate",
-        "Hide": "0"
-    },
-    {
         "Name": "Change",
         "Permission": "dynamic_preferences.change_globalpreferencemodel",
         "Hide": "0"
@@ -3522,11 +3337,6 @@
     {
         "Name": "Assignee",
         "Permission": "System.assignee_bypass_submenu",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Reports.assignee_bypass_reportrequest",
         "Hide": "0"
     },
     {
@@ -4490,11 +4300,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Download",
-        "Permission": "Reports.download_pdftemplate",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "System.add_backup",
         "Hide": "0"
@@ -4542,11 +4347,6 @@
     {
         "Name": "Assignee",
         "Permission": "Dispatch.assignee_bypass_dispatchorderitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Reports.delete_reportrequest",
         "Hide": "0"
     },
     {
@@ -4620,11 +4420,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Change",
-        "Permission": "Reports.change_scheduledemail",
-        "Hide": "0"
-    },
-    {
         "Name": "Reports",
         "Permission": "core_users.reports_devicelog",
         "Hide": "0"
@@ -4680,11 +4475,6 @@
         "Hide": "0"
     },
     {
-        "Name": "View",
-        "Permission": "Reports.view_reportrequest",
-        "Hide": "0"
-    },
-    {
         "Name": "Assignee",
         "Permission": "Masters.assignee_bypass_distributorlocation",
         "Hide": "0"
@@ -4692,11 +4482,6 @@
     {
         "Name": "Reports",
         "Permission": "dynamic_preferences.reports_globalpreferencemodel",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Reports.add_assignee_importrequest",
         "Hide": "0"
     },
     {
@@ -4860,11 +4645,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Import",
-        "Permission": "Reports.import_importrequest",
-        "Hide": "0"
-    },
-    {
         "Name": "Assignee",
         "Permission": "System.assignee_bypass_download",
         "Hide": "0"
@@ -4875,7 +4655,7 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
+        "Name": "Assignee",
         "Permission": "Users.add_assignee_user",
         "Hide": "0"
     },
@@ -4980,11 +4760,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Export",
-        "Permission": "Reports.export_importrequest",
-        "Hide": "0"
-    },
-    {
         "Name": "Change",
         "Permission": "Masters.change_brand",
         "Hide": "0"
@@ -5002,11 +4777,6 @@
     {
         "Name": "Reports",
         "Permission": "sessions.reports_session",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Reports.change_reportrequest",
         "Hide": "0"
     },
     {
@@ -5037,11 +4807,6 @@
     {
         "Name": "Assignee",
         "Permission": "System.assignee_bypass_temporaryverification",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Reports.import_reportrequest",
         "Hide": "0"
     },
     {
@@ -5087,11 +4852,6 @@
     {
         "Name": "Can delete retailer",
         "Permission": "Masters.delete_retailer",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Reports.download_importrequest",
         "Hide": "0"
     },
     {
@@ -6670,73 +6430,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Lead.reports_lead",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "Lead.export_lead",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Lead.import_lead",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Lead.print_lead",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Lead.download_lead",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Lead.add_leadstatushistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Lead.change_leadstatushistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Lead.delete_leadstatushistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Lead.view_leadstatushistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Lead.reports_leadstatushistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Lead.export_leadstatushistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Lead.import_leadstatushistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Lead.print_leadstatushistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Lead.download_leadstatushistory",
         "Hide": "0"
     },
     {
@@ -6760,73 +6455,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Lead.reports_leadfollowup",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "Lead.export_leadfollowup",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Lead.import_leadfollowup",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Lead.print_leadfollowup",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Lead.download_leadfollowup",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Lead.add_leadcrosscheck",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Lead.change_leadcrosscheck",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Lead.delete_leadcrosscheck",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Lead.view_leadcrosscheck",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Lead.reports_leadcrosscheck",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Lead.export_leadcrosscheck",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Lead.import_leadcrosscheck",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Lead.print_leadcrosscheck",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Lead.download_leadcrosscheck",
         "Hide": "0"
     },
     {
@@ -6850,73 +6480,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "SiteVisit.reports_sitevisit",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "SiteVisit.export_sitevisit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "SiteVisit.import_sitevisit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "SiteVisit.print_sitevisit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "SiteVisit.download_sitevisit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "SiteVisit.add_sitevisitphoto",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "SiteVisit.change_sitevisitphoto",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "SiteVisit.delete_sitevisitphoto",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "SiteVisit.view_sitevisitphoto",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "SiteVisit.reports_sitevisitphoto",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "SiteVisit.export_sitevisitphoto",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "SiteVisit.import_sitevisitphoto",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "SiteVisit.print_sitevisitphoto",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "SiteVisit.download_sitevisitphoto",
         "Hide": "0"
     },
     {
@@ -6950,63 +6515,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Import",
-        "Permission": "Masters.import_project",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_project",
-        "Hide": "0"
-    },
-    {
         "Name": "Download",
         "Permission": "Masters.download_project",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_projectstatushistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_projectstatushistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Masters.delete_projectstatushistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_projectstatushistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_projectstatushistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_projectstatushistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Masters.import_projectstatushistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_projectstatushistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_projectstatushistory",
         "Hide": "0"
     },
     {
@@ -7082,26 +6592,6 @@
     {
         "Name": "Export",
         "Permission": "Booking.export_booking",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Booking.view_bookingstatushistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Booking.add_bookingstatushistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Booking.change_bookingstatushistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Booking.delete_bookingstatushistory",
         "Hide": "0"
     }
 ]

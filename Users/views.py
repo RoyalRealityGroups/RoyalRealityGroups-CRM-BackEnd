@@ -143,6 +143,8 @@ class UserList(generics.ListAPIView):
         queryset = User.objects.filter(is_superuser=False)
 
         if not user.is_superuser:
+            # Exclude self — non-superusers cannot manage their own account from this screen
+            queryset = queryset.exclude(id=user.id)
             queryset = apply_company_location_filter_for_users(queryset, user)
 
         queryset = queryset.order_by('-created_at')
@@ -510,7 +512,7 @@ class ReportingManagerDropdownView(generics.ListAPIView):
     search_fields = ['username', 'email', 'phone', 'first_name', 'last_name']
 
     def get_queryset(self):
-        return User.objects.filter(is_active=True, is_superuser=False).order_by('first_name', 'last_name')
+        return User.objects.filter(is_active=True).order_by('first_name', 'last_name')
 
 
 # =============================================================================

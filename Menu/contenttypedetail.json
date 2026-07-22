@@ -78,12 +78,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Importrequest",
-        "ContentType": "importrequest",
-        "App": "Reports",
-        "Hide": "0"
-    },
-    {
         "Name": "Djangoapp",
         "ContentType": "djangoapp",
         "App": "core_users",
@@ -150,12 +144,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Reportrequest",
-        "ContentType": "reportrequest",
-        "App": "Reports",
-        "Hide": "0"
-    },
-    {
         "Name": "Authorizationhistory",
         "ContentType": "authorizationhistory",
         "App": "core_users",
@@ -213,12 +201,6 @@
         "Name": "Item",
         "ContentType": "item",
         "App": "Masters",
-        "Hide": "0"
-    },
-    {
-        "Name": "Pdftemplate",
-        "ContentType": "pdftemplate",
-        "App": "Reports",
         "Hide": "0"
     },
     {
@@ -309,12 +291,6 @@
         "Name": "Alertconfig",
         "ContentType": "alertconfig",
         "App": "System",
-        "Hide": "0"
-    },
-    {
-        "Name": "Scheduledemail",
-        "ContentType": "scheduledemail",
-        "App": "Reports",
         "Hide": "0"
     },
     {
@@ -726,20 +702,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Leadstatushistory",
-        "ContentType": "leadstatushistory",
-        "App": "Lead",
-        "Hide": "0"
-    },
-    {
         "Name": "Leadfollowup",
         "ContentType": "leadfollowup",
-        "App": "Lead",
-        "Hide": "0"
-    },
-    {
-        "Name": "Leadcrosscheck",
-        "ContentType": "leadcrosscheck",
         "App": "Lead",
         "Hide": "0"
     },
@@ -750,20 +714,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Sitevisitphoto",
-        "ContentType": "sitevisitphoto",
-        "App": "SiteVisit",
-        "Hide": "0"
-    },
-    {
         "Name": "Project",
         "ContentType": "project",
-        "App": "ProjectManagement",
-        "Hide": "0"
-    },
-    {
-        "Name": "Projectstatushistory",
-        "ContentType": "projectstatushistory",
         "App": "ProjectManagement",
         "Hide": "0"
     },
@@ -782,12 +734,6 @@
     {
         "Name": "Booking",
         "ContentType": "booking",
-        "App": "Booking",
-        "Hide": "0"
-    },
-    {
-        "Name": "Bookingstatushistory",
-        "ContentType": "bookingstatushistory",
         "App": "Booking",
         "Hide": "0"
     }

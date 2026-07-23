@@ -198,6 +198,7 @@ class LeadFollowUpSerializer(serializers.ModelSerializer):
             'name': lead.name,
             'code': lead.code,
             'mobile': lead.mobile,
+            'email': lead.email or '',
             'status': lead.status,
             'assigned_employee': (
                 f"{lead.assigned_employee.first_name} {lead.assigned_employee.last_name}".strip()

@@ -515,6 +515,43 @@ class ReportingManagerDropdownView(generics.ListAPIView):
         return User.objects.filter(is_active=True).order_by('first_name', 'last_name')
 
 
+class ForceLogoutView(APIView):
+    """Force logout a user by invalidating all their JWT tokens."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, user_id):
+        # Only superusers or users with USER_PERMISSION access can force-logout others
+        if not request.user.is_superuser:
+            from Users.models import UserPermission
+            has_perm = UserPermission.objects.filter(
+                user=request.user, screen__code='USER_PERMISSION', can_edit=True
+            ).exists()
+            if not has_perm:
+                return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+
+        # Can't force-logout yourself
+        if str(request.user.id) == str(user_id):
+            return Response({'error': 'You cannot force-logout yourself'}, status=status.HTTP_400_BAD_REQUEST)
+
+        target_user = User.objects.filter(id=user_id).first()
+        if not target_user:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Delete all JWT tokens — next request will fail auth and force re-login
+        deleted_count, _ = JwtToken.objects.filter(
+            user_type='User', user_identifier=target_user.id
+        ).delete()
+
+        # Also clear device tokens so push notifications stop
+        Device.objects.filter(user_type='User', user_identifier=target_user.id).update(
+            accesstoken='', fcmtoken='', apntoken='', socket='',
+        )
+
+        return Response({
+            'message': f'User "{target_user.username}" has been logged out ({deleted_count} session(s) invalidated).'
+        }, status=status.HTTP_200_OK)
+
+
 # =============================================================================
 # RRGMS Permission API Views
 # =============================================================================

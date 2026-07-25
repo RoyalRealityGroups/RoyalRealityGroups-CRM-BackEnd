@@ -88,22 +88,57 @@ class UserMenuitemSerializer(serializers.ModelSerializer):
         model = Menuitem
         fields = ('id', 'code', 'name', 'icon', 'path', 'link', 'sequence', 'click', 'description', 'permissions')
 
+
+def filter_menuitems_by_permission(queryset, user):
+    """Filter menuitems based on user's Django group permissions."""
+    if user.is_superuser:
+        return queryset
+    
+    # Get user's permissions from Django's group permissions
+    user_permissions = set(user.get_all_permissions())
+    
+    # If user has no permissions, return empty queryset
+    if not user_permissions:
+        return queryset.none()
+    
+    # Filter by permissions
+    filtered_ids = []
+    for item in queryset.select_related('permission', 'permission__content_type'):
+        if item.permission is None:
+            # No permission required - accessible to all authenticated users
+            filtered_ids.append(item.id)
+        else:
+            perm_str = f"{item.permission.content_type.app_label}.{item.permission.codename}"
+            if perm_str in user_permissions:
+                filtered_ids.append(item.id)
+    
+    return queryset.filter(id__in=filtered_ids)
+
+
 class RecursiveField(serializers.ModelSerializer): 
     def to_representation(self, value):
         serializer_data = UserSubmenuSerializer(value, context=self.context).data
-        return serializer_data
+        # Only include submenu if it has menuitems or nested submenus with content
+        if serializer_data.get('menuitems') or serializer_data.get('submenus'):
+            return serializer_data
+        return None
+    
     class Meta:
-            model = Submenu
-            fields = '__all__'
+        model = Submenu
+        fields = '__all__'
 
 
 class UserSubmenuSerializer(serializers.ModelSerializer):
     menuitems = serializers.SerializerMethodField('get_menuitems')
     submenus = serializers.SerializerMethodField()
 
-
     def get_menuitems(self, submenu):
+        user = self.context['request'].user
         queryset = Menuitem.objects.filter(submenu=submenu, is_deleted=False)
+        
+        # Filter by user permissions
+        queryset = filter_menuitems_by_permission(queryset, user)
+        
         serializer = UserMenuitemSerializer(instance=queryset.order_by('sequence'), many=True, context=self.context)
         return serializer.data
     
@@ -116,40 +151,47 @@ class UserSubmenuSerializer(serializers.ModelSerializer):
         queryset = Submenu.objects.filter(submenu=obj.id).exclude(id__in=visited_submenu_ids).order_by('sequence')
         child_context = dict(self.context)
         child_context['visited_submenu_ids'] = visited_submenu_ids
-        return RecursiveField(queryset, many=True, read_only=True, context=child_context).data
+        
+        # Serialize and filter out empty submenus
+        results = []
+        for submenu in queryset:
+            data = UserSubmenuSerializer(submenu, context=child_context).data
+            # Only include if has menuitems or nested submenus
+            if data.get('menuitems') or data.get('submenus'):
+                results.append(data)
+        return results
         
     class Meta:
         model = Submenu
         fields = ('id', 'code', 'name', 'menuitems', 'sequence', 'icon', 'click', 'submenus')
 
+
 class UserMenuSerializer(serializers.ModelSerializer):
-    submenus = serializers.PrimaryKeyRelatedField(many=True,  read_only=True)
-    submenus = UserSubmenuSerializer(many=True,  read_only=True)
+    submenus = serializers.SerializerMethodField('get_submenus')
     menuitems = serializers.SerializerMethodField('get_menuitems')
+
+    def get_submenus(self, menu):
+        """Get submenus filtered by user permissions, excluding empty ones."""
+        user = self.context['request'].user
+        queryset = Submenu.objects.filter(menu=menu, submenu__isnull=True, is_deleted=False).order_by('sequence')
+        
+        # Serialize and filter out empty submenus
+        results = []
+        for submenu in queryset:
+            data = UserSubmenuSerializer(submenu, context=self.context).data
+            # Only include if has menuitems or nested submenus
+            if data.get('menuitems') or data.get('submenus'):
+                results.append(data)
+        return results
 
     def get_menuitems(self, menu):
         user = self.context['request'].user
         queryset = Menuitem.objects.filter(submenu__isnull=True, menu=menu, is_deleted=False)
         
-        # Show all menuitems for non-superusers (fallback when no permissions)
-        if not user.is_superuser:
-            user_permissions = user.get_all_permissions()
-            if not user_permissions:
-                # User has no permissions - show all menuitems
-                pass
-            else:
-                # Filter by permissions
-                filtered_items = []
-                for item in queryset:
-                    if item.permission is None:
-                        filtered_items.append(item.id)
-                    else:
-                        perm_str = f"{item.permission.content_type.app_label}.{item.permission.codename}"
-                        if perm_str in user_permissions:
-                            filtered_items.append(item.id)
-                queryset = Menuitem.objects.filter(id__in=filtered_items)
+        # Filter by user permissions
+        queryset = filter_menuitems_by_permission(queryset, user)
             
-        serializer = UserMenuitemSerializer(instance=queryset.order_by('sequence'), many=True)
+        serializer = UserMenuitemSerializer(instance=queryset.order_by('sequence'), many=True, context=self.context)
         return serializer.data
 
     class Meta:

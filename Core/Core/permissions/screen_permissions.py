@@ -37,6 +37,25 @@ URL_TO_PERMISSION_MODEL = {
     '/api/usermanagement/dropdowns/': None,  # exempt
     '/api/usermanagement/my-permissions/': None,  # exempt
     '/api/usermanagement/': ('Users', 'user'),
+    '/api/masters/countries/': ('Masters', 'country'),
+    '/api/masters/states/': ('Masters', 'state'),
+    '/api/masters/cities/': ('Masters', 'city'),
+    '/api/masters/area/': ('Masters', 'area'),
+    '/api/masters/company/': ('Masters', 'company'),
+    '/api/masters/location/': ('Masters', 'location'),
+    '/api/masters/warehouses/': ('Masters', 'warehouse'),
+    '/api/masters/uom/': ('Masters', 'uom'),
+    '/api/masters/categories/': ('Masters', 'category'),
+    '/api/masters/brands/': ('Masters', 'brand'),
+    '/api/masters/tax/': ('Masters', 'tax'),
+    '/api/masters/items/': ('Masters', 'item'),
+    '/api/masters/item-tax-composition/': ('Masters', 'itemtaxcomposition'),
+    '/api/masters/outlet-types/': ('Masters', 'outlettype'),
+    '/api/masters/superstockist/': ('Masters', 'superstockist'),
+    '/api/masters/distributor/': ('Masters', 'distributor'),
+    '/api/masters/retailer/': ('Masters', 'retailer'),
+    '/api/masters/route/': ('Masters', 'route'),
+    '/api/masters/': ('Masters', 'project'),  # fallback for other masters
 }
 
 # Map HTTP methods to Django permission action prefix
@@ -89,12 +108,13 @@ class ScreenPermission(BasePermission):
             if path.startswith(prefix):
                 return True
 
-        # Find which permission model this URL maps to
+        # Find which permission model this URL maps to (check longer prefixes first)
         perm_model = None
+        matched_prefix = ''
         for prefix, model_info in URL_TO_PERMISSION_MODEL.items():
-            if path.startswith(prefix):
+            if path.startswith(prefix) and len(prefix) > len(matched_prefix):
                 perm_model = model_info
-                break
+                matched_prefix = prefix
 
         # No mapping found — allow (don't break unmapped endpoints)
         if perm_model is None:

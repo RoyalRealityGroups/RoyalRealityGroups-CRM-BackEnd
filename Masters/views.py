@@ -5216,7 +5216,7 @@ class ChannelPartnerDetail(APIView):
 
 class ProjectList(generics.ListCreateAPIView):
     """List + Create Project."""
-    permission_classes = [permissions.IsAuthenticated]
+    # Uses default permission_classes from settings (IsAuthenticated + ScreenPermission)
     serializer_class = ProjectSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['status', 'project_type', 'approval_type', 'is_active', 'location']
@@ -5237,7 +5237,7 @@ class ProjectList(generics.ListCreateAPIView):
 
 class ProjectExportView(APIView):
     """Export projects as Excel or PDF"""
-    permission_classes = [permissions.IsAuthenticated]
+    # Uses default permission_classes from settings (IsAuthenticated + ScreenPermission)
 
     def get(self, request):
         from django.http import HttpResponse
@@ -5303,7 +5303,7 @@ class ProjectExportView(APIView):
 
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     """Retrieve / Update / Soft-delete Project."""
-    permission_classes = [permissions.IsAuthenticated]
+    # Uses default permission_classes from settings (IsAuthenticated + ScreenPermission)
     serializer_class = ProjectSerializer
     lookup_field = 'pk'
 
@@ -5317,7 +5317,7 @@ class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class ProjectMini(generics.ListAPIView):
     """Minimal list for dropdowns. Excludes soft-deleted + inactive."""
-    permission_classes = [permissions.IsAuthenticated]
+    # Uses default permission_classes from settings (IsAuthenticated + ScreenPermission)
     serializer_class = ProjectMiniSerializer
 
     def get_queryset(self):
@@ -5326,7 +5326,7 @@ class ProjectMini(generics.ListAPIView):
 
 class ProjectChoices(APIView):
     """Return choice enums for Project form."""
-    permission_classes = [permissions.IsAuthenticated]
+    # Uses default permission_classes from settings (IsAuthenticated + ScreenPermission)
 
     def get(self, request):
         return Response({

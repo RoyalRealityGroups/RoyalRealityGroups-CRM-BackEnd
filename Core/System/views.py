@@ -75,68 +75,24 @@ class UserMenuList(generics.ListAPIView):
         """Override to include user permissions in the response alongside menus."""
         queryset = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(queryset, many=True)
-        # Add the flat permissions array so the frontend can refresh without re-login
+        
+        # Filter out menus that have no accessible content
+        filtered_menus = [
+            menu for menu in serializer.data 
+            if menu.get('submenus') or menu.get('menuitems')
+        ]
+        
+        # Get user's permissions from Django's group permissions
         user = request.user
         permissions = list(user.get_all_permissions()) if not user.is_anonymous else []
+        
         return Response({
-            'menus': serializer.data,
+            'menus': filtered_menus,
             'permissions': permissions,
         })
 
     def get_queryset(self):
-        user = self.request.user
-        all_menus = Menu.objects.filter(is_deleted=False).order_by('name')
-
-        # Superuser / no-permission fallback: return everything, eagerly prefetched.
-        if user.is_superuser:
-            return all_menus.prefetch_related(
-                'submenus',
-                Prefetch('submenus__menuitems', queryset=Menuitem.objects.filter(is_deleted=False)),
-                Prefetch('menuitems', queryset=Menuitem.objects.filter(is_deleted=False, submenu__isnull=True)),
-            )
-
-        user_permissions = set(user.get_all_permissions())
-
-        if not user_permissions:
-            # No perms assigned -> show everything.
-            return all_menus.prefetch_related(
-                'submenus',
-                Prefetch('submenus__menuitems', queryset=Menuitem.objects.filter(is_deleted=False)),
-                Prefetch('menuitems', queryset=Menuitem.objects.filter(is_deleted=False, submenu__isnull=True)),
-            )
-
-        # ponytail: 1 query to fetch every menuitem + its permission FK, then Python filter.
-        # Was: ~M*(1+S) queries (~150 for typical menu trees).
-        items = (
-            Menuitem.objects
-            .filter(is_deleted=False)
-            .select_related('permission')
-            .values_list(
-                'menu_id',
-                'permission__content_type__app_label',
-                'permission__codename',
-            )
-        )
-
-        accessible_menu_ids = set()
-        for menu_id, app_label, codename in items:
-            if app_label is None or codename is None:
-                # No permission gate -> accessible to anyone.
-                accessible_menu_ids.add(menu_id)
-                continue
-            perm_str = f"{app_label}.{codename}"
-            if perm_str in user_permissions:
-                accessible_menu_ids.add(menu_id)
-
-        return (
-            all_menus
-            .filter(id__in=accessible_menu_ids)
-            .prefetch_related(
-                'submenus',
-                Prefetch('submenus__menuitems', queryset=Menuitem.objects.filter(is_deleted=False)),
-                Prefetch('menuitems', queryset=Menuitem.objects.filter(is_deleted=False, submenu__isnull=True)),
-            )
-        )
+        return Menu.objects.filter(is_deleted=False).order_by('name')
    
 
 class UserMenuDetail(generics.RetrieveAPIView):

@@ -69,6 +69,19 @@ from Core.System.socketio_app import maintenance_mode
 class UserMenuList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserMenuSerializer
+    pagination_class = None  # Return all menus without pagination wrapper
+
+    def list(self, request, *args, **kwargs):
+        """Override to include user permissions in the response alongside menus."""
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        # Add the flat permissions array so the frontend can refresh without re-login
+        user = request.user
+        permissions = list(user.get_all_permissions()) if not user.is_anonymous else []
+        return Response({
+            'menus': serializer.data,
+            'permissions': permissions,
+        })
 
     def get_queryset(self):
         user = self.request.user

@@ -27,10 +27,14 @@ class PlotInventoryViewSet(viewsets.ModelViewSet):
         qs = super().get_queryset()
         from_date = self.request.query_params.get('from_date')
         to_date = self.request.query_params.get('to_date')
+        status_in = self.request.query_params.get('status__in')
         if from_date:
             qs = qs.filter(created_on__date__gte=from_date)
         if to_date:
             qs = qs.filter(created_on__date__lte=to_date)
+        if status_in:
+            statuses = [s.strip() for s in status_in.split(',')]
+            qs = qs.filter(status__in=statuses)
         return qs
 
     @action(detail=True, methods=['patch'])
@@ -133,10 +137,14 @@ class FlatInventoryViewSet(viewsets.ModelViewSet):
         qs = super().get_queryset()
         from_date = self.request.query_params.get('from_date')
         to_date = self.request.query_params.get('to_date')
+        status_in = self.request.query_params.get('status__in')
         if from_date:
             qs = qs.filter(created_on__date__gte=from_date)
         if to_date:
             qs = qs.filter(created_on__date__lte=to_date)
+        if status_in:
+            statuses = [s.strip() for s in status_in.split(',')]
+            qs = qs.filter(status__in=statuses)
         return qs
 
     @action(detail=True, methods=['patch'])

@@ -47,6 +47,7 @@ urlpatterns = [
     path('permissions/my/', views.MyPermissionsView.as_view(), name='my_permissions'),
     path('permissions/<uuid:user_id>/', views.UserPermissionView.as_view(), name='user_permissions'),
     path('permissions/<uuid:user_id>/audit/', views.PermissionAuditLogView.as_view(), name='permission_audit'),
+    path('force-logout/<str:user_id>/', views.ForceLogoutView.as_view(), name='force_logout'),
 
     # Module 10 - Employee Management
     path('employees/', EmployeeListView.as_view(), name='employee_list'),

@@ -12,7 +12,7 @@ class Command(BaseCommand):
             {'code': 'FOLLOWUP', 'name': 'Follow-Up Management', 'order': 3},
             {'code': 'SITE_VISIT', 'name': 'Site Visit Management', 'order': 4},
             {'code': 'PROJECT', 'name': 'Project Management', 'order': 5},
-            {'code': 'INVENTORY', 'name': 'Inventory Management', 'order': 6},
+            {'code': 'INVENTORY', 'name': 'Availability List', 'order': 6},
             {'code': 'BOOKING', 'name': 'Booking Management', 'order': 7},
             {'code': 'DOCUMENT', 'name': 'Document Management', 'order': 8},
             {'code': 'EMPLOYEE', 'name': 'Employee Management', 'order': 9},

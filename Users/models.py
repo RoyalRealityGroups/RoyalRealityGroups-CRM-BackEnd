@@ -209,7 +209,7 @@ class Screen(models.Model):
         ('FOLLOWUP', 'Follow-Up Management'),
         ('SITE_VISIT', 'Site Visit Management'),
         ('PROJECT', 'Project Management'),
-        ('INVENTORY', 'Inventory Management'),
+        ('INVENTORY', 'Availability List'),
         ('BOOKING', 'Booking Management'),
         ('DOCUMENT', 'Document Management'),
         ('EMPLOYEE', 'Employee Management'),

@@ -56,9 +56,9 @@
     },
     {
         "Code": "SBM-008",
-        "Name": "Inventory Management",
+        "Name": "Availability List",
         "Sequence": "5",
-        "Icon": "inventory_2",
+        "Icon": "list_alt",
         "Click": "/inventory",
         "Menu": "MENU-001",
         "Submenu": "",

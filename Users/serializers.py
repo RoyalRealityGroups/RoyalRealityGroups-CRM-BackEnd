@@ -123,9 +123,20 @@ class UserSerializer(serializers.ModelSerializer):
 
     def validate_email(self, value):
         try:
-            return validate_contact_email(value)
+            value = validate_contact_email(value)
         except Exception as exc:
             raise serializers.ValidationError(str(exc))
+        
+        # Validate email domain for internal users
+        if value:
+            allowed_domain = 'royalrealitygroup.com'
+            email_domain = value.split('@')[-1].lower()
+            if email_domain != allowed_domain:
+                raise serializers.ValidationError(
+                    f'Email must be from @{allowed_domain} domain.'
+                )
+        
+        return value
 
     def validate_phone(self, value):
         try:

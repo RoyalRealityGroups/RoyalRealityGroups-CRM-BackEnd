@@ -5316,12 +5316,13 @@ class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ProjectMini(generics.ListAPIView):
-    """Minimal list for dropdowns. Excludes soft-deleted + inactive."""
+    """Minimal list for dropdowns. Excludes soft-deleted."""
     # Uses default permission_classes from settings (IsAuthenticated + ScreenPermission)
     serializer_class = ProjectMiniSerializer
+    pagination_class = None
 
     def get_queryset(self):
-        return Project.objects.filter(is_deleted=False, is_active=True).order_by('name')
+        return Project.objects.filter(is_deleted=False).order_by('name')
 
 
 class ProjectChoices(APIView):

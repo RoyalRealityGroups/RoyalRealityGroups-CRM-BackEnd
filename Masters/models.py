@@ -2595,6 +2595,62 @@ class Project(DuplicateValidationMixin, CoreModel):
         max_length=20, choices=PROJECT_STATUS_CHOICES, default='UPCOMING', db_index=True,
     )
     sub = models.ImageField(upload_to='projects/', null=True, blank=True)
+    
+    # New fields for enhanced project presentation
+    # Overview & Description
+    overview = models.TextField(
+        blank=True, null=True,
+        help_text='Brief project overview (shown in cards/previews)',
+    )
+    description = models.TextField(
+        blank=True, null=True,
+        help_text='Detailed project description',
+    )
+    
+    # Amenities & Specifications
+    amenities = models.TextField(
+        blank=True, null=True,
+        help_text='List of amenities (can be JSON or comma-separated)',
+    )
+    specifications = models.TextField(
+        blank=True, null=True,
+        help_text='Project specifications (can be JSON or structured text)',
+    )
+    
+    # Floor Plans (text description)
+    floor_plans_text = models.TextField(
+        blank=True, null=True,
+        help_text='Floor plan details as text description',
+    )
+    
+    # Media - Images
+    elevation_image = models.ImageField(
+        upload_to='projects/elevation/', null=True, blank=True,
+        help_text='Main elevation image for project preview',
+    )
+    thumbnail = models.ImageField(
+        upload_to='projects/thumbnails/', null=True, blank=True,
+        help_text='Thumbnail image for cards/lists',
+    )
+    
+    # Floor Plans (can store multiple as JSON array of URLs or use separate model)
+    floor_plans = models.JSONField(
+        default=list, blank=True,
+        help_text='List of floor plan image URLs',
+    )
+    
+    # Gallery (multiple images as JSON array)
+    gallery = models.JSONField(
+        default=list, blank=True,
+        help_text='List of gallery image URLs',
+    )
+    
+    # Documents
+    brochure = models.FileField(
+        upload_to='projects/brochures/', null=True, blank=True,
+        help_text='Project brochure PDF',
+    )
+    
     is_active = models.BooleanField(default=True)
 
     class Meta:
@@ -2653,3 +2709,33 @@ class ProjectStatusHistory(BaseModel):
 
     def __str__(self):
         return f"{self.project.code}: {self.from_status or 'NEW'} → {self.to_status}"
+
+
+class ProjectImage(BaseModel):
+    """
+    Stores multiple images for project gallery, floor plans, and elevation images.
+    """
+    IMAGE_TYPE_CHOICES = [
+        ('GALLERY', 'Gallery'),
+        ('FLOOR_PLAN', 'Floor Plan'),
+        ('ELEVATION', 'Elevation'),
+    ]
+    
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, related_name='images',
+    )
+    image = models.ImageField(upload_to='projects/images/')
+    image_type = models.CharField(
+        max_length=20, choices=IMAGE_TYPE_CHOICES, default='GALLERY',
+    )
+    title = models.CharField(max_length=200, blank=True, null=True)
+    description = models.CharField(max_length=500, blank=True, null=True)
+    order = models.PositiveIntegerField(default=0)
+    
+    class Meta:
+        ordering = ['order', 'created_on']
+        verbose_name = 'Project Image'
+        verbose_name_plural = 'Project Images'
+    
+    def __str__(self):
+        return f"{self.project.code} - {self.image_type} - {self.title or self.id}"

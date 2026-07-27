@@ -21,7 +21,7 @@ from Masters.models import (
     PriceBook, PriceBookDocument, PriceBookHistory,
     Scheme, SchemeHistory, SchemeCondition, SchemeBenefit,
     Agent,
-    Project,
+    Project, ProjectImage,
 )
 from Masters.attachment_views import ChannelPartnerAttachmentMixin
 from django_filters.filters import Filter
@@ -60,7 +60,7 @@ from Masters.serializers import (
     PriceBookDocumentSerializer, PriceBookDocumentDetailSerializer,
     SchemeSerializer, SchemeMiniSerializer, SchemeHistorySerializer,
     AgentSerializer, AgentMiniSerializer,
-    ProjectSerializer, ProjectMiniSerializer,
+    ProjectSerializer, ProjectMiniSerializer, ProjectImageSerializer,
 )
 # from thirdparty.FocusAPI import *
 User = get_user_model()
@@ -5334,3 +5334,55 @@ class ProjectChoices(APIView):
             'project_types': [{'value': k, 'label': v} for k, v in Project.PROJECT_TYPE_CHOICES],
             'approval_types': [{'value': k, 'label': v} for k, v in Project.APPROVAL_TYPE_CHOICES],
         })
+
+
+class ProjectImageList(generics.ListCreateAPIView):
+    """List and create project images (gallery, floor plans, elevation)."""
+    serializer_class = ProjectImageSerializer
+    
+    def get_queryset(self):
+        project_id = self.kwargs.get('project_id')
+        image_type = self.request.query_params.get('image_type')
+        qs = ProjectImage.objects.filter(project_id=project_id)
+        if image_type:
+            qs = qs.filter(image_type=image_type)
+        return qs.order_by('order', 'created_on')
+    
+    def perform_create(self, serializer):
+        project_id = self.kwargs.get('project_id')
+        serializer.save(project_id=project_id)
+
+
+class ProjectImageDetail(generics.RetrieveUpdateDestroyAPIView):
+    """Retrieve, update, or delete a project image."""
+    serializer_class = ProjectImageSerializer
+    queryset = ProjectImage.objects.all()
+
+
+class ProjectImageUpload(APIView):
+    """Bulk upload images for a project."""
+    
+    def post(self, request, project_id):
+        from rest_framework.parsers import MultiPartParser, FormParser
+        
+        project = Project.objects.filter(id=project_id, is_deleted=False).first()
+        if not project:
+            return Response({'detail': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        image_type = request.data.get('image_type', 'GALLERY')
+        images = request.FILES.getlist('images')
+        
+        if not images:
+            return Response({'detail': 'No images provided'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        created = []
+        for idx, img in enumerate(images):
+            proj_img = ProjectImage.objects.create(
+                project=project,
+                image=img,
+                image_type=image_type,
+                order=idx,
+            )
+            created.append(ProjectImageSerializer(proj_img, context={'request': request}).data)
+        
+        return Response({'created': created, 'count': len(created)}, status=status.HTTP_201_CREATED)

@@ -110,3 +110,26 @@ class SiteVisitPhoto(models.Model):
 
     def __str__(self):
         return f"Photo for {self.site_visit}"
+
+
+class CalendarTodo(models.Model):
+    """
+    Personal to-do items for the Site Visit Calendar.
+    Each user can add to-do notes for specific dates.
+    """
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='calendar_todos',
+    )
+    date = models.DateField(db_index=True)
+    title = models.CharField(max_length=255)
+    is_completed = models.BooleanField(default=False)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['date', 'created_on']
+        db_table = 'sitevisit_calendar_todo'
+
+    def __str__(self):
+        return f"{self.user.username} - {self.date} - {self.title}"

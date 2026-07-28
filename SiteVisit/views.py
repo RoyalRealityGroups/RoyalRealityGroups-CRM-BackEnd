@@ -6,7 +6,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from django.utils import timezone
 
-from .models import SiteVisit, SiteVisitPhoto, SITE_VISIT_STATUS_TRANSITIONS
+from .models import SiteVisit, SiteVisitPhoto, CalendarTodo, SITE_VISIT_STATUS_TRANSITIONS
 from .serializers import SiteVisitSerializer, SiteVisitPhotoSerializer, SITE_VISIT_STATUS_CHOICES_LIST
 
 
@@ -164,6 +164,155 @@ class SiteVisitViewSet(viewsets.ModelViewSet):
         })
 
     @action(detail=False, methods=['get'])
+    def calendar(self, request):
+        """
+        Calendar endpoint - returns site visits for a month with lead status for colour-coding.
+
+        Query params:
+          - month (int, required): 1-12
+          - year (int, required): e.g. 2026
+          - assigned_employee (uuid, optional): filter by employee
+          - project (uuid, optional): filter by project
+          - status (str, optional): filter by site visit status
+
+        Returns flat list of events with colour classification:
+          - RED: lead is LOST or site visit CANCELLED
+          - YELLOW: site visit COMPLETED (but lead not yet converted)
+          - GREEN: lead reached BOOKING or REGISTRATION (sale closed)
+          - BLUE: CONFIRMED
+          - ORANGE: SCHEDULED
+        """
+        import calendar as cal
+        from datetime import date
+
+        month = request.query_params.get('month')
+        year = request.query_params.get('year')
+
+        if not month or not year:
+            return Response(
+                {'error': 'month and year query params are required'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            month = int(month)
+            year = int(year)
+        except (ValueError, TypeError):
+            return Response(
+                {'error': 'month and year must be integers'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Calculate date range for the month
+        _, last_day = cal.monthrange(year, month)
+        start_date = date(year, month, 1)
+        end_date = date(year, month, last_day)
+
+        qs = SiteVisit.objects.select_related(
+            'lead', 'project', 'assigned_employee'
+        ).filter(
+            is_deleted=False,
+            visit_date__gte=start_date,
+            visit_date__lte=end_date,
+        )
+
+        # Apply filters
+        employee_id = request.query_params.get('assigned_employee')
+        if employee_id:
+            qs = qs.filter(assigned_employee_id=employee_id)
+
+        project_id = request.query_params.get('project')
+        if project_id:
+            qs = qs.filter(project_id=project_id)
+
+        sv_status = request.query_params.get('status')
+        if sv_status:
+            qs = qs.filter(status=sv_status)
+
+        # Build calendar events
+        events = []
+        for sv in qs:
+            # Determine colour based on lead status + visit status
+            colour = self._get_calendar_colour(sv)
+            emp = sv.assigned_employee
+            emp_name = ''
+            if emp:
+                emp_name = f"{emp.first_name} {emp.last_name}".strip() or emp.username
+
+            events.append({
+                'id': str(sv.id),
+                'code': sv.code,
+                'customer_name': sv.customer_name,
+                'project_name': sv.project_name or (sv.project.name if sv.project else ''),
+                'project_id': str(sv.project_id) if sv.project_id else None,
+                'visit_date': sv.visit_date.isoformat(),
+                'assigned_employee_id': str(sv.assigned_employee_id) if sv.assigned_employee_id else None,
+                'assigned_employee_name': emp_name,
+                'status': sv.status,
+                'status_display': sv.get_status_display(),
+                'lead_id': str(sv.lead_id) if sv.lead_id else None,
+                'lead_status': sv.lead.status if sv.lead else None,
+                'colour': colour,
+                'remarks': sv.remarks or '',
+            })
+
+        # Summary counts for the sidebar
+        all_visits = SiteVisit.objects.filter(
+            is_deleted=False,
+            visit_date__gte=start_date,
+            visit_date__lte=end_date,
+        )
+        if employee_id:
+            all_visits = all_visits.filter(assigned_employee_id=employee_id)
+        if project_id:
+            all_visits = all_visits.filter(project_id=project_id)
+
+        summary = {
+            'total': all_visits.count(),
+            'scheduled': all_visits.filter(status='SCHEDULED').count(),
+            'confirmed': all_visits.filter(status='CONFIRMED').count(),
+            'completed': all_visits.filter(status='COMPLETED').count(),
+            'cancelled': all_visits.filter(status='CANCELLED').count(),
+        }
+
+        return Response({
+            'month': month,
+            'year': year,
+            'events': events,
+            'summary': summary,
+        })
+
+    def _get_calendar_colour(self, site_visit):
+        """
+        Determine colour code for a site visit on the calendar.
+        RED: Lead LOST or visit CANCELLED
+        GREEN: Lead reached BOOKING/REGISTRATION (sale closed)
+        YELLOW: Visit COMPLETED but lead not yet converted
+        BLUE: Visit CONFIRMED
+        ORANGE: Visit SCHEDULED
+        """
+        # If visit is cancelled or lead is lost → RED
+        if site_visit.status == 'CANCELLED':
+            return 'RED'
+        if site_visit.lead and site_visit.lead.status == 'LOST':
+            return 'RED'
+
+        # If lead has reached booking/registration → GREEN
+        if site_visit.lead and site_visit.lead.status in ('BOOKING', 'REGISTRATION'):
+            return 'GREEN'
+
+        # Visit completed but lead not yet at booking → YELLOW
+        if site_visit.status == 'COMPLETED':
+            return 'YELLOW'
+
+        # Confirmed → BLUE
+        if site_visit.status == 'CONFIRMED':
+            return 'BLUE'
+
+        # Scheduled → ORANGE
+        return 'ORANGE'
+
+    @action(detail=False, methods=['get'])
     def export(self, request):
         from django.http import HttpResponse
         from rest_framework.exceptions import PermissionDenied
@@ -212,3 +361,90 @@ class SiteVisitViewSet(viewsets.ModelViewSet):
             response = HttpResponse(content, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             response['Content-Disposition'] = 'attachment; filename="SiteVisit_Report.xlsx"'
             return response
+
+
+class CalendarTodoViewSet(viewsets.ModelViewSet):
+    """
+    Personal To-Do items for the Site Visit Calendar.
+    Each user manages their own to-do list.
+
+    GET /api/sitevisit/todos/?month=7&year=2026 → list todos for a month
+    POST /api/sitevisit/todos/ → create a todo {date, title}
+    PATCH /api/sitevisit/todos/{id}/ → toggle completion or update title
+    DELETE /api/sitevisit/todos/{id}/ → remove a todo
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    http_method_names = ['get', 'post', 'patch', 'delete']
+
+    def get_queryset(self):
+        qs = CalendarTodo.objects.filter(user=self.request.user)
+        month = self.request.query_params.get('month')
+        year = self.request.query_params.get('year')
+        if month and year:
+            try:
+                qs = qs.filter(date__month=int(month), date__year=int(year))
+            except (ValueError, TypeError):
+                pass
+        return qs.order_by('date', 'created_on')
+
+    def list(self, request, *args, **kwargs):
+        qs = self.get_queryset()
+        data = [
+            {
+                'id': t.id,
+                'date': t.date.isoformat(),
+                'title': t.title,
+                'is_completed': t.is_completed,
+            }
+            for t in qs
+        ]
+        return Response(data)
+
+    def create(self, request, *args, **kwargs):
+        date_str = request.data.get('date')
+        title = request.data.get('title', '').strip()
+        if not date_str or not title:
+            return Response(
+                {'error': 'date and title are required'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        from datetime import date as date_type
+        try:
+            todo_date = date_type.fromisoformat(date_str)
+        except (ValueError, TypeError):
+            return Response(
+                {'error': 'Invalid date format. Use YYYY-MM-DD'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        todo = CalendarTodo.objects.create(
+            user=request.user,
+            date=todo_date,
+            title=title,
+        )
+        return Response(
+            {'id': todo.id, 'date': todo.date.isoformat(), 'title': todo.title, 'is_completed': False},
+            status=status.HTTP_201_CREATED,
+        )
+
+    def partial_update(self, request, *args, **kwargs):
+        try:
+            todo = CalendarTodo.objects.get(id=kwargs['pk'], user=request.user)
+        except CalendarTodo.DoesNotExist:
+            return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if 'is_completed' in request.data:
+            todo.is_completed = request.data['is_completed']
+        if 'title' in request.data:
+            todo.title = request.data['title']
+        todo.save()
+        return Response(
+            {'id': todo.id, 'date': todo.date.isoformat(), 'title': todo.title, 'is_completed': todo.is_completed}
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            todo = CalendarTodo.objects.get(id=kwargs['pk'], user=request.user)
+        except CalendarTodo.DoesNotExist:
+            return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
+        todo.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

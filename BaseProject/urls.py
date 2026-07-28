@@ -27,7 +27,7 @@ from drf_spectacular.views import (
 
 from BaseProject.views import index_view, privacy_view
 from Core.Core.views.health import health_check
-from SiteVisit.views import SiteVisitViewSet
+from SiteVisit.views import SiteVisitViewSet, CalendarTodoViewSet
 
 from django.contrib.auth.decorators import login_required
 
@@ -43,6 +43,7 @@ if settings.DEBUG:
 if not settings.DYNAMICS_SAFE_MODE:
     site_visit_router = DefaultRouter()
     site_visit_router.register(r'site-visits', SiteVisitViewSet, basename='site-visit')
+    site_visit_router.register(r'todos', CalendarTodoViewSet, basename='calendar-todo')
 
     app_urlpatterns = [
 

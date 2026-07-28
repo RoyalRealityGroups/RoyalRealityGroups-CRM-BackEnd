@@ -6486,6 +6486,26 @@
     },
     {
         "Name": "Add",
+        "Permission": "SiteVisit.add_calendartodo",
+        "Hide": "0"
+    },
+    {
+        "Name": "Change",
+        "Permission": "SiteVisit.change_calendartodo",
+        "Hide": "0"
+    },
+    {
+        "Name": "Delete",
+        "Permission": "SiteVisit.delete_calendartodo",
+        "Hide": "0"
+    },
+    {
+        "Name": "View",
+        "Permission": "SiteVisit.view_calendartodo",
+        "Hide": "0"
+    },
+    {
+        "Name": "Add",
         "Permission": "Masters.add_project",
         "Hide": "0"
     },

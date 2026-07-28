@@ -606,7 +606,7 @@
         "Name": "Site Visits",
         "Icon": "site_visit",
         "Link": "/sitevisit/list",
-        "Sequence": "2",
+        "Sequence": "1",
         "Click": "",
         "Menu": "MENU-001",
         "Submenu": "SBM-007",
@@ -614,6 +614,20 @@
         "Description": "Manage site visits for leads",
         "Created On": "2026-07-18 00:00:00",
         "Modified On": "2026-07-18 00:00:00"
+    },
+    {
+        "Code": "LM-002B",
+        "Name": "Site Visit Calendar",
+        "Icon": "calendar_month",
+        "Link": "/sitevisit/calendar",
+        "Sequence": "2",
+        "Click": "",
+        "Menu": "MENU-001",
+        "Submenu": "SBM-007",
+        "Permission": "SiteVisit.view_sitevisit",
+        "Description": "Monthly calendar view of site visits with status colour-coding",
+        "Created On": "2026-07-28 00:00:00",
+        "Modified On": "2026-07-28 00:00:00"
     },
 {
         "Code": "LM-003",

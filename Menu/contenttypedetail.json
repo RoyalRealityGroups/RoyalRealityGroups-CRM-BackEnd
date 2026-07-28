@@ -714,6 +714,12 @@
         "Hide": "0"
     },
     {
+        "Name": "Calendartodo",
+        "ContentType": "calendartodo",
+        "App": "SiteVisit",
+        "Hide": "0"
+    },
+    {
         "Name": "Project",
         "ContentType": "project",
         "App": "ProjectManagement",

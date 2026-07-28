@@ -37,11 +37,11 @@
         "Name": "Site Visit Management",
         "Sequence": "4",
         "Icon": "site_visit",
-        "Click": "/sitevisit/list",
+        "Click": "",
         "Menu": "MENU-001",
         "Submenu": "",
         "Created On": "2026-07-18 00:00:00",
-        "Modified On": "2026-07-18 00:00:00"
+        "Modified On": "2026-07-28 00:00:00"
     },
     {
         "Code": "SBM-006",

@@ -624,7 +624,7 @@
         "Click": "",
         "Menu": "MENU-001",
         "Submenu": "SBM-007",
-        "Permission": "SiteVisit.view_sitevisit",
+        "Permission": "SiteVisit.view_calendartodo",
         "Description": "Monthly calendar view of site visits with status colour-coding",
         "Created On": "2026-07-28 00:00:00",
         "Modified On": "2026-07-28 00:00:00"

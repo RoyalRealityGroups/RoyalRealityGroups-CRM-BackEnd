@@ -363,6 +363,21 @@ class DashboardSummaryView(APIView):
                     created_on__year=today.year,
                     created_on__month=today.month
                 ).count(),
+                'hot_leads': lead_qs.filter(status__in=['INTERESTED', 'NEGOTIATION', 'SITE_VISIT_COMPLETED']).count(),
+                'prospects': lead_qs.filter(status__in=['CONNECTED', 'CONTACT_ATTEMPTED']).count(),
+            },
+            'todays_insights': {
+                'calls_made': lead_qs.filter(
+                    follow_ups__follow_up_date=today,
+                    follow_ups__follow_up_type='CALL',
+                ).distinct().count(),
+                'connected_calls': lead_qs.filter(
+                    follow_ups__follow_up_date=today,
+                    follow_ups__follow_up_type='CALL',
+                    status__in=['CONNECTED', 'INTERESTED', 'SITE_VISIT_SCHEDULED', 'SITE_VISIT_COMPLETED', 'NEGOTIATION', 'BOOKING', 'REGISTRATION'],
+                ).distinct().count(),
+                'site_visits_scheduled': sv_qs.filter(visit_date=today, status='SCHEDULED').count(),
+                'site_visits_completed': sv_qs.filter(visit_date=today, status='COMPLETED').count(),
             },
             'lead_pipeline': list(
                 lead_qs.values('status')

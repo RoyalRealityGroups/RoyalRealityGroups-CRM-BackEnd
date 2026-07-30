@@ -96,12 +96,6 @@
         "sequence": "0"
     },
     {
-        "Name": "Masters",
-        "App_Label": "Masters",
-        "Hide": "0",
-        "sequence": "10"
-    },
-    {
         "Name": "Delivery",
         "App_Label": "Delivery",
         "Hide": "0",

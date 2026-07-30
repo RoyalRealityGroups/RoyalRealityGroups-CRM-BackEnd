@@ -11,17 +11,6 @@
         "Modified On": "2026-03-06 11:47:06"
     },
     {
-        "Code": "SBM-001",
-        "Name": "Masters",
-        "Sequence": "1",
-        "Icon": "business",
-        "Click": "",
-        "Menu": "MENU-001",
-        "Submenu": "",
-        "Created On": "2025-12-29 00:00:00",
-        "Modified On": "2026-03-06 11:47:06"
-    },
-    {
         "Code": "SBM-005",
         "Name": "Lead Management",
         "Sequence": "2",

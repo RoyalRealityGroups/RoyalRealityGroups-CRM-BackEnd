@@ -34,8 +34,6 @@ URL_TO_PERMISSION_MODEL = {
     '/api/documents/': ('Documents', 'document'),
     '/api/re-reports/': None,  # exempt — reports
     '/api/dashboards/': None,  # exempt — dashboards
-    '/api/usermanagement/dropdowns/': None,  # exempt
-    '/api/usermanagement/my-permissions/': None,  # exempt
     '/api/usermanagement/': ('Users', 'user'),
     '/api/masters/countries/': ('Masters', 'country'),
     '/api/masters/states/': ('Masters', 'state'),
@@ -76,6 +74,8 @@ EXEMPT_PREFIXES = (
     '/api/reports/',      # Import/export framework
     '/api/general/',      # General settings
     '/api/thirdparty/',   # Focus ERP
+    '/api/usermanagement/dropdowns/',   # Dropdowns needed by all screens
+    '/api/usermanagement/my-permissions/',  # Needed for frontend permission checks
 )
 
 

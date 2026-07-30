@@ -10,11 +10,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Print",
-        "Permission": "Masters.print_retailerlocation",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "thirdparty.export_synctrigger",
         "Hide": "0"
@@ -35,26 +30,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Print",
-        "Permission": "Masters.print_area",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_superstockistlocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_item",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_category",
-        "Hide": "0"
-    },
-    {
         "Name": "Import",
         "Permission": "Delivery.import_proofofdeliveryfile",
         "Hide": "0"
@@ -65,18 +40,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Export",
-        "Permission": "Masters.export_pricebookhistory",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "System.add_assignee_menuitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_pricebook",
         "Hide": "0"
     },
     {
@@ -100,11 +65,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_item",
-        "Hide": "0"
-    },
-    {
         "Name": "Reports",
         "Permission": "contenttypes.reports_contenttype",
         "Hide": "0"
@@ -120,11 +80,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Import",
-        "Permission": "Masters.import_superstockistlocation",
-        "Hide": "0"
-    },
-    {
         "Name": "Delete",
         "Permission": "core_users.delete_sequencecode",
         "Hide": "0"
@@ -137,11 +92,6 @@
     {
         "Name": "Import",
         "Permission": "System.import_template",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Masters.delete_superstockistlocation",
         "Hide": "0"
     },
     {
@@ -175,33 +125,13 @@
         "Hide": "0"
     },
     {
-        "Name": "Can delete location",
-        "Permission": "Masters.delete_location",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Masters.import_retailerlocation",
-        "Hide": "0"
-    },
-    {
         "Name": "Import",
         "Permission": "Dispatch.import_dispatchorderitem",
         "Hide": "0"
     },
     {
         "Name": "Reports",
-        "Permission": "Masters.reports_superstockistlocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
         "Permission": "Sales.reports_salesorder",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_brand",
         "Hide": "0"
     },
     {
@@ -220,11 +150,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Masters.reports_itemuomconversion",
-        "Hide": "0"
-    },
-    {
         "Name": "Print",
         "Permission": "core_users.print_assigneebypass",
         "Hide": "0"
@@ -238,11 +163,6 @@
         "Name": "Import",
         "Permission": "System.import_filterpreset",
         "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_pricebook",
-        "Hide": "1"
     },
     {
         "Name": "Print",
@@ -260,18 +180,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Download",
-        "Permission": "Masters.download_tax",
-        "Hide": "0"
-    },
-    {
         "Name": "View",
         "Permission": "System.view_formulaupdate",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_retailerlocation",
         "Hide": "0"
     },
     {
@@ -310,11 +220,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Masters.reports_country",
-        "Hide": "0"
-    },
-    {
         "Name": "Download",
         "Permission": "System.download_template",
         "Hide": "0"
@@ -350,26 +255,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Delete",
-        "Permission": "Masters.delete_retailerlocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can delete state",
-        "Permission": "Masters.delete_state",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_pricebook",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_pricebookhistory",
-        "Hide": "0"
-    },
-    {
         "Name": "View",
         "Permission": "core_users.view_assigneedefnition",
         "Hide": "0"
@@ -382,16 +267,6 @@
     {
         "Name": "Assignee",
         "Permission": "core_users.assignee_bypass_codetemplate",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_pricebook",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_category",
         "Hide": "0"
     },
     {
@@ -480,11 +355,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Can change superstockist",
-        "Permission": "Masters.change_superstockist",
-        "Hide": "0"
-    },
-    {
         "Name": "Import",
         "Permission": "System.import_attachment",
         "Hide": "0"
@@ -497,11 +367,6 @@
     {
         "Name": "Print",
         "Permission": "System.print_template",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_itemtaxcomposition",
         "Hide": "0"
     },
     {
@@ -530,11 +395,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Can import warehouse",
-        "Permission": "Masters.import_warehouse",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "System.add_alertconfig",
         "Hide": "0"
@@ -545,33 +405,13 @@
         "Hide": "0"
     },
     {
-        "Name": "Can import distributor",
-        "Permission": "Masters.import_distributor",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_distributorlocation",
-        "Hide": "1"
-    },
-    {
         "Name": "Can add group",
         "Permission": "auth.add_group",
         "Hide": "0"
     },
     {
         "Name": "Import",
-        "Permission": "Masters.import_company",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
         "Permission": "System.import_taskexecutionlog",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_brand",
         "Hide": "0"
     },
     {
@@ -595,11 +435,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Print",
-        "Permission": "Masters.print_itemfieldconfiguration",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "System.add_assignee_backup",
         "Hide": "0"
@@ -610,28 +445,13 @@
         "Hide": "0"
     },
     {
-        "Name": "Download",
-        "Permission": "Masters.download_channelpartnerconfiguration",
-        "Hide": "0"
-    },
-    {
         "Name": "Change",
         "Permission": "Invoice.change_payment",
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Masters.add_superstockistlocation",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "System.export_formulavariables",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_channelpartnerconfiguration",
         "Hide": "0"
     },
     {
@@ -650,11 +470,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Masters.reports_area",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "auth.export_permission",
         "Hide": "0"
@@ -665,18 +480,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_country",
-        "Hide": "0"
-    },
-    {
         "Name": "View",
         "Permission": "core_users.view_permissiondetail",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_uom",
         "Hide": "0"
     },
     {
@@ -700,16 +505,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_itemuomconversion",
-        "Hide": "1"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_country",
-        "Hide": "1"
-    },
-    {
         "Name": "View",
         "Permission": "System.view_setting",
         "Hide": "0"
@@ -725,11 +520,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Import",
-        "Permission": "Masters.import_category",
-        "Hide": "0"
-    },
-    {
         "Name": "Print",
         "Permission": "System.print_download",
         "Hide": "0"
@@ -742,21 +532,6 @@
     {
         "Name": "Download",
         "Permission": "auth.download_group",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can view country",
-        "Permission": "Masters.view_country",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can change location",
-        "Permission": "Masters.change_location",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Masters.import_itemtaxcomposition",
         "Hide": "0"
     },
     {
@@ -810,11 +585,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_state",
-        "Hide": "0"
-    },
-    {
         "Name": "Print",
         "Permission": "System.print_backup",
         "Hide": "0"
@@ -837,11 +607,6 @@
     {
         "Name": "Reports",
         "Permission": "core_users.reports_groupdetails",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_itemfieldconfiguration",
         "Hide": "0"
     },
     {
@@ -870,21 +635,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Masters.reports_itemtaxcomposition",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_company",
-        "Hide": "1"
-    },
-    {
-        "Name": "Can add superstockist",
-        "Permission": "Masters.add_superstockist",
-        "Hide": "0"
-    },
-    {
         "Name": "Download",
         "Permission": "core_users.download_device",
         "Hide": "0"
@@ -897,11 +647,6 @@
     {
         "Name": "Export",
         "Permission": "core_users.export_jwttoken",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_item",
         "Hide": "0"
     },
     {
@@ -936,32 +681,12 @@
     },
     {
         "Name": "Delete",
-        "Permission": "Masters.delete_pricebookdocument",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
         "Permission": "core_users.delete_authorizationhistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_uom",
         "Hide": "0"
     },
     {
         "Name": "Change",
         "Permission": "System.change_alertconfigusers",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_brand",
-        "Hide": "1"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_superstockist",
         "Hide": "0"
     },
     {
@@ -980,16 +705,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Masters.add_category",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_retailer",
-        "Hide": "1"
-    },
-    {
         "Name": "Change",
         "Permission": "core_users.change_userpreferences",
         "Hide": "0"
@@ -1000,24 +715,9 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_outlettype",
-        "Hide": "1"
-    },
-    {
         "Name": "View",
         "Permission": "System.view_export",
         "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_itemuomconversion",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_state",
-        "Hide": "1"
     },
     {
         "Name": "Add",
@@ -1075,16 +775,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Can change outlet type",
-        "Permission": "Masters.change_outlettype",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_city",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "System.export_formula",
         "Hide": "0"
@@ -1092,11 +782,6 @@
     {
         "Name": "Assignee",
         "Permission": "auth.assignee_bypass_group",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_warehouse",
         "Hide": "0"
     },
     {
@@ -1110,16 +795,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Change",
-        "Permission": "Masters.change_pricebook",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_channelpartnerconfiguration",
-        "Hide": "0"
-    },
-    {
         "Name": "Print",
         "Permission": "core_users.print_authorizationhistory",
         "Hide": "0"
@@ -1130,23 +805,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Export",
-        "Permission": "Masters.export_retailerlocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can add warehouse",
-        "Permission": "Masters.add_warehouse",
-        "Hide": "0"
-    },
-    {
         "Name": "Import",
         "Permission": "auth.import_permission",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_brand",
         "Hide": "0"
     },
     {
@@ -1175,29 +835,9 @@
         "Hide": "0"
     },
     {
-        "Name": "Print",
-        "Permission": "Masters.print_itemuomconversion",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "System.add_download",
         "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_distributorlocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can add uom",
-        "Permission": "Masters.add_uom",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_superstockistlocation",
-        "Hide": "1"
     },
     {
         "Name": "Change",
@@ -1225,11 +865,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_tax",
-        "Hide": "1"
-    },
-    {
         "Name": "View",
         "Permission": "Dispatch.view_dispatchitem",
         "Hide": "0"
@@ -1237,11 +872,6 @@
     {
         "Name": "Download",
         "Permission": "Dispatch.download_dispatchitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_pricebookdocument",
         "Hide": "0"
     },
     {
@@ -1260,18 +890,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Delete",
-        "Permission": "Masters.delete_area",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "core_users.export_authorizationdefinition",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can change country",
-        "Permission": "Masters.change_country",
         "Hide": "0"
     },
     {
@@ -1287,11 +907,6 @@
     {
         "Name": "Change",
         "Permission": "core_users.change_usertype",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_outlettype",
         "Hide": "0"
     },
     {
@@ -1355,18 +970,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Can import state",
-        "Permission": "Masters.import_state",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "core_users.add_assignee",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can change city",
-        "Permission": "Masters.change_city",
         "Hide": "0"
     },
     {
@@ -1390,23 +995,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Can change item",
-        "Permission": "Masters.change_item",
-        "Hide": "0"
-    },
-    {
         "Name": "Download",
         "Permission": "core_users.download_permissiondetail",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can delete tax",
-        "Permission": "Masters.delete_tax",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_pricebookdocument",
         "Hide": "0"
     },
     {
@@ -1460,33 +1050,13 @@
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_pricebook",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_itemuomconversion",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "core_users.export_assigneedefnition",
         "Hide": "0"
     },
     {
-        "Name": "Print",
-        "Permission": "Masters.print_channelpartnerconfiguration",
-        "Hide": "0"
-    },
-    {
         "Name": "Reports",
         "Permission": "core_users.reports_assignee",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can add tax",
-        "Permission": "Masters.add_tax",
         "Hide": "0"
     },
     {
@@ -1520,11 +1090,6 @@
         "Hide": "0"
     },
     {
-        "Name": "View",
-        "Permission": "Masters.view_retailerlocation",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "admin.add_logentry",
         "Hide": "0"
@@ -1532,11 +1097,6 @@
     {
         "Name": "Delete",
         "Permission": "Dispatch.delete_dispatchorderitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_itemuomconversion",
         "Hide": "0"
     },
     {
@@ -1560,24 +1120,9 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Masters.reports_pricebookhistory",
-        "Hide": "0"
-    },
-    {
         "Name": "Delete",
         "Permission": "core_users.delete_assigneedefnition",
         "Hide": "0"
-    },
-    {
-        "Name": "Can delete item",
-        "Permission": "Masters.delete_item",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_warehouse",
-        "Hide": "1"
     },
     {
         "Name": "Reports",
@@ -1595,38 +1140,13 @@
         "Hide": "0"
     },
     {
-        "Name": "Print",
-        "Permission": "Masters.print_outlettype",
-        "Hide": "0"
-    },
-    {
         "Name": "Assignee",
         "Permission": "core_users.assignee_bypass_authorizationdefinition",
         "Hide": "0"
     },
     {
-        "Name": "Can import area",
-        "Permission": "Masters.import_area",
-        "Hide": "0"
-    },
-    {
         "Name": "Print",
         "Permission": "core_users.print_devicelog",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_pricebookhistory",
-        "Hide": "1"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_area",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_itemuomconversion",
         "Hide": "0"
     },
     {
@@ -1637,11 +1157,6 @@
     {
         "Name": "View",
         "Permission": "System.view_attachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can change distributor",
-        "Permission": "Masters.change_distributor",
         "Hide": "0"
     },
     {
@@ -1675,16 +1190,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Export",
-        "Permission": "Masters.export_brand",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_retailerlocation",
-        "Hide": "0"
-    },
-    {
         "Name": "View",
         "Permission": "core_users.view_sequencecode",
         "Hide": "0"
@@ -1692,11 +1197,6 @@
     {
         "Name": "Assignee",
         "Permission": "System.assignee_bypass_formulaupdate",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_pricebook",
         "Hide": "0"
     },
     {
@@ -1712,11 +1212,6 @@
     {
         "Name": "Add",
         "Permission": "System.add_assignee_taskexecutionlog",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_retailer",
         "Hide": "0"
     },
     {
@@ -1785,18 +1280,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Change",
-        "Permission": "Masters.change_category",
-        "Hide": "0"
-    },
-    {
         "Name": "Download",
         "Permission": "System.download_menuitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_distributorlocation",
         "Hide": "0"
     },
     {
@@ -1815,11 +1300,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_retailerlocation",
-        "Hide": "1"
-    },
-    {
         "Name": "Export",
         "Permission": "System.export_error",
         "Hide": "0"
@@ -1830,28 +1310,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Masters.reports_retailerlocation",
-        "Hide": "0"
-    },
-    {
         "Name": "View",
         "Permission": "thirdparty.view_synclog",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Masters.delete_pricebookhistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_superstockist",
-        "Hide": "1"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_area",
         "Hide": "0"
     },
     {
@@ -1875,11 +1335,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Delete",
-        "Permission": "Masters.delete_category",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "core_users.add_device",
         "Hide": "0"
@@ -1892,11 +1347,6 @@
     {
         "Name": "Can delete authorization definition",
         "Permission": "core_users.delete_authorizationdefinition",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Masters.delete_itemuomconversion",
         "Hide": "0"
     },
     {
@@ -1930,16 +1380,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Print",
-        "Permission": "Masters.print_state",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can add city",
-        "Permission": "Masters.add_city",
-        "Hide": "0"
-    },
-    {
         "Name": "Delete",
         "Permission": "System.delete_setting",
         "Hide": "0"
@@ -1960,38 +1400,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Can view retailer",
-        "Permission": "Masters.view_retailer",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_superstockistlocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_distributorlocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Masters.import_itemuomconversion",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "Dispatch.export_dispatchitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_distributor",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_outlettype",
         "Hide": "0"
     },
     {
@@ -2045,11 +1455,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Can view outlet type",
-        "Permission": "Masters.view_outlettype",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "Invoice.export_invoice",
         "Hide": "0"
@@ -2080,11 +1485,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Can import item",
-        "Permission": "Masters.import_item",
-        "Hide": "0"
-    },
-    {
         "Name": "Change",
         "Permission": "contenttypes.change_contenttype",
         "Hide": "0"
@@ -2097,16 +1497,6 @@
     {
         "Name": "Add",
         "Permission": "System.add_assignee_restore",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_location",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_itemtaxcomposition",
         "Hide": "0"
     },
     {
@@ -2132,16 +1522,6 @@
     {
         "Name": "View",
         "Permission": "System.view_menu",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_channelpartnerconfiguration",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can change retailer",
-        "Permission": "Masters.change_retailer",
         "Hide": "0"
     },
     {
@@ -2185,11 +1565,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Print",
-        "Permission": "Masters.print_superstockist",
-        "Hide": "0"
-    },
-    {
         "Name": "Reports",
         "Permission": "System.reports_menuitem",
         "Hide": "0"
@@ -2207,16 +1582,6 @@
     {
         "Name": "Download",
         "Permission": "System.download_notificationusers",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_company",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can view superstockist",
-        "Permission": "Masters.view_superstockist",
         "Hide": "0"
     },
     {
@@ -2245,11 +1610,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Can add location",
-        "Permission": "Masters.add_location",
-        "Hide": "0"
-    },
-    {
         "Name": "Assignee",
         "Permission": "core_users.assignee_bypass_authorizationhistory",
         "Hide": "0"
@@ -2275,28 +1635,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Masters.add_company",
-        "Hide": "0"
-    },
-    {
         "Name": "Change",
         "Permission": "Sales.change_salesorderitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Masters.delete_company",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_item",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_uom",
         "Hide": "0"
     },
     {
@@ -2312,11 +1652,6 @@
     {
         "Name": "View",
         "Permission": "System.view_alertconfig",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_area",
         "Hide": "0"
     },
     {
@@ -2345,18 +1680,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Masters.reports_outlettype",
-        "Hide": "0"
-    },
-    {
         "Name": "Import",
         "Permission": "core_users.import_datapermissions",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_item",
         "Hide": "0"
     },
     {
@@ -2372,11 +1697,6 @@
     {
         "Name": "Assignee",
         "Permission": "auth.assignee_bypass_permission",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can add state",
-        "Permission": "Masters.add_state",
         "Hide": "0"
     },
     {
@@ -2400,11 +1720,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Can view tax",
-        "Permission": "Masters.view_tax",
-        "Hide": "0"
-    },
-    {
         "Name": "View",
         "Permission": "core_users.view_codetemplate",
         "Hide": "0"
@@ -2415,33 +1730,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Export",
-        "Permission": "Masters.export_country",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_channelpartnerconfiguration",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "System.add_menu",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_distributorlocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_area",
-        "Hide": "1"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_tax",
         "Hide": "0"
     },
     {
@@ -2457,21 +1747,6 @@
     {
         "Name": "Add",
         "Permission": "Sales.add_assignee_salesorderitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_retailer",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_category",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can delete city",
-        "Permission": "Masters.delete_city",
         "Hide": "0"
     },
     {
@@ -2495,21 +1770,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Import",
-        "Permission": "Masters.import_itemfieldconfiguration",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_itemfieldconfiguration",
-        "Hide": "1"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_country",
-        "Hide": "0"
-    },
-    {
         "Name": "Reports",
         "Permission": "System.reports_savedfilter",
         "Hide": "0"
@@ -2520,18 +1780,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_area",
-        "Hide": "0"
-    },
-    {
         "Name": "Import",
         "Permission": "Delivery.import_proofofdelivery",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can import location",
-        "Permission": "Masters.import_location",
         "Hide": "0"
     },
     {
@@ -2550,19 +1800,9 @@
         "Hide": "0"
     },
     {
-        "Name": "Can delete outlet type",
-        "Permission": "Masters.delete_outlettype",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "core_users.add_devicelog",
         "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_uom",
-        "Hide": "1"
     },
     {
         "Name": "Assignee",
@@ -2595,11 +1835,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Export",
-        "Permission": "Masters.export_state",
-        "Hide": "0"
-    },
-    {
         "Name": "View",
         "Permission": "core_users.view_assignee",
         "Hide": "0"
@@ -2612,16 +1847,6 @@
     {
         "Name": "Print",
         "Permission": "System.print_error",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_city",
-        "Hide": "1"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_city",
         "Hide": "0"
     },
     {
@@ -2647,16 +1872,6 @@
     {
         "Name": "Export",
         "Permission": "core_users.export_authorizationhistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_superstockist",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_company",
         "Hide": "0"
     },
     {
@@ -2695,11 +1910,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Can add distributor",
-        "Permission": "Masters.add_distributor",
-        "Hide": "0"
-    },
-    {
         "Name": "Assignee",
         "Permission": "System.assignee_bypass_notificationusers",
         "Hide": "0"
@@ -2715,21 +1925,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Masters.reports_channelpartnerconfiguration",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_category",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_pricebookdocument",
-        "Hide": "0"
-    },
-    {
         "Name": "Import",
         "Permission": "thirdparty.import_synctrigger",
         "Hide": "0"
@@ -2740,33 +1935,13 @@
         "Hide": "0"
     },
     {
-        "Name": "Can add country",
-        "Permission": "Masters.add_country",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can import superstockist",
-        "Permission": "Masters.import_superstockist",
-        "Hide": "0"
-    },
-    {
         "Name": "Download",
         "Permission": "core_users.download_contenttypedetail",
         "Hide": "0"
     },
     {
-        "Name": "Can view warehouse",
-        "Permission": "Masters.view_warehouse",
-        "Hide": "0"
-    },
-    {
         "Name": "Delete",
         "Permission": "System.delete_taskexecutionlog",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_distributor",
         "Hide": "0"
     },
     {
@@ -2830,11 +2005,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Delete",
-        "Permission": "Masters.delete_itemfieldconfiguration",
-        "Hide": "0"
-    },
-    {
         "Name": "Change",
         "Permission": "System.change_template",
         "Hide": "0"
@@ -2847,11 +2017,6 @@
     {
         "Name": "Download",
         "Permission": "System.download_savedfilter",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_uom",
         "Hide": "0"
     },
     {
@@ -2875,33 +2040,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Change",
-        "Permission": "Masters.change_company",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_pricebookdocument",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_company",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_itemtaxcomposition",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "admin.export_logentry",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_pricebookdocument",
         "Hide": "0"
     },
     {
@@ -2917,11 +2057,6 @@
     {
         "Name": "Export",
         "Permission": "core_users.export_djangoapp",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_brand",
         "Hide": "0"
     },
     {
@@ -2965,21 +2100,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Print",
-        "Permission": "Masters.print_company",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_area",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_pricebookhistory",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "System.add_formulaupdate",
         "Hide": "0"
@@ -2987,16 +2107,6 @@
     {
         "Name": "Export",
         "Permission": "Sales.export_salesorder",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_city",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_category",
         "Hide": "0"
     },
     {
@@ -3015,38 +2125,13 @@
         "Hide": "0"
     },
     {
-        "Name": "Export",
-        "Permission": "Masters.export_superstockist",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "Sales.add_salesorder",
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Masters.reports_retailer",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can delete warehouse",
-        "Permission": "Masters.delete_warehouse",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_retailerlocation",
-        "Hide": "0"
-    },
-    {
         "Name": "View",
         "Permission": "System.view_report",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_warehouse",
         "Hide": "0"
     },
     {
@@ -3072,11 +2157,6 @@
     {
         "Name": "Import",
         "Permission": "System.import_activitylog",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can delete distributor",
-        "Permission": "Masters.delete_distributor",
         "Hide": "0"
     },
     {
@@ -3120,44 +2200,14 @@
         "Hide": "0"
     },
     {
-        "Name": "Download",
-        "Permission": "Masters.download_country",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_distributorlocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_tax",
-        "Hide": "0"
-    },
-    {
         "Name": "Reports",
         "Permission": "admin.reports_logentry",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can change warehouse",
-        "Permission": "Masters.change_warehouse",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can delete superstockist",
-        "Permission": "Masters.delete_superstockist",
         "Hide": "0"
     },
     {
         "Name": "Download",
         "Permission": "core_users.download_userpreferences",
         "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_itemtaxcomposition",
-        "Hide": "1"
     },
     {
         "Name": "Reports",
@@ -3195,18 +2245,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Download",
-        "Permission": "Masters.download_retailer",
-        "Hide": "0"
-    },
-    {
         "Name": "Print",
         "Permission": "core_users.print_device",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_distributorlocation",
         "Hide": "0"
     },
     {
@@ -3255,11 +2295,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Download",
-        "Permission": "Masters.download_pricebookdocument",
-        "Hide": "0"
-    },
-    {
         "Name": "View",
         "Permission": "System.view_savedfilter",
         "Hide": "0"
@@ -3277,16 +2312,6 @@
     {
         "Name": "Add",
         "Permission": "dynamic_preferences.add_globalpreferencemodel",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_city",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_pricebook",
         "Hide": "0"
     },
     {
@@ -3320,11 +2345,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Import",
-        "Permission": "Masters.import_distributorlocation",
-        "Hide": "0"
-    },
-    {
         "Name": "Change",
         "Permission": "dynamic_preferences.change_globalpreferencemodel",
         "Hide": "0"
@@ -3345,11 +2365,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Import",
-        "Permission": "Masters.import_outlettype",
-        "Hide": "0"
-    },
-    {
         "Name": "Download",
         "Permission": "core_users.download_djangoapp",
         "Hide": "0"
@@ -3357,16 +2372,6 @@
     {
         "Name": "Export",
         "Permission": "System.export_notification",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_itemfieldconfiguration",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Masters.delete_brand",
         "Hide": "0"
     },
     {
@@ -3395,16 +2400,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Export",
-        "Permission": "Masters.export_location",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Masters.import_channelpartnerconfiguration",
-        "Hide": "0"
-    },
-    {
         "Name": "Assignee",
         "Permission": "Dispatch.assignee_bypass_dispatchplan",
         "Hide": "0"
@@ -3417,11 +2412,6 @@
     {
         "Name": "Reports",
         "Permission": "core_users.reports_contenttypedetail",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can add outlet type",
-        "Permission": "Masters.add_outlettype",
         "Hide": "0"
     },
     {
@@ -3450,16 +2440,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Import",
-        "Permission": "Masters.import_pricebook",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_location",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "System.add_attachment",
         "Hide": "0"
@@ -3470,16 +2450,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_superstockistlocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can view location",
-        "Permission": "Masters.view_location",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "sessions.add_assignee_session",
         "Hide": "0"
@@ -3487,11 +2457,6 @@
     {
         "Name": "Download",
         "Permission": "Dispatch.download_dispatchplan",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_tax",
         "Hide": "0"
     },
     {
@@ -3580,16 +2545,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Download",
-        "Permission": "Masters.download_itemtaxcomposition",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can add item",
-        "Permission": "Masters.add_item",
-        "Hide": "0"
-    },
-    {
         "Name": "View",
         "Permission": "System.view_filterpreset",
         "Hide": "0"
@@ -3597,11 +2552,6 @@
     {
         "Name": "Download",
         "Permission": "sessions.download_session",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_city",
         "Hide": "0"
     },
     {
@@ -3615,23 +2565,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Download",
-        "Permission": "Masters.download_itemfieldconfiguration",
-        "Hide": "0"
-    },
-    {
         "Name": "Assignee",
         "Permission": "System.assignee_bypass_backup",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_itemuomconversion",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Masters.import_pricebookdocument",
         "Hide": "0"
     },
     {
@@ -3647,16 +2582,6 @@
     {
         "Name": "Change",
         "Permission": "System.change_submenu",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Masters.import_uom",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can import tax",
-        "Permission": "Masters.import_tax",
         "Hide": "0"
     },
     {
@@ -3680,11 +2605,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Can view distributor",
-        "Permission": "Masters.view_distributor",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "core_users.add_assignee_contenttypedetail",
         "Hide": "0"
@@ -3700,23 +2620,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Print",
-        "Permission": "Masters.print_location",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_superstockistlocation",
-        "Hide": "0"
-    },
-    {
         "Name": "Reports",
         "Permission": "System.reports_backup",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can change tax",
-        "Permission": "Masters.change_tax",
         "Hide": "0"
     },
     {
@@ -3765,11 +2670,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Can view item",
-        "Permission": "Masters.view_item",
-        "Hide": "0"
-    },
-    {
         "Name": "Delete",
         "Permission": "System.delete_formulavariables",
         "Hide": "0"
@@ -3785,11 +2685,6 @@
         "Hide": "0"
     },
     {
-        "Name": "View",
-        "Permission": "Masters.view_itemtaxcomposition",
-        "Hide": "0"
-    },
-    {
         "Name": "Import",
         "Permission": "core_users.import_device",
         "Hide": "0"
@@ -3797,11 +2692,6 @@
     {
         "Name": "Import",
         "Permission": "auth.import_group",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Masters.delete_pricebook",
         "Hide": "0"
     },
     {
@@ -3815,28 +2705,13 @@
         "Hide": "0"
     },
     {
-        "Name": "View",
-        "Permission": "Masters.view_superstockistlocation",
-        "Hide": "0"
-    },
-    {
         "Name": "Assignee",
         "Permission": "Invoice.assignee_bypass_invoiceitem",
         "Hide": "0"
     },
     {
-        "Name": "Import",
-        "Permission": "Masters.import_brand",
-        "Hide": "0"
-    },
-    {
         "Name": "Delete",
         "Permission": "System.delete_formula",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_itemtaxcomposition",
         "Hide": "0"
     },
     {
@@ -3880,31 +2755,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_tax",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_distributor",
-        "Hide": "1"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_brand",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_warehouse",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_itemfieldconfiguration",
-        "Hide": "0"
-    },
-    {
         "Name": "Delete",
         "Permission": "System.delete_alertconfigusers",
         "Hide": "0"
@@ -3935,28 +2785,13 @@
         "Hide": "0"
     },
     {
-        "Name": "Can import city",
-        "Permission": "Masters.import_city",
-        "Hide": "0"
-    },
-    {
         "Name": "Print",
         "Permission": "core_users.print_usertype",
         "Hide": "0"
     },
     {
-        "Name": "Delete",
-        "Permission": "Masters.delete_itemtaxcomposition",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "core_users.add_assignee_assignee",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_distributor",
         "Hide": "0"
     },
     {
@@ -3975,11 +2810,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_superstockist",
-        "Hide": "0"
-    },
-    {
         "Name": "Import",
         "Permission": "System.import_submenu",
         "Hide": "0"
@@ -3990,11 +2820,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Print",
-        "Permission": "Masters.print_pricebookhistory",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "auth.add_assignee_group",
         "Hide": "0"
@@ -4002,16 +2827,6 @@
     {
         "Name": "Download",
         "Permission": "System.download_taskscheduler",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_state",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_company",
         "Hide": "0"
     },
     {
@@ -4075,11 +2890,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Print",
-        "Permission": "Masters.print_category",
-        "Hide": "0"
-    },
-    {
         "Name": "Change",
         "Permission": "core_users.change_device",
         "Hide": "0"
@@ -4106,11 +2916,6 @@
     },
     {
         "Name": "Export",
-        "Permission": "Masters.export_warehouse",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
         "Permission": "core_users.export_contenttypedetail",
         "Hide": "0"
     },
@@ -4130,33 +2935,13 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Masters.reports_uom",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "contenttypes.add_assignee_contenttype",
         "Hide": "0"
     },
     {
-        "Name": "Can change uom",
-        "Permission": "Masters.change_uom",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Masters.delete_channelpartnerconfiguration",
-        "Hide": "0"
-    },
-    {
         "Name": "Delete",
         "Permission": "System.delete_submenu",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can import retailer",
-        "Permission": "Masters.import_retailer",
         "Hide": "0"
     },
     {
@@ -4170,11 +2955,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_itemtaxcomposition",
-        "Hide": "0"
-    },
-    {
         "Name": "Delete",
         "Permission": "dynamic_preferences.delete_globalpreferencemodel",
         "Hide": "0"
@@ -4185,16 +2965,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Masters.reports_distributor",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_area",
-        "Hide": "0"
-    },
-    {
         "Name": "Change",
         "Permission": "Sales.change_salesorder",
         "Hide": "0"
@@ -4202,11 +2972,6 @@
     {
         "Name": "Download",
         "Permission": "System.download_submenu",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_itemfieldconfiguration",
         "Hide": "0"
     },
     {
@@ -4260,23 +3025,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Can add retailer",
-        "Permission": "Masters.add_retailer",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_state",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "core_users.export_codetemplate",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_distributor",
         "Hide": "0"
     },
     {
@@ -4302,11 +3052,6 @@
     {
         "Name": "Add",
         "Permission": "System.add_backup",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_superstockistlocation",
         "Hide": "0"
     },
     {
@@ -4355,11 +3100,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Can view state",
-        "Permission": "Masters.view_state",
-        "Hide": "0"
-    },
-    {
         "Name": "Change",
         "Permission": "Dispatch.change_dispatchitem",
         "Hide": "0"
@@ -4385,11 +3125,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Download",
-        "Permission": "Masters.download_pricebookhistory",
-        "Hide": "0"
-    },
-    {
         "Name": "Print",
         "Permission": "core_users.print_groupdetails",
         "Hide": "0"
@@ -4400,18 +3135,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_pricebookhistory",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "core_users.export_sequencecode",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can import country",
-        "Permission": "Masters.import_country",
         "Hide": "0"
     },
     {
@@ -4450,33 +3175,13 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_category",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_retailer",
-        "Hide": "0"
-    },
-    {
         "Name": "Assignee",
         "Permission": "System.assignee_bypass_attachment",
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Masters.reports_itemfieldconfiguration",
-        "Hide": "0"
-    },
-    {
         "Name": "Assignee",
         "Permission": "contenttypes.assignee_bypass_contenttype",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_distributorlocation",
         "Hide": "0"
     },
     {
@@ -4520,19 +3225,9 @@
         "Hide": "0"
     },
     {
-        "Name": "Can delete country",
-        "Permission": "Masters.delete_country",
-        "Hide": "0"
-    },
-    {
         "Name": "Assignee",
         "Permission": "core_users.assignee_bypass_permissiondetail",
         "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_item",
-        "Hide": "1"
     },
     {
         "Name": "View",
@@ -4552,11 +3247,6 @@
     {
         "Name": "Reports",
         "Permission": "core_users.reports_djangoapp",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_pricebook",
         "Hide": "0"
     },
     {
@@ -4585,11 +3275,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Can delete uom",
-        "Permission": "Masters.delete_uom",
-        "Hide": "0"
-    },
-    {
         "Name": "View",
         "Permission": "dynamic_preferences.view_globalpreferencemodel",
         "Hide": "0"
@@ -4602,11 +3287,6 @@
     {
         "Name": "View",
         "Permission": "Dispatch.view_dispatchplan",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can view uom",
-        "Permission": "Masters.view_uom",
         "Hide": "0"
     },
     {
@@ -4630,11 +3310,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_location",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "core_users.add_contenttypedetail",
         "Hide": "0"
@@ -4647,11 +3322,6 @@
     {
         "Name": "Assignee",
         "Permission": "System.assignee_bypass_download",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can view city",
-        "Permission": "Masters.view_city",
         "Hide": "0"
     },
     {
@@ -4680,11 +3350,6 @@
         "Hide": "0"
     },
     {
-        "Name": "View",
-        "Permission": "Masters.view_pricebookhistory",
-        "Hide": "0"
-    },
-    {
         "Name": "Reports",
         "Permission": "Invoice.reports_payment",
         "Hide": "0"
@@ -4702,11 +3367,6 @@
     {
         "Name": "Add",
         "Permission": "System.add_filterpreset",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_outlettype",
         "Hide": "0"
     },
     {
@@ -4750,24 +3410,9 @@
         "Hide": "0"
     },
     {
-        "Name": "Can change state",
-        "Permission": "Masters.change_state",
-        "Hide": "0"
-    },
-    {
         "Name": "Delete",
         "Permission": "core_users.delete_assignee",
         "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_brand",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_location",
-        "Hide": "1"
     },
     {
         "Name": "Import",
@@ -4785,11 +3430,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Change",
-        "Permission": "Masters.change_itemfieldconfiguration",
-        "Hide": "0"
-    },
-    {
         "Name": "Download",
         "Permission": "System.download_alertconfig",
         "Hide": "0"
@@ -4801,17 +3441,7 @@
     },
     {
         "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_warehouse",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
         "Permission": "System.assignee_bypass_temporaryverification",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_distributorlocation",
         "Hide": "0"
     },
     {
@@ -4835,23 +3465,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_pricebookdocument",
-        "Hide": "1"
-    },
-    {
         "Name": "Assignee",
         "Permission": "core_users.assignee_bypass_sequencecode",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_channelpartnerconfiguration",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can delete retailer",
-        "Permission": "Masters.delete_retailer",
         "Hide": "0"
     },
     {
@@ -4861,32 +3476,7 @@
     },
     {
         "Name": "Add",
-        "Permission": "Masters.add_assignee_channelpartnerconfiguration",
-        "Hide": "1"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Masters.import_pricebookhistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_itemuomconversion",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
         "Permission": "System.add_taskscheduler",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_pricebookdocument",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_pricebookdocument",
         "Hide": "0"
     },
     {
@@ -4900,18 +3490,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Masters.reports_company",
-        "Hide": "0"
-    },
-    {
         "Name": "Change",
         "Permission": "System.change_attachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Masters.delete_distributorlocation",
         "Hide": "0"
     },
     {
@@ -4925,18 +3505,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Masters.add_brand",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "System.export_recentactivity",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_retailerlocation",
         "Hide": "0"
     },
     {
@@ -4960,113 +3530,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Masters.add_channelpartnerattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_channelpartnerattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_channelpartnerattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_channelpartnerattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_channelpartnerattachment",
-        "Hide": "1"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Masters.delete_channelpartnerattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_channelpartnerattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_channelpartnerattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_channelpartnerattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Masters.import_channelpartnerattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_channelpartnerattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_schemecondition",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_schemeapplicability",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_schemebenefit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_schemebenefit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_schemehistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_schemeapplicability",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "Dispatch.export_dispatchplanattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can import scheme",
-        "Permission": "Masters.import_scheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_schemeapplicability",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_schemehistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_schemeitem",
         "Hide": "0"
     },
     {
@@ -5086,32 +3551,7 @@
     },
     {
         "Name": "Download",
-        "Permission": "Masters.download_schemeapplicability",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_schemehistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
         "Permission": "Dispatch.download_dispatchplanattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_schemeitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can add scheme",
-        "Permission": "Masters.add_scheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_schemeitem",
         "Hide": "0"
     },
     {
@@ -5120,53 +3560,13 @@
         "Hide": "0"
     },
     {
-        "Name": "Download",
-        "Permission": "Masters.download_schemehistory",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "Sales.add_assignee_salesorderattachment",
         "Hide": "0"
     },
     {
-        "Name": "Import",
-        "Permission": "Masters.import_schemebenefit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_schemeapplicability",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can view scheme history",
-        "Permission": "Masters.view_schemehistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_scheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Masters.delete_schemeitem",
-        "Hide": "0"
-    },
-    {
         "Name": "Assignee",
         "Permission": "Sales.assignee_bypass_salesorderattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Masters.delete_schemehistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_schemeitem",
         "Hide": "0"
     },
     {
@@ -5185,23 +3585,8 @@
         "Hide": "0"
     },
     {
-        "Name": "View",
-        "Permission": "Masters.view_schemeitem",
-        "Hide": "0"
-    },
-    {
         "Name": "Import",
         "Permission": "Sales.import_salesorderscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Masters.import_schemecondition",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_schemebenefit",
         "Hide": "0"
     },
     {
@@ -5215,28 +3600,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Masters.reports_schemeitem",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "Dispatch.add_assignee_dispatchplanattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_scheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_schemecondition",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_schemebenefit",
         "Hide": "0"
     },
     {
@@ -5245,28 +3610,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Export",
-        "Permission": "Masters.export_schemeapplicability",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can delete scheme",
-        "Permission": "Masters.delete_scheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_schemeitem",
-        "Hide": "0"
-    },
-    {
         "Name": "View",
         "Permission": "Dispatch.view_dispatchplanattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_schemehistory",
         "Hide": "0"
     },
     {
@@ -5280,18 +3625,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Delete",
-        "Permission": "Masters.delete_schemeapplicability",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "Sales.add_assignee_salesorderitemscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can change scheme",
-        "Permission": "Masters.change_scheme",
         "Hide": "0"
     },
     {
@@ -5300,28 +3635,13 @@
         "Hide": "0"
     },
     {
-        "Name": "Download",
-        "Permission": "Masters.download_scheme",
-        "Hide": "0"
-    },
-    {
         "Name": "Assignee",
         "Permission": "Sales.assignee_bypass_salesorderitemscheme",
         "Hide": "0"
     },
     {
-        "Name": "Import",
-        "Permission": "Masters.import_schemeapplicability",
-        "Hide": "0"
-    },
-    {
         "Name": "Reports",
         "Permission": "Sales.reports_salesorderscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_schemecondition",
         "Hide": "0"
     },
     {
@@ -5340,38 +3660,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Masters.add_schemeitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Masters.import_schemeitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_schemeapplicability",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_schemecondition",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "Sales.export_salesorderitemscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_schemecondition",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_schemecondition",
         "Hide": "0"
     },
     {
@@ -5381,27 +3671,7 @@
     },
     {
         "Name": "Print",
-        "Permission": "Masters.print_schemecondition",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can view scheme",
-        "Permission": "Masters.view_scheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
         "Permission": "Sales.print_salesorderscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Masters.delete_schemecondition",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Masters.delete_schemebenefit",
         "Hide": "0"
     },
     {
@@ -5410,18 +3680,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Export",
-        "Permission": "Masters.export_schemecondition",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "Dispatch.add_dispatchplanattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Masters.import_schemehistory",
         "Hide": "0"
     },
     {
@@ -5432,21 +3692,6 @@
     {
         "Name": "View",
         "Permission": "Sales.view_salesorderattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_schemeitem",
-        "Hide": "1"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_schemebenefit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_schemebenefit",
         "Hide": "0"
     },
     {
@@ -5465,28 +3710,13 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_schemecondition",
-        "Hide": "1"
-    },
-    {
         "Name": "Reports",
         "Permission": "Dispatch.reports_dispatchplanattachment",
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_schemehistory",
-        "Hide": "0"
-    },
-    {
         "Name": "Import",
         "Permission": "Sales.import_salesorderitemscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_scheme",
         "Hide": "0"
     },
     {
@@ -5505,24 +3735,9 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_schemeapplicability",
-        "Hide": "1"
-    },
-    {
         "Name": "Print",
         "Permission": "Dispatch.print_dispatchplanattachment",
         "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_scheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_schemehistory",
-        "Hide": "1"
     },
     {
         "Name": "Add",
@@ -5530,43 +3745,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Export",
-        "Permission": "Masters.export_schemebenefit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_schemebenefit",
-        "Hide": "0"
-    },
-    {
         "Name": "Print",
         "Permission": "Sales.print_salesorderitemscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_schemebenefit",
-        "Hide": "1"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_schemeapplicability",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_scheme",
-        "Hide": "1"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_schemehistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_distributorcontact",
         "Hide": "0"
     },
     {
@@ -5580,16 +3760,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Download",
-        "Permission": "Masters.download_retailercontact",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_distributorcontact",
-        "Hide": "0"
-    },
-    {
         "Name": "Reports",
         "Permission": "Receipts.reports_receipt",
         "Hide": "0"
@@ -5598,36 +3768,6 @@
         "Name": "Reports",
         "Permission": "Receipts.reports_receiptallocation",
         "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_locationcontact",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_distributorcontact",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_locationcontact",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_distributorcontact",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_retailercontact",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_locationcontact",
-        "Hide": "1"
     },
     {
         "Name": "Export",
@@ -5650,18 +3790,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Delete",
-        "Permission": "Masters.delete_distributorcontact",
-        "Hide": "0"
-    },
-    {
         "Name": "Assignee",
         "Permission": "Receipts.assignee_bypass_receipt",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_retailercontact",
         "Hide": "0"
     },
     {
@@ -5675,23 +3805,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Masters.reports_locationcontact",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Masters.import_distributorcontact",
-        "Hide": "0"
-    },
-    {
         "Name": "Import",
         "Permission": "Receipts.import_receiptattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_superstockistcontact",
         "Hide": "0"
     },
     {
@@ -5712,11 +3827,6 @@
     {
         "Name": "Add",
         "Permission": "Receipts.add_assignee_customercredit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Masters.import_superstockistcontact",
         "Hide": "0"
     },
     {
@@ -5745,18 +3855,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_locationcontact",
-        "Hide": "0"
-    },
-    {
         "Name": "Download",
         "Permission": "Receipts.download_receiptallocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_distributorcontact",
         "Hide": "0"
     },
     {
@@ -5767,16 +3867,6 @@
     {
         "Name": "View",
         "Permission": "Receipts.view_customercredit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Masters.import_retailercontact",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_locationcontact",
         "Hide": "0"
     },
     {
@@ -5800,28 +3890,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Export",
-        "Permission": "Masters.export_retailercontact",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "Receipts.add_assignee_receiptallocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Masters.delete_superstockistcontact",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_locationcontact",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_superstockistcontact",
         "Hide": "0"
     },
     {
@@ -5835,11 +3905,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Masters.reports_retailercontact",
-        "Hide": "0"
-    },
-    {
         "Name": "Import",
         "Permission": "Receipts.import_creditutilization",
         "Hide": "0"
@@ -5847,11 +3912,6 @@
     {
         "Name": "Delete",
         "Permission": "Receipts.delete_receiptattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Masters.import_locationcontact",
         "Hide": "0"
     },
     {
@@ -5868,21 +3928,6 @@
         "Name": "Can view receipt",
         "Permission": "Receipts.view_receipt",
         "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Masters.delete_retailercontact",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_distributorcontact",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_distributorcontact",
-        "Hide": "1"
     },
     {
         "Name": "Assignee",
@@ -5920,23 +3965,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_superstockistcontact",
-        "Hide": "0"
-    },
-    {
         "Name": "View",
         "Permission": "Receipts.view_receiptallocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_superstockistcontact",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_distributorcontact",
         "Hide": "0"
     },
     {
@@ -5950,28 +3980,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Masters.reports_superstockistcontact",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_superstockistcontact",
-        "Hide": "0"
-    },
-    {
         "Name": "Assignee",
         "Permission": "Receipts.assignee_bypass_creditutilization",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_superstockistcontact",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_retailercontact",
         "Hide": "0"
     },
     {
@@ -5980,29 +3990,9 @@
         "Hide": "0"
     },
     {
-        "Name": "Export",
-        "Permission": "Masters.export_locationcontact",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_distributorcontact",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_locationcontact",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "Receipts.add_assignee_receiptattachment",
         "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_retailercontact",
-        "Hide": "1"
     },
     {
         "Name": "Change",
@@ -6012,11 +4002,6 @@
     {
         "Name": "Change",
         "Permission": "Receipts.change_receiptattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_superstockistcontact",
         "Hide": "0"
     },
     {
@@ -6030,28 +4015,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_superstockistcontact",
-        "Hide": "1"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Masters.delete_locationcontact",
-        "Hide": "0"
-    },
-    {
         "Name": "Reports",
         "Permission": "Receipts.reports_customercredit",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_retailercontact",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_retailercontact",
         "Hide": "0"
     },
     {
@@ -6080,23 +4045,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Can add route",
-        "Permission": "Masters.add_route",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_route",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "token_blacklist.export_blacklistedtoken",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Masters.print_routecoverage",
         "Hide": "0"
     },
     {
@@ -6115,16 +4065,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Download",
-        "Permission": "Masters.download_routecoverage",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_assignee_routecoverage",
-        "Hide": "1"
-    },
-    {
         "Name": "Reports",
         "Permission": "Receipts.reports_customerledgerentry",
         "Hide": "0"
@@ -6137,11 +4077,6 @@
     {
         "Name": "Delete",
         "Permission": "token_blacklist.delete_outstandingtoken",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_route",
         "Hide": "0"
     },
     {
@@ -6162,11 +4097,6 @@
     {
         "Name": "Add",
         "Permission": "token_blacklist.add_assignee_blacklistedtoken",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_route",
         "Hide": "0"
     },
     {
@@ -6195,26 +4125,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Can view route",
-        "Permission": "Masters.view_route",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_route",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_routecoverage",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can change route",
-        "Permission": "Masters.change_route",
-        "Hide": "0"
-    },
-    {
         "Name": "Change",
         "Permission": "token_blacklist.change_blacklistedtoken",
         "Hide": "0"
@@ -6240,28 +4150,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Can delete route",
-        "Permission": "Masters.delete_route",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_route",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_routecoverage",
-        "Hide": "0"
-    },
-    {
         "Name": "Delete",
         "Permission": "token_blacklist.delete_blacklistedtoken",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_routecoverage",
         "Hide": "0"
     },
     {
@@ -6290,11 +4180,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Import",
-        "Permission": "Masters.import_routecoverage",
-        "Hide": "0"
-    },
-    {
         "Name": "Reports",
         "Permission": "token_blacklist.reports_outstandingtoken",
         "Hide": "0"
@@ -6306,37 +4191,7 @@
     },
     {
         "Name": "Add",
-        "Permission": "Masters.add_assignee_route",
-        "Hide": "1"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_routecoverage",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_routecoverage",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can import route",
-        "Permission": "Masters.import_route",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
         "Permission": "token_blacklist.add_blacklistedtoken",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Masters.delete_routecoverage",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Masters.assignee_bypass_routecoverage",
         "Hide": "0"
     },
     {
@@ -6502,41 +4357,6 @@
     {
         "Name": "View",
         "Permission": "SiteVisit.view_calendartodo",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Masters.add_project",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Masters.change_project",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Masters.delete_project",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Masters.view_project",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Masters.reports_project",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Masters.export_project",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Masters.download_project",
         "Hide": "0"
     },
     {

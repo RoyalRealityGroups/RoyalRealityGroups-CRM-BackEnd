@@ -21,7 +21,7 @@ if not os.environ.get('DJANGO_SETTINGS_MODULE'):
 
 from django.contrib.auth import get_user_model
 from Lead.models import Lead
-from Masters.models import Project
+from ProjectManagement.models import Project
 from Inventory.models import PlotInventory, FlatInventory
 from Booking.models import Booking, BOOKING_STATUS_CHOICES
 

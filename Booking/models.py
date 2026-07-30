@@ -42,7 +42,7 @@ class Booking(CoreModel):
 
     # Project & Unit
     project = models.ForeignKey(
-        'Masters.Project',
+        'ProjectManagement.Project',
         on_delete=models.RESTRICT,
         related_name='bookings',
     )

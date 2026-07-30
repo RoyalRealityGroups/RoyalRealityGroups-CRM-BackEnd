@@ -82,6 +82,7 @@ INSTALLED_APPS = [
     'Documents',
     'RealEstateReports',
     'SiteVisit',
+    'ProjectManagement',
 ]
 
 

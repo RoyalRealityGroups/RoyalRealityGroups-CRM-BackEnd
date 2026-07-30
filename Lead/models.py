@@ -61,7 +61,7 @@ class Lead(CoreModel):
 
     # Project interest
     interested_project = models.ForeignKey(
-        'Masters.Project',
+        'ProjectManagement.Project',
         on_delete=models.SET_NULL,
         related_name='interested_leads',
         null=True,

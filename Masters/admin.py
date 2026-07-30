@@ -664,63 +664,6 @@ class SchemeHistoryAdmin(admin.ModelAdmin):
         return False
 
 # ==================== Project Master Admin ====================
+# ProjectAdmin, ProjectStatusHistoryAdmin, ProjectImageAdmin have been
+# moved to ProjectManagement/admin.py
 
-@admin.register(Project)
-class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('code', 'name', 'developer_name', 'project_type',
-                    'approval_type', 'status', 'location', 'is_active', 'is_deleted',
-                    'created_on')
-    list_filter = ('status', 'project_type', 'approval_type', 'is_active', 'is_deleted')
-    search_fields = ('code', 'name', 'developer_name', 'rera_number')
-    ordering = ('name',)
-    list_per_page = 25
-    raw_id_fields = ()
-    readonly_fields = ('code', 'created_on', 'modified_on',
-                      'created_by_identifier', 'modified_by_identifier')
-
-    fieldsets = (
-        ('Identification', {
-            'fields': ('code', 'name', 'developer_name')
-        }),
-        ('Classification', {
-            'fields': ('project_type', 'approval_type', 'status', 'is_active')
-        }),
-        ('Location', {
-            'fields': ('location', 'address')
-        }),
-        ('Compliance', {
-            'fields': ('rera_number', 'launch_date', 'possession_date')
-        }),
-        ('Size & Description', {
-            'fields': ('total_area', 'description')
-        }),
-        ('Marketing Assets', {
-            'fields': ('image_url', 'brochure_url', 'layout_plan_url', 'floor_plan_url'),
-            'classes': ('collapse',)
-        }),
-        ('Audit', {
-            'fields': ('is_deleted', 'created_by_identifier', 'created_on',
-                       'modified_by_identifier', 'modified_on'),
-            'classes': ('collapse',)
-        }),
-    )
-
-    def has_delete_permission(self, request, obj=None):
-        # Force users through the soft-delete path; hard delete via shell only
-        return False
-
-
-@admin.register(ProjectStatusHistory)
-class ProjectStatusHistoryAdmin(admin.ModelAdmin):
-    list_display = ('project', 'from_status', 'to_status', 'changed_by_identifier', 'created_on')
-    list_filter = ('to_status',)
-    search_fields = ('project__code', 'project__name', 'changed_by_identifier')
-    readonly_fields = ('project', 'from_status', 'to_status', 'changed_by_identifier', 'remarks', 'created_on')
-    ordering = ('-created_on',)
-    list_per_page = 25
-
-    def has_add_permission(self, request):
-        return False  # History rows are auto-created
-
-    def has_delete_permission(self, request, obj=None):
-        return False

@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from Masters.models import Project, ProjectStatusHistory
+from ProjectManagement.models import Project, ProjectStatusHistory
 
 User = get_user_model()
 
@@ -65,7 +65,7 @@ class ProjectModelTests(TestCase):
 
 
 class ProjectAPITests(TestCase):
-    """Endpoint-level tests for /api/masters/projects/."""
+    """Endpoint-level tests for /api/projects/."""
 
     def setUp(self):
         self.user = User.objects.create_user(
@@ -76,7 +76,7 @@ class ProjectAPITests(TestCase):
 
     def test_list_requires_auth(self):
         anon = APIClient()
-        resp = anon.get('/api/masters/projects/')
+        resp = anon.get('/api/projects/')
         self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_create_then_list(self):
@@ -88,45 +88,47 @@ class ProjectAPITests(TestCase):
             'status': 'UPCOMING',
             'is_active': True,
         }
-        resp = self.client.post('/api/masters/projects/', payload, format='json')
+        resp = self.client.post('/api/projects/', payload, format='json')
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED, resp.data)
         self.assertIn('code', resp.data)
         self.assertTrue(resp.data['code'].startswith('PROJ'))
 
-        resp = self.client.get('/api/masters/projects/')
+        resp = self.client.get('/api/projects/')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertGreaterEqual(resp.data['count'], 1)
 
     def test_soft_delete_via_api(self):
-        proj = Project.objects.create(
+        from ProjectManagement.models import Project as PMProject
+        proj = PMProject.objects.create(
             name='Delete Me',
             created_by_identifier=str(self.user.id),
         )
-        resp = self.client.delete(f'/api/masters/projects/{proj.id}/')
+        resp = self.client.delete(f'/api/projects/{proj.id}/')
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
         proj.refresh_from_db()
         self.assertTrue(proj.is_deleted)
 
         # Hidden from default list
-        resp = self.client.get('/api/masters/projects/')
+        resp = self.client.get('/api/projects/')
         ids = [r['id'] for r in resp.data['results']]
         self.assertNotIn(str(proj.id), ids)
 
     def test_choices_endpoint(self):
-        resp = self.client.get('/api/masters/projects/choices/')
+        resp = self.client.get('/api/projects/choices/')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertIn('project_statuses', resp.data)
         self.assertIn('project_types', resp.data)
         self.assertIn('approval_types', resp.data)
 
     def test_mini_endpoint_excludes_soft_deleted(self):
-        Project.objects.create(name='Active One', is_active=True)
-        deleted = Project.objects.create(name='Deleted One', is_active=True)
+        from ProjectManagement.models import Project as PMProject
+        PMProject.objects.create(name='Active One', is_active=True)
+        deleted = PMProject.objects.create(name='Deleted One', is_active=True)
         deleted.delete()  # soft-delete
         deleted.save()
 
-        resp = self.client.get('/api/masters/projects/mini/')
+        resp = self.client.get('/api/projects/mini/')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         names = [p['name'] for p in resp.data]
         self.assertIn('Active One', names)

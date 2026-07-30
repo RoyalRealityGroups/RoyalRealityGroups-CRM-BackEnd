@@ -208,18 +208,4 @@ urlpatterns = [
 
     path('exampleapi/',views.ExampleGETAPI.as_view()),
 
-    # ============================================================================
-    # Project Master — SRS Module 6
-    # ============================================================================
-    path('projects/', views.ProjectList.as_view()),
-    path('projects/export/', views.ProjectExportView.as_view(), name='project-export'),
-    path('projects/choices/', views.ProjectChoices.as_view()),
-    path('projects/mini/', views.ProjectMini.as_view()),
-    path('projects/<str:pk>/', views.ProjectDetail.as_view()),
-    
-    # Project Images (gallery, floor plans, elevation)
-    path('projects/<str:project_id>/images/', views.ProjectImageList.as_view()),
-    path('projects/<str:project_id>/images/upload/', views.ProjectImageUpload.as_view()),
-    path('projects/images/<str:pk>/', views.ProjectImageDetail.as_view()),
-
 ]

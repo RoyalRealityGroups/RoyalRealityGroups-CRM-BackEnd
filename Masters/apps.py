@@ -30,8 +30,8 @@ class MastersConfig(AppConfig):
                 Route, Location, WareHouse, UOM, Category, Brand, Tax, Superstockist,
                 SuperstockistLocation, Distributor, DistributorLocation, Retailer,
                 RetailerLocation, PriceBook, Agent,
-                Project,
             )
+            from ProjectManagement.models import Project
 
             register_report_models(only_imports=[
                 {'Item': {'model_class': Item, 'resource_class': ItemResource}},

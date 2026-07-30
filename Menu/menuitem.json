@@ -120,7 +120,7 @@
         "Click": "",
         "Menu": "MENU-001",
         "Submenu": "SBM-006",
-        "Permission": "Masters.view_project",
+        "Permission": "ProjectManagement.view_project",
         "Description": "Manage real estate projects (SRS Module 6)",
         "Created On": "2026-07-11 00:00:00",
         "Modified On": "2026-07-11 00:00:00"

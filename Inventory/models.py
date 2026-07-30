@@ -40,7 +40,7 @@ class PlotInventory(CoreModel):
     CODE_PREFIX = 'PLT'
 
     project = models.ForeignKey(
-        'Masters.Project',
+        'ProjectManagement.Project',
         on_delete=models.CASCADE,
         related_name='plots',
     )
@@ -97,7 +97,7 @@ class FlatInventory(CoreModel):
     CODE_PREFIX = 'FLT'
 
     project = models.ForeignKey(
-        'Masters.Project',
+        'ProjectManagement.Project',
         on_delete=models.CASCADE,
         related_name='flats',
     )

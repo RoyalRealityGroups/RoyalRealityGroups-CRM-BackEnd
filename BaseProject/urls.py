@@ -52,23 +52,15 @@ if not settings.DYNAMICS_SAFE_MODE:
         path('api/reports/', include('Core.Reports.urls')),
 
         path('api/usermanagement/', include('Users.urls')),  # Changed from 'users/' to avoid conflict
-        path('api/masters/', include('Masters.urls')),
-    path('api/sales/', include('Sales.urls')),
-    path('api/lead/', include('Lead.urls')),
-    path('api/sitevisit/', include(site_visit_router.urls)),
-    path('api/inventory/', include('Inventory.urls')),
-    path('api/dispatch/', include('Dispatch.urls')),
-        path('api/invoice/', include('Invoice.urls')),
-        path('api/receipts/', include('Receipts.urls')),
-        path('api/delivery/', include('Delivery.urls')),
-        path('api/thirdparty/', include('thirdparty.urls')),
-        path('api/general/', include('General.urls')),
-        path('api/dashboards/', include('dashboards.urls')),
-        # Phase 1 — new modules
+        path('api/projects/', include('ProjectManagement.urls')),
+        path('api/lead/', include('Lead.urls')),
+        path('api/sitevisit/', include(site_visit_router.urls)),
         path('api/inventory/', include('Inventory.urls')),
         path('api/booking/', include('Booking.urls')),
         path('api/documents/', include('Documents.urls')),
         path('api/re-reports/', include('RealEstateReports.urls')),
+        path('api/dashboards/', include('dashboards.urls')),
+        path('api/general/', include('General.urls')),
 
     ]
 

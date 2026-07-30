@@ -27,7 +27,7 @@ from django.utils import timezone
 from Lead.models import Lead, LEAD_SOURCE_CHOICES, LEAD_STATUS_CHOICES
 from SiteVisit.models import SiteVisit
 from Booking.models import Booking
-from Masters.models import Project
+from ProjectManagement.models import Project
 from Inventory.models import PlotInventory, FlatInventory
 
 User = get_user_model()

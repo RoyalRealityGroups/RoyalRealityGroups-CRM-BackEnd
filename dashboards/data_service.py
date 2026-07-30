@@ -70,8 +70,8 @@ class WidgetDataService:
         'bookings.over_time': {'model': 'Booking.Booking', 'field': 'booking_date', 'type': 'time_series'},
 
         # Projects
-        'projects.count': {'model': 'Masters.Project', 'field': None, 'type': 'count'},
-        'projects.by_status': {'model': 'Masters.Project', 'field': 'status', 'type': 'group_by'},
+        'projects.count': {'model': 'ProjectManagement.Project', 'field': None, 'type': 'count'},
+        'projects.by_status': {'model': 'ProjectManagement.Project', 'field': 'status', 'type': 'group_by'},
 
         # Inventory
         'plots.count': {'model': 'Inventory.PlotInventory', 'field': None, 'type': 'count'},

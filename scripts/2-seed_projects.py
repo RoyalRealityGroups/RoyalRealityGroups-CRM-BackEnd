@@ -16,7 +16,7 @@ if not os.environ.get('DJANGO_SETTINGS_MODULE'):
     django.setup()
 
 from django.contrib.auth import get_user_model
-from Masters.models import Project
+from ProjectManagement.models import Project
 
 User = get_user_model()
 

@@ -64,7 +64,7 @@ class Document(CoreModel):
         max_length=10, choices=LINKED_TO_CHOICES, default='PROJECT'
     )
     project = models.ForeignKey(
-        'Masters.Project',
+        'ProjectManagement.Project',
         on_delete=models.CASCADE,
         related_name='documents',
         null=True, blank=True,

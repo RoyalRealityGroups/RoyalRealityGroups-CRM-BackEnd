@@ -4,59 +4,45 @@ Screen-level permission enforcement for RRGMS.
 Maps API URL prefixes to Screen codes, and uses Django's built-in
 group permissions (from import_menu_data) to check whether the user
 can perform the requested action.
-
-This replaces AllPermissions with a screen-aware approach that maps
-HTTP methods to the standard Django permission codenames
-(view_X, add_X, change_X, delete_X) for each screen's model.
 """
 from rest_framework.permissions import BasePermission
 
 
-# Map URL path prefixes to the Django app_label.model used for permission checking.
-# Format: prefix -> (app_label, model_name)
-# The permission codename will be: {action}_{model_name}
-# e.g. POST /api/lead/leads/ -> checks Lead.add_lead
 URL_TO_PERMISSION_MODEL = {
+    # Lead Management
     '/api/lead/followups/reminders/': None,  # exempt
-    '/api/lead/leads/choices/': None,  # exempt
+    '/api/lead/leads/choices/': None,        # exempt
     '/api/lead/followups/': ('Lead', 'leadfollowup'),
     '/api/lead/leads/cross_check/': ('Lead', 'lead'),
-    '/api/lead/leads/export/': ('Lead', 'lead'),  # export uses export_ perm
+    '/api/lead/leads/export/': ('Lead', 'lead'),
     '/api/lead/': ('Lead', 'lead'),
+
+    # Site Visit
     '/api/sitevisit/': ('SiteVisit', 'sitevisit'),
-    '/api/masters/projects/': ('Masters', 'project'),
-    '/api/projects/': ('Masters', 'project'),
+
+    # Project Management
+    '/api/projects/': ('ProjectManagement', 'project'),
+
+    # Inventory
     '/api/inventory/plots/': ('Inventory', 'plotinventory'),
     '/api/inventory/flats/': ('Inventory', 'flatinventory'),
     '/api/inventory/': ('Inventory', 'plotinventory'),
+
+    # Booking
     '/api/booking/bookings/choices/': None,  # exempt
     '/api/booking/': ('Booking', 'booking'),
+
+    # Documents
     '/api/documents/': ('Documents', 'document'),
-    '/api/re-reports/': None,  # exempt — reports
-    '/api/dashboards/': None,  # exempt — dashboards
+
+    # Reports & Dashboards (exempt)
+    '/api/re-reports/': None,
+    '/api/dashboards/': None,
+
+    # User Management
     '/api/usermanagement/': ('Users', 'user'),
-    '/api/masters/countries/': ('Masters', 'country'),
-    '/api/masters/states/': ('Masters', 'state'),
-    '/api/masters/cities/': ('Masters', 'city'),
-    '/api/masters/area/': ('Masters', 'area'),
-    '/api/masters/company/': ('Masters', 'company'),
-    '/api/masters/location/': ('Masters', 'location'),
-    '/api/masters/warehouses/': ('Masters', 'warehouse'),
-    '/api/masters/uom/': ('Masters', 'uom'),
-    '/api/masters/categories/': ('Masters', 'category'),
-    '/api/masters/brands/': ('Masters', 'brand'),
-    '/api/masters/tax/': ('Masters', 'tax'),
-    '/api/masters/items/': ('Masters', 'item'),
-    '/api/masters/item-tax-composition/': ('Masters', 'itemtaxcomposition'),
-    '/api/masters/outlet-types/': ('Masters', 'outlettype'),
-    '/api/masters/superstockist/': ('Masters', 'superstockist'),
-    '/api/masters/distributor/': ('Masters', 'distributor'),
-    '/api/masters/retailer/': ('Masters', 'retailer'),
-    '/api/masters/route/': ('Masters', 'route'),
-    '/api/masters/': ('Masters', 'project'),  # fallback for other masters
 }
 
-# Map HTTP methods to Django permission action prefix
 METHOD_TO_PERM_ACTION = {
     'GET': 'view',
     'HEAD': 'view',
@@ -67,14 +53,12 @@ METHOD_TO_PERM_ACTION = {
     'DELETE': 'delete',
 }
 
-# URL prefixes that skip permission checks entirely
 EXEMPT_PREFIXES = (
     '/api/users/',        # Auth (login, logout, token refresh)
     '/api/system/',       # System config, menu
     '/api/reports/',      # Import/export framework
     '/api/general/',      # General settings
-    '/api/thirdparty/',   # Focus ERP
-    '/api/usermanagement/dropdowns/',   # Dropdowns needed by all screens
+    '/api/usermanagement/dropdowns/',       # Dropdowns needed by all screens
     '/api/usermanagement/my-permissions/',  # Needed for frontend permission checks
 )
 
@@ -120,15 +104,8 @@ class ScreenPermission(BasePermission):
         if perm_model is None:
             return True
 
-        # None means explicitly exempt
-        # (already handled above but also in the map for specific sub-URLs)
-
         app_label, model_name = perm_model
-
-        # Determine action
         action = METHOD_TO_PERM_ACTION.get(request.method, 'view')
-
-        # Build permission string: e.g. "Lead.view_lead", "Masters.add_project"
         perm_codename = f"{app_label}.{action}_{model_name}"
 
         return user.has_perm(perm_codename)

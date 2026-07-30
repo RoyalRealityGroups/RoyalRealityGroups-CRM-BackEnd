@@ -126,7 +126,7 @@ def seed_leads():
     # Try to get projects for interested_project
     projects = []
     try:
-        from Masters.models import Project
+        from ProjectManagement.models import Project
         projects = list(Project.objects.filter(is_deleted=False, is_active=True))
     except Exception:
         pass

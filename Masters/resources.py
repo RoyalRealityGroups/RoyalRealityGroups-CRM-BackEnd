@@ -6,7 +6,8 @@ from Core.Core.imports_exports.widget import ChoicesWidget
 from .models import *
 from import_export.widgets import ForeignKeyWidget, DateTimeWidget
 
-from Masters.models import Country, State, District, Mandal, City, Area, Location, WareHouse, Route, RouteCoverage, Company, Category, Brand, Tax, Item, ItemTaxComposition, Agent, Project
+from Masters.models import Country, State, District, Mandal, City, Area, Location, WareHouse, Route, RouteCoverage, Company, Category, Brand, Tax, Item, ItemTaxComposition, Agent
+from ProjectManagement.models import Project
 from django.contrib.auth import get_user_model
 User = get_user_model()
 

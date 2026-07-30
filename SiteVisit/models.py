@@ -55,7 +55,7 @@ class SiteVisit(CoreModel):
     # --- Schedule fields (required) ---
     customer_name = models.CharField(max_length=200, db_index=True)
     project = models.ForeignKey(
-        'Masters.Project',
+        'ProjectManagement.Project',
         on_delete=models.RESTRICT,
         related_name='site_visits',
         null=True,

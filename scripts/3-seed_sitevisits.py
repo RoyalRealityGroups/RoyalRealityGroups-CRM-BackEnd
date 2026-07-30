@@ -20,7 +20,7 @@ if not os.environ.get('DJANGO_SETTINGS_MODULE'):
 
 from django.contrib.auth import get_user_model
 from Lead.models import Lead
-from Masters.models import Project
+from ProjectManagement.models import Project
 from SiteVisit.models import SiteVisit, SITE_VISIT_STATUS_CHOICES
 
 User = get_user_model()

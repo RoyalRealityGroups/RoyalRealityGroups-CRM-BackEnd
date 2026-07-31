@@ -342,18 +342,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Projectimage",
-        "ContentType": "projectimage",
-        "App": "ProjectManagement",
-        "Hide": "0"
-    },
-    {
-        "Name": "Projectstatushistory",
-        "ContentType": "projectstatushistory",
-        "App": "ProjectManagement",
-        "Hide": "0"
-    },
-    {
         "Name": "Plotinventory",
         "ContentType": "plotinventory",
         "App": "Inventory",

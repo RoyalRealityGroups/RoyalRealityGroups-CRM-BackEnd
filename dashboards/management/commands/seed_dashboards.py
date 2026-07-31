@@ -1,17 +1,16 @@
 """
-Management command to seed default dashboards for TDH Sales Application.
+Management command to seed default dashboards for Royal Reality Groups CRM.
 
 Usage:
     python manage.py seed_dashboards
     python manage.py seed_dashboards --clear  # Remove ALL dashboards first
 """
 from django.core.management.base import BaseCommand
-from django.contrib.auth.models import Group
-from dashboards.models import Dashboard, DashboardWidget, DashboardGroup, WidgetType
+from dashboards.models import Dashboard, DashboardWidget, WidgetType
 
 
 class Command(BaseCommand):
-    help = 'Seeds default dashboards for TDH Sales Application'
+    help = 'Seeds default dashboards for Royal Reality Groups CRM'
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -21,7 +20,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        self.stdout.write('Seeding TDH Sales dashboards...')
+        self.stdout.write('Seeding Real Estate CRM dashboards...')
 
         # Cache widget types by code
         widget_types = {}
@@ -34,37 +33,104 @@ class Command(BaseCommand):
             ))
             return
 
-        # Delete existing dashboards if requested
         if options.get('clear'):
             deleted_count = Dashboard.objects.all().delete()[0]
             self.stdout.write(self.style.WARNING(f'Deleted {deleted_count} existing dashboards'))
 
-        # Create Sales Dashboard
-        sales_dashboard = self._create_sales_dashboard(widget_types)
-        self.stdout.write(self.style.SUCCESS(f'Created: {sales_dashboard.name}'))
+        overview = self._create_overview_dashboard(widget_types)
+        self.stdout.write(self.style.SUCCESS(f'Created: {overview.name}'))
 
-        # Create Dispatch Dashboard
-        dispatch_dashboard = self._create_dispatch_dashboard(widget_types)
-        self.stdout.write(self.style.SUCCESS(f'Created: {dispatch_dashboard.name}'))
-
-        # Create Overview Dashboard
-        overview_dashboard = self._create_overview_dashboard(widget_types)
-        self.stdout.write(self.style.SUCCESS(f'Created: {overview_dashboard.name}'))
+        sales = self._create_sales_dashboard(widget_types)
+        self.stdout.write(self.style.SUCCESS(f'Created: {sales.name}'))
 
         self.stdout.write(self.style.SUCCESS(
-            '\nDone! Created 3 dashboards. Assign them to groups via admin or API.'
+            '\nDone! Created 2 dashboards. Assign them to groups via admin or API.'
         ))
 
-    def _create_sales_dashboard(self, wt):
-        """Sales Dashboard - Sales orders, invoices, receipts"""
+    def _create_overview_dashboard(self, wt):
+        """Overview Dashboard — high-level real estate KPIs"""
         dashboard = Dashboard.objects.create(
-            name='Sales Dashboard',
-            description='Sales orders, invoices, and receipts overview',
-            icon='TrendingUp',
-            visibility='role',
+            name='Overview Dashboard',
+            description='High-level overview of leads, site visits, bookings, and projects',
+            icon='LayoutDashboard',
+            visibility='organization',
             is_default=True,
             is_system=True,
             display_order=1,
+            theme='default',
+            refresh_interval=300,
+            layout_config={'columns': 12, 'rowHeight': 100, 'gap': 16},
+        )
+
+        widgets = [
+            # Row 0: Welcome
+            {
+                'widget_type': 'welcome_card',
+                'title': 'Real Estate CRM',
+                'x': 0, 'y': 0, 'w': 12, 'h': 1,
+                'config': {'showGreeting': True, 'showDate': True},
+            },
+            # Row 1: KPI cards
+            {
+                'widget_type': 'stats_card',
+                'title': 'Total Leads',
+                'x': 0, 'y': 1, 'w': 3, 'h': 1,
+                'data_source': 'realestate.leads_count',
+                'config': {'color': 'blue', 'icon': 'Users'},
+            },
+            {
+                'widget_type': 'stats_card',
+                'title': 'Site Visits',
+                'x': 3, 'y': 1, 'w': 3, 'h': 1,
+                'data_source': 'realestate.sitevisits_count',
+                'config': {'color': 'green', 'icon': 'MapPin'},
+            },
+            {
+                'widget_type': 'stats_card',
+                'title': 'Bookings',
+                'x': 6, 'y': 1, 'w': 3, 'h': 1,
+                'data_source': 'realestate.bookings_count',
+                'config': {'color': 'purple', 'icon': 'FileText'},
+            },
+            {
+                'widget_type': 'stats_card',
+                'title': 'Active Projects',
+                'x': 9, 'y': 1, 'w': 3, 'h': 1,
+                'data_source': 'realestate.projects_count',
+                'config': {'color': 'orange', 'icon': 'Building'},
+            },
+            # Row 2-3: Charts
+            {
+                'widget_type': 'bar_chart',
+                'title': 'Leads by Status',
+                'subtitle': 'Lead pipeline status',
+                'x': 0, 'y': 2, 'w': 6, 'h': 2,
+                'data_source': 'realestate.leads_by_status',
+                'config': {'orientation': 'vertical', 'showLegend': True},
+            },
+            {
+                'widget_type': 'donut_chart',
+                'title': 'Bookings by Project',
+                'subtitle': 'Bookings distribution',
+                'x': 6, 'y': 2, 'w': 6, 'h': 2,
+                'data_source': 'realestate.bookings_by_project',
+                'config': {'showLegend': True, 'showCenterLabel': True},
+            },
+        ]
+
+        self._create_widgets(dashboard, wt, widgets)
+        return dashboard
+
+    def _create_sales_dashboard(self, wt):
+        """Sales Dashboard — lead and booking conversion tracking"""
+        dashboard = Dashboard.objects.create(
+            name='Sales Dashboard',
+            description='Lead follow-ups, site visits, and booking conversions',
+            icon='TrendingUp',
+            visibility='role',
+            is_default=False,
+            is_system=True,
+            display_order=2,
             theme='default',
             refresh_interval=300,
             layout_config={'columns': 12, 'rowHeight': 100, 'gap': 16},
@@ -84,279 +150,68 @@ class Command(BaseCommand):
                 'x': 8, 'y': 0, 'w': 4, 'h': 1,
                 'config': {
                     'actions': [
-                        {'label': 'New Sales Order', 'action': 'create_sales_order', 'icon': 'Plus'},
-                        {'label': 'New Invoice', 'action': 'create_invoice', 'icon': 'FileText'},
+                        {'label': 'New Lead', 'action': 'create_lead', 'icon': 'Plus'},
+                        {'label': 'New Site Visit', 'action': 'create_sitevisit', 'icon': 'MapPin'},
                     ],
                     'columns': 2,
                 },
             },
-            # Row 1: Stats cards
+            # Row 1: KPI cards
             {
                 'widget_type': 'stats_card',
-                'title': 'Total Sales Orders',
+                'title': 'Leads This Month',
                 'x': 0, 'y': 1, 'w': 3, 'h': 1,
-                'data_source': 'sales.count',
-                'config': {'color': 'blue', 'icon': 'ShoppingCart'},
+                'data_source': 'realestate.leads_count',
+                'config': {'color': 'blue', 'icon': 'Users'},
             },
             {
                 'widget_type': 'stats_card',
-                'title': 'Total Invoices',
+                'title': 'Site Visits This Month',
                 'x': 3, 'y': 1, 'w': 3, 'h': 1,
-                'data_source': 'invoice.count',
-                'config': {'color': 'green', 'icon': 'FileText'},
+                'data_source': 'realestate.sitevisits_count',
+                'config': {'color': 'green', 'icon': 'MapPin'},
             },
             {
                 'widget_type': 'stats_card',
-                'title': 'Total Receipts',
+                'title': 'Bookings This Month',
                 'x': 6, 'y': 1, 'w': 3, 'h': 1,
-                'data_source': 'receipts.count',
-                'config': {'color': 'purple', 'icon': 'DollarSign'},
-            },
-            {
-                'widget_type': 'stats_card',
-                'title': 'Total Distributors',
-                'x': 9, 'y': 1, 'w': 3, 'h': 1,
-                'data_source': 'masters.distributors_count',
-                'config': {'color': 'orange', 'icon': 'Users'},
-            },
-            # Row 2-3: Charts
-            {
-                'widget_type': 'bar_chart',
-                'title': 'Sales by Status',
-                'subtitle': 'Order status distribution',
-                'x': 0, 'y': 2, 'w': 6, 'h': 2,
-                'data_source': 'sales.by_status',
-                'config': {'orientation': 'vertical', 'showLegend': True},
-            },
-            {
-                'widget_type': 'donut_chart',
-                'title': 'Invoice Status',
-                'subtitle': 'Invoice distribution',
-                'x': 6, 'y': 2, 'w': 6, 'h': 2,
-                'data_source': 'invoice.by_status',
-                'config': {'showLegend': True, 'showCenterLabel': True},
-            },
-            # Row 4-5: Recent lists
-            {
-                'widget_type': 'sales_list',
-                'title': 'Recent Sales Orders',
-                'subtitle': 'Latest orders',
-                'x': 0, 'y': 4, 'w': 12, 'h': 2,
-                'data_source': 'sales.recent',
-                'config': {'limit': 10, 'showStatus': True},
-            },
-        ]
-
-        for widget_def in widgets:
-            wt_code = widget_def['widget_type']
-            if wt_code not in wt:
-                continue
-
-            DashboardWidget.objects.create(
-                dashboard=dashboard,
-                widget_type=wt[wt_code],
-                title=widget_def['title'],
-                subtitle=widget_def.get('subtitle', ''),
-                position_x=widget_def['x'],
-                position_y=widget_def['y'],
-                width=widget_def['w'],
-                height=widget_def['h'],
-                data_source=widget_def.get('data_source', ''),
-                config=widget_def.get('config', {}),
-                cache_duration=300,
-                is_visible=True,
-            )
-
-        return dashboard
-
-    def _create_dispatch_dashboard(self, wt):
-        """Dispatch Dashboard - Dispatch plans and delivery"""
-        dashboard = Dashboard.objects.create(
-            name='Dispatch Dashboard',
-            description='Dispatch plans and delivery tracking',
-            icon='Truck',
-            visibility='role',
-            is_default=False,
-            is_system=True,
-            display_order=2,
-            theme='default',
-            refresh_interval=300,
-            layout_config={'columns': 12, 'rowHeight': 100, 'gap': 16},
-        )
-
-        widgets = [
-            # Row 0: Welcome + Quick Actions
-            {
-                'widget_type': 'welcome_card',
-                'title': 'Dispatch Dashboard',
-                'x': 0, 'y': 0, 'w': 8, 'h': 1,
-                'config': {'showGreeting': True, 'showDate': True},
-            },
-            {
-                'widget_type': 'quick_actions',
-                'title': 'Quick Actions',
-                'x': 8, 'y': 0, 'w': 4, 'h': 1,
-                'config': {
-                    'actions': [
-                        {'label': 'New Dispatch', 'action': 'create_dispatch', 'icon': 'Truck'},
-                        {'label': 'New POD', 'action': 'create_pod', 'icon': 'FileCheck'},
-                    ],
-                    'columns': 2,
-                },
-            },
-            # Row 1: Stats cards
-            {
-                'widget_type': 'stats_card',
-                'title': 'Total Dispatch Plans',
-                'x': 0, 'y': 1, 'w': 4, 'h': 1,
-                'data_source': 'dispatch.count',
-                'config': {'color': 'blue', 'icon': 'Truck'},
-            },
-            {
-                'widget_type': 'stats_card',
-                'title': 'Total PODs',
-                'x': 4, 'y': 1, 'w': 4, 'h': 1,
-                'data_source': 'delivery.count',
-                'config': {'color': 'green', 'icon': 'FileCheck'},
-            },
-            {
-                'widget_type': 'stats_card',
-                'title': 'Total Retailers',
-                'x': 8, 'y': 1, 'w': 4, 'h': 1,
-                'data_source': 'masters.retailers_count',
-                'config': {'color': 'purple', 'icon': 'Store'},
-            },
-            # Row 2-3: Charts
-            {
-                'widget_type': 'bar_chart',
-                'title': 'Dispatch by Status',
-                'subtitle': 'Dispatch plan status',
-                'x': 0, 'y': 2, 'w': 6, 'h': 2,
-                'data_source': 'dispatch.by_status',
-                'config': {'orientation': 'vertical', 'showLegend': True},
-            },
-            {
-                'widget_type': 'pie_chart',
-                'title': 'Delivery Status',
-                'subtitle': 'POD status distribution',
-                'x': 6, 'y': 2, 'w': 6, 'h': 2,
-                'data_source': 'delivery.by_status',
-                'config': {'showLegend': True},
-            },
-            # Row 4-5: Recent lists
-            {
-                'widget_type': 'dispatch_list',
-                'title': 'Recent Dispatch Plans',
-                'subtitle': 'Latest dispatches',
-                'x': 0, 'y': 4, 'w': 12, 'h': 2,
-                'data_source': 'dispatch.recent',
-                'config': {'limit': 10, 'showStatus': True},
-            },
-        ]
-
-        for widget_def in widgets:
-            wt_code = widget_def['widget_type']
-            if wt_code not in wt:
-                continue
-
-            DashboardWidget.objects.create(
-                dashboard=dashboard,
-                widget_type=wt[wt_code],
-                title=widget_def['title'],
-                subtitle=widget_def.get('subtitle', ''),
-                position_x=widget_def['x'],
-                position_y=widget_def['y'],
-                width=widget_def['w'],
-                height=widget_def['h'],
-                data_source=widget_def.get('data_source', ''),
-                config=widget_def.get('config', {}),
-                cache_duration=300,
-                is_visible=True,
-            )
-
-        return dashboard
-
-    def _create_overview_dashboard(self, wt):
-        """Overview Dashboard - Complete overview"""
-        dashboard = Dashboard.objects.create(
-            name='Overview Dashboard',
-            description='Complete overview of sales, dispatch, and delivery',
-            icon='LayoutDashboard',
-            visibility='organization',
-            is_default=False,
-            is_system=True,
-            display_order=3,
-            theme='default',
-            refresh_interval=300,
-            layout_config={'columns': 12, 'rowHeight': 100, 'gap': 16},
-        )
-
-        widgets = [
-            # Row 0: Welcome
-            {
-                'widget_type': 'welcome_card',
-                'title': 'Overview Dashboard',
-                'x': 0, 'y': 0, 'w': 12, 'h': 1,
-                'config': {'showGreeting': True, 'showDate': True},
-            },
-            # Row 1: Stats cards
-            {
-                'widget_type': 'stats_card',
-                'title': 'Sales Orders',
-                'x': 0, 'y': 1, 'w': 3, 'h': 1,
-                'data_source': 'sales.count',
-                'config': {'color': 'blue', 'icon': 'ShoppingCart'},
-            },
-            {
-                'widget_type': 'stats_card',
-                'title': 'Dispatch Plans',
-                'x': 3, 'y': 1, 'w': 3, 'h': 1,
-                'data_source': 'dispatch.count',
-                'config': {'color': 'green', 'icon': 'Truck'},
-            },
-            {
-                'widget_type': 'stats_card',
-                'title': 'Invoices',
-                'x': 6, 'y': 1, 'w': 3, 'h': 1,
-                'data_source': 'invoice.count',
+                'data_source': 'realestate.bookings_count',
                 'config': {'color': 'purple', 'icon': 'FileText'},
             },
             {
                 'widget_type': 'stats_card',
-                'title': 'PODs',
+                'title': 'Available Inventory',
                 'x': 9, 'y': 1, 'w': 3, 'h': 1,
-                'data_source': 'delivery.count',
-                'config': {'color': 'orange', 'icon': 'FileCheck'},
+                'data_source': 'realestate.inventory_count',
+                'config': {'color': 'orange', 'icon': 'Home'},
             },
             # Row 2-3: Charts
             {
-                'widget_type': 'bar_chart',
-                'title': 'Sales by Status',
-                'x': 0, 'y': 2, 'w': 4, 'h': 2,
-                'data_source': 'sales.by_status',
-                'config': {'orientation': 'vertical', 'showLegend': True},
-            },
-            {
-                'widget_type': 'donut_chart',
-                'title': 'Dispatch Status',
-                'x': 4, 'y': 2, 'w': 4, 'h': 2,
-                'data_source': 'dispatch.by_status',
-                'config': {'showLegend': True, 'showCenterLabel': True},
+                'widget_type': 'line_chart',
+                'title': 'Lead Trend',
+                'subtitle': 'Leads over time',
+                'x': 0, 'y': 2, 'w': 6, 'h': 2,
+                'data_source': 'realestate.leads_over_time',
+                'config': {'showDots': True, 'showArea': True, 'showLegend': True},
             },
             {
                 'widget_type': 'pie_chart',
-                'title': 'Invoice Status',
-                'x': 8, 'y': 2, 'w': 4, 'h': 2,
-                'data_source': 'invoice.by_status',
+                'title': 'Site Visit Status',
+                'subtitle': 'Site visit outcomes',
+                'x': 6, 'y': 2, 'w': 6, 'h': 2,
+                'data_source': 'realestate.sitevisits_by_status',
                 'config': {'showLegend': True},
             },
         ]
 
+        self._create_widgets(dashboard, wt, widgets)
+        return dashboard
+
+    def _create_widgets(self, dashboard, wt, widgets):
         for widget_def in widgets:
             wt_code = widget_def['widget_type']
             if wt_code not in wt:
                 continue
-
             DashboardWidget.objects.create(
                 dashboard=dashboard,
                 widget_type=wt[wt_code],
@@ -371,5 +226,3 @@ class Command(BaseCommand):
                 cache_duration=300,
                 is_visible=True,
             )
-
-        return dashboard

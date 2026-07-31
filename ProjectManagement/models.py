@@ -1,10 +1,9 @@
 from django.db import models
 
 from Core.Users.models import CoreModel, BaseModel
-from Masters.validators import DuplicateValidationMixin
 
 
-class Project(DuplicateValidationMixin, CoreModel):
+class Project(CoreModel):
     """
     Real Estate Project Master.
     Stores projects (Plot/Flat developments) that Leads → Site Visits → Bookings hang off.

@@ -11,46 +11,6 @@ class WidgetDataService:
 
     # Mapping of data_source to model and field
     DATA_SOURCE_MAP = {
-        # Sales
-        'sales.count': {'model': 'Sales.SalesOrder', 'field': None, 'type': 'count'},
-        'sales.by_status': {'model': 'Sales.SalesOrder', 'field': 'status', 'type': 'group_by'},
-        'sales.recent': {'model': 'Sales.SalesOrder', 'field': None, 'type': 'list'},
-        'sales.list': {'model': 'Sales.SalesOrder', 'field': None, 'type': 'list'},
-        'sales.over_time': {'model': 'Sales.SalesOrder', 'field': 'order_date', 'type': 'time_series'},
-        
-        # Dispatch
-        'dispatch.count': {'model': 'Dispatch.DispatchPlan', 'field': None, 'type': 'count'},
-        'dispatch.by_status': {'model': 'Dispatch.DispatchPlan', 'field': 'status', 'type': 'group_by'},
-        'dispatch.recent': {'model': 'Dispatch.DispatchPlan', 'field': None, 'type': 'list'},
-        'dispatch.list': {'model': 'Dispatch.DispatchPlan', 'field': None, 'type': 'list'},
-        'dispatch.over_time': {'model': 'Dispatch.DispatchPlan', 'field': 'dispatch_date', 'type': 'time_series'},
-        
-        # Invoice
-        'invoice.count': {'model': 'Invoice.Invoice', 'field': None, 'type': 'count'},
-        'invoice.by_status': {'model': 'Invoice.Invoice', 'field': 'status', 'type': 'group_by'},
-        'invoice.recent': {'model': 'Invoice.Invoice', 'field': None, 'type': 'list'},
-        'invoice.list': {'model': 'Invoice.Invoice', 'field': None, 'type': 'list'},
-        'invoice.over_time': {'model': 'Invoice.Invoice', 'field': 'invoice_date', 'type': 'time_series'},
-        
-        # Receipts
-        'receipts.count': {'model': 'Receipts.Receipt', 'field': None, 'type': 'count'},
-        'receipts.by_payment_mode': {'model': 'Receipts.Receipt', 'field': 'payment_mode', 'type': 'group_by'},
-        'receipts.recent': {'model': 'Receipts.Receipt', 'field': None, 'type': 'list'},
-        
-        # Delivery
-        'delivery.count': {'model': 'Delivery.ProofOfDelivery', 'field': None, 'type': 'count'},
-        'delivery.by_status': {'model': 'Delivery.ProofOfDelivery', 'field': 'status', 'type': 'group_by'},
-        'delivery.recent': {'model': 'Delivery.ProofOfDelivery', 'field': None, 'type': 'list'},
-        
-        # Masters
-        'masters.distributors_count': {'model': 'Masters.Distributor', 'field': None, 'type': 'count'},
-        'masters.retailers_count': {'model': 'Masters.Retailer', 'field': None, 'type': 'count'},
-        'masters.superstockists_count': {'model': 'Masters.Superstockist', 'field': None, 'type': 'count'},
-
-        # ====================================================================
-        # Real Estate — Phase 1 data sources
-        # ====================================================================
-
         # Lead
         'leads.count': {'model': 'Lead.Lead', 'field': None, 'type': 'count'},
         'leads.by_status': {'model': 'Lead.Lead', 'field': 'status', 'type': 'group_by'},

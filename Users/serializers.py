@@ -8,21 +8,6 @@ from django.utils.crypto import get_random_string
 from rest_framework import serializers, status
 from Core.Users.models import DEVICE_ACCESS_CHOICES, GENDER_CHOICES, Groupdetails
 from Core.Users.serializers import GroupMiniSerializer
-from Masters.validators import validate_contact_phone, validate_contact_email
-
-
-class CompanyMiniSerializer(serializers.ModelSerializer):
-    class Meta:
-        from Masters.models import Company
-        model = Company
-        fields = ['id', 'code', 'name']
-
-
-class LocationMiniSerializer(serializers.ModelSerializer):
-    class Meta:
-        from Masters.models import Location
-        model = Location
-        fields = ['id', 'code', 'name']
 from Core.System.models import TemporaryVerification
 
 User = get_user_model()

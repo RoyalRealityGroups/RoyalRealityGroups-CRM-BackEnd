@@ -34,13 +34,8 @@ urlpatterns = [
     # Test endpoint
     path('test/<str:user_id>/', TestUserSerializerView.as_view(), name='test_user_serializer'),
 
-    # Channel Partner endpoints
-    path('channel-partners/superstockists/', views.SuperstockistListView.as_view(), name='superstockists_list'),
-    path('channel-partners/distributors/', views.DistributorListView.as_view(), name='distributors_list'),
-    path('channel-partners/retailers/', views.RetailerListView.as_view(), name='retailers_list'),
+    # Channel Partner endpoints (removed - FMCG only)
 
-    path('dropdowns/companies/', views.CompanyDropdownView.as_view(), name='companies_dropdown'),
-    path('dropdowns/locations/', views.LocationDropdownView.as_view(), name='locations_dropdown'),
     path('dropdowns/reporting-managers/', views.ReportingManagerDropdownView.as_view(), name='reporting_managers_dropdown'),
 
     path('screens/', views.ScreenListView.as_view(), name='screen_list'),

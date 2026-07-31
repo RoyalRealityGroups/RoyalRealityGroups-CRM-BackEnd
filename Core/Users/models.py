@@ -369,9 +369,7 @@ class AssigneeByPass(CodeMixModel):
 class AuthorizationDefinition(CodeMixModel):
     authorization_name = models.CharField(max_length=255, null=True, blank=True)
     effective_from = models.DateField(null=True, blank=True)
-    companies = models.ManyToManyField('Masters.Company', blank=True, related_name='authorization_definitions')
     has_all_companies = models.BooleanField(default=False)
-    locations = models.ManyToManyField('Masters.Location', blank=True, related_name='authorization_definitions')
     has_all_locations = models.BooleanField(default=False)
     status = models.BooleanField(default=True)
     auto_approve_creator_level = models.BooleanField(default=False)

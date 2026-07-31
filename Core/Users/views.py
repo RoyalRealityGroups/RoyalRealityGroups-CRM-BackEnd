@@ -2008,9 +2008,8 @@ class LocationsByCompanyAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     
     def get(self, request, company_id):
-        from Masters.models import Location
-        locations = Location.objects.filter(companies__id=company_id, is_deleted=False).values('id', 'name').distinct()
-        return Response(list(locations), status=status.HTTP_200_OK)
+        # Masters.Location removed — return empty list
+        return Response([], status=status.HTTP_200_OK)
 
 
 class UsersByCompanyLocationAPIView(APIView):
@@ -2068,15 +2067,8 @@ class PendingAuthorizationsView(generics.ListAPIView):
         app_label = self.kwargs.get('app_label')
         model_name = self.kwargs.get('model_name')
         
-        # Map models to their list serializers
-        # Note: app_label here refers to what the frontend passes, not necessarily the Django app
+        # Map models to their list serializers (FMCG removed)
         serializer_map = {
-            ('sales', 'salesorder'): 'Sales.serializers.SalesOrderListSerializer',
-            ('sales', 'invoice'): 'Invoice.serializers.InvoiceListSerializer',
-            ('delivery', 'dispatchplan'): 'Dispatch.serializers.DispatchPlanListSerializer',
-            ('delivery', 'proofofdelivery'): 'Delivery.serializers.ProofOfDeliveryListSerializer',
-            ('masters', 'scheme'): 'Masters.serializers.SchemeSerializer',
-            ('masters', 'pricebookdocument'): 'Masters.serializers.PriceBookDocumentSerializer',
         }
         
         serializer_path = serializer_map.get((app_label.lower(), model_name.lower()))

@@ -1300,80 +1300,48 @@ class AuthorizationDefinitionSerializer(serializers.ModelSerializer):
         return AuthorizationSerializer(auths, many=True).data
     
     def validate(self, attrs):
-        from Masters.models import Company, Location
-        
         screen = attrs.get('screen', None)
         if self.instance and not screen:
             screen = self.instance.screen
         
         level = attrs.get('level', None)
-        company_ids = attrs.pop('company_ids', [])
-        location_ids = attrs.pop('location_ids', [])
-        has_all_companies = attrs.get('has_all_companies', False)
-        has_all_locations = attrs.get('has_all_locations', False)
-        status = attrs.get('status', True)
+        attrs.pop('company_ids', [])
+        attrs.pop('location_ids', [])
         
         if screen == None:
             raise serializers.ValidationError({"screen_id": "Screen is required."})
         if level == None:
             raise serializers.ValidationError({"level": "Level is required."})
 
-        # Dispatch Plan authorization is location-scoped.
-        # Force all-companies for this screen and ignore company selection.
+        # Dispatch Plan: force all companies
         if _is_dispatchplan_content_type(screen):
             attrs['has_all_companies'] = True
-            has_all_companies = True
-            company_ids = []
 
-        # Validate companies
-        companies = []
-        if not has_all_companies and company_ids:
-            companies = list(Company.objects.filter(id__in=company_ids, is_deleted=False))
-            if len(companies) != len(company_ids):
-                raise serializers.ValidationError({"company_ids": "One or more invalid company IDs."})
-        
-        # Validate locations
-        locations = []
-        # If selected screen doesn't support location filtering, force all locations.
+        # If screen doesn't support location filtering, force all locations.
         if not _content_type_has_field(screen, 'location'):
             attrs['has_all_locations'] = True
-            has_all_locations = True
-            location_ids = []
 
-        if not has_all_locations and location_ids:
-            locations = list(Location.objects.filter(id__in=location_ids, is_deleted=False))
-            if len(locations) != len(location_ids):
-                raise serializers.ValidationError({"location_ids": "One or more invalid location IDs."})
-        
-        attrs['_companies'] = companies
-        attrs['_locations'] = locations
+        attrs['_companies'] = []
+        attrs['_locations'] = []
         
         return super().validate(attrs)
     
     def create(self, validated_data):
-        companies = validated_data.pop('_companies', [])
-        locations = validated_data.pop('_locations', [])
+        validated_data.pop('_companies', [])
+        validated_data.pop('_locations', [])
         instance = super().create(validated_data)
-        if companies:
-            instance.companies.set(companies)
-        if locations:
-            instance.locations.set(locations)
         return instance
     
     def update(self, instance, validated_data):
-        companies = validated_data.pop('_companies', None)
-        locations = validated_data.pop('_locations', None)
+        validated_data.pop('_companies', None)
+        validated_data.pop('_locations', None)
         instance = super().update(instance, validated_data)
-        if companies is not None:
-            instance.companies.set(companies)
-        if locations is not None:
-            instance.locations.set(locations)
         return instance
     
     class Meta:
         model = AuthorizationDefinition
         read_only_fields = ['id', 'level_authorizations']
-        fields = ('id', 'code', 'authorization_name', 'effective_from', 'companies', 'company_ids', 'has_all_companies', 'locations', 'location_ids', 'has_all_locations', 'status', 'auto_approve_creator_level', 'screen', 'screen_id', 'level', 'send_sms', 'send_email', 'send_notification', 'level_authorizations')
+        fields = ('id', 'code', 'authorization_name', 'effective_from', 'has_all_companies', 'has_all_locations', 'status', 'auto_approve_creator_level', 'screen', 'screen_id', 'level', 'send_sms', 'send_email', 'send_notification', 'level_authorizations')
 
 
 class AuthorizationSerializer(serializers.ModelSerializer):

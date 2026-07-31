@@ -54,10 +54,12 @@ class LeadSerializer(serializers.ModelSerializer):
         duplicates = self._find_duplicates(mobile, alt, email, exclude_id=None)
         if duplicates and not override:
             dup_payload = [self._duplicate_payload(d, mobile, alt, email) for d in duplicates]
+            fields = sorted({d['match_field'] for d in dup_payload if d['match_field'] != 'unknown'})
             raise serializers.ValidationError({
-                'non_field_errors': ['Duplicate lead(s) exist. Provide an override reason to proceed.'],
+                'non_field_errors': ['This client already exists in the CRM and is assigned to another employee.'],
                 'has_duplicates': True,
                 'duplicates': dup_payload,
+                'matched_fields': fields,
             })
 
         validated_data['created_by_type'] = 'User'
@@ -157,7 +159,7 @@ class LeadSerializer(serializers.ModelSerializer):
             fields = sorted({d['match_field'] for d in dup_payload if d['match_field'] != 'unknown'})
             field_text = ', '.join(fields) if fields else 'mobile/email/alternate_number'
             raise serializers.ValidationError({
-                'non_field_errors': [f"Duplicate lead(s) found on {field_text}. Provide an override reason to proceed."],
+                'non_field_errors': ['This client already exists in the CRM and is assigned to another employee.'],
                 'has_duplicates': True,
                 'duplicates': dup_payload,
                 'matched_fields': fields,

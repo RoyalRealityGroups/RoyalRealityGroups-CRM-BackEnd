@@ -8,6 +8,26 @@ from django.utils.crypto import get_random_string
 from rest_framework import serializers, status
 from Core.Users.models import DEVICE_ACCESS_CHOICES, GENDER_CHOICES, Groupdetails
 from Core.Users.serializers import GroupMiniSerializer
+
+
+def validate_contact_email(value):
+    """Validate email format."""
+    if value:
+        import re
+        value = value.strip().lower()
+        if not re.match(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$', value):
+            raise ValueError(f'Enter a valid email address.')
+    return value
+
+
+def validate_contact_phone(value):
+    """Validate phone number — digits only, 7–15 chars."""
+    if value:
+        import re
+        digits = re.sub(r'[\s\-\+\(\)]', '', value)
+        if not digits.isdigit() or not (7 <= len(digits) <= 15):
+            raise ValueError('Enter a valid phone number (7–15 digits).')
+    return value
 from Core.System.models import TemporaryVerification
 
 User = get_user_model()

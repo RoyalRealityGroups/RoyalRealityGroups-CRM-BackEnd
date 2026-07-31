@@ -10,11 +10,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Export",
-        "Permission": "thirdparty.export_synctrigger",
-        "Hide": "0"
-    },
-    {
         "Name": "Delete",
         "Permission": "core_users.delete_jwttoken",
         "Hide": "0"
@@ -27,11 +22,6 @@
     {
         "Name": "Print",
         "Permission": "core_users.print_sequencecode",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Delivery.import_proofofdeliveryfile",
         "Hide": "0"
     },
     {
@@ -85,11 +75,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Print",
-        "Permission": "Dispatch.print_dispatchorderitem",
-        "Hide": "0"
-    },
-    {
         "Name": "Import",
         "Permission": "System.import_template",
         "Hide": "0"
@@ -111,42 +96,7 @@
     },
     {
         "Name": "Download",
-        "Permission": "Sales.download_salesorder",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Invoice.change_invoice",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
         "Permission": "System.download_activitylog",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Dispatch.import_dispatchorderitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Sales.reports_salesorder",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Sales.add_salesorderhistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "thirdparty.change_synctrigger",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Dispatch.reports_dispatchorderitem",
         "Hide": "0"
     },
     {
@@ -175,11 +125,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Download",
-        "Permission": "Invoice.download_invoiceitem",
-        "Hide": "0"
-    },
-    {
         "Name": "View",
         "Permission": "System.view_formulaupdate",
         "Hide": "0"
@@ -195,11 +140,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "thirdparty.add_synclog",
-        "Hide": "0"
-    },
-    {
         "Name": "Delete",
         "Permission": "core_users.delete_contenttypedetail",
         "Hide": "0"
@@ -207,11 +147,6 @@
     {
         "Name": "Download",
         "Permission": "core_users.download_authorizationhistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Delivery.download_proofofdelivery",
         "Hide": "0"
     },
     {
@@ -275,11 +210,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Dispatch.add_dispatchitem",
-        "Hide": "0"
-    },
-    {
         "Name": "Print",
         "Permission": "System.print_recentactivity",
         "Hide": "0"
@@ -292,26 +222,6 @@
     {
         "Name": "Delete",
         "Permission": "System.delete_menu",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Invoice.add_invoiceitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Delivery.add_assignee_proofofdeliveryfile",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can add proof of delivery",
-        "Permission": "Delivery.add_proofofdelivery",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Sales.export_salesorderitem",
         "Hide": "0"
     },
     {
@@ -331,27 +241,12 @@
     },
     {
         "Name": "Export",
-        "Permission": "Dispatch.export_dispatchplan",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Delivery.change_proofofdeliveryfile",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
         "Permission": "System.export_menu",
         "Hide": "0"
     },
     {
         "Name": "Print",
         "Permission": "core_users.print_contenttypedetail",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "thirdparty.assignee_bypass_synctrigger",
         "Hide": "0"
     },
     {
@@ -377,11 +272,6 @@
     {
         "Name": "Add",
         "Permission": "System.add_assignee_activitylog",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Sales.print_salesorderitem",
         "Hide": "0"
     },
     {
@@ -420,11 +310,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "Invoice.assignee_bypass_invoice",
-        "Hide": "0"
-    },
-    {
         "Name": "Can view authorization",
         "Permission": "core_users.view_authorization",
         "Hide": "0"
@@ -442,11 +327,6 @@
     {
         "Name": "Assignee",
         "Permission": "admin.assignee_bypass_logentry",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Invoice.change_payment",
         "Hide": "0"
     },
     {
@@ -475,11 +355,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Change",
-        "Permission": "Dispatch.change_dispatchplan",
-        "Hide": "0"
-    },
-    {
         "Name": "View",
         "Permission": "core_users.view_permissiondetail",
         "Hide": "0"
@@ -487,11 +362,6 @@
     {
         "Name": "Print",
         "Permission": "System.print_formulaupdate",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Sales.import_salesorderitem",
         "Hide": "0"
     },
     {
@@ -512,11 +382,6 @@
     {
         "Name": "Export",
         "Permission": "System.export_notificationusers",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Dispatch.import_dispatchplan",
         "Hide": "0"
     },
     {
@@ -560,18 +425,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "thirdparty.reports_synclog",
-        "Hide": "0"
-    },
-    {
         "Name": "Print",
         "Permission": "contenttypes.print_contenttype",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Invoice.download_invoice",
         "Hide": "0"
     },
     {
@@ -590,16 +445,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Invoice.add_payment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Sales.add_salesorderitem",
-        "Hide": "0"
-    },
-    {
         "Name": "Delete",
         "Permission": "System.delete_download",
         "Hide": "0"
@@ -607,16 +452,6 @@
     {
         "Name": "Reports",
         "Permission": "core_users.reports_groupdetails",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Invoice.add_assignee_payment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "thirdparty.export_synclog",
         "Hide": "0"
     },
     {
@@ -655,18 +490,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Invoice.reports_invoice",
-        "Hide": "0"
-    },
-    {
         "Name": "Assignee",
         "Permission": "System.assignee_bypass_formula",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Sales.assignee_bypass_salesorderitem",
         "Hide": "0"
     },
     {
@@ -687,21 +512,6 @@
     {
         "Name": "Change",
         "Permission": "System.change_alertconfigusers",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "thirdparty.delete_synctrigger",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Sales.delete_salesorderitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Dispatch.import_dispatchitem",
         "Hide": "0"
     },
     {
@@ -865,16 +675,6 @@
         "Hide": "0"
     },
     {
-        "Name": "View",
-        "Permission": "Dispatch.view_dispatchitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Dispatch.download_dispatchitem",
-        "Hide": "0"
-    },
-    {
         "Name": "Change",
         "Permission": "core_users.change_authorizationhistory",
         "Hide": "0"
@@ -885,18 +685,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Delete",
-        "Permission": "Invoice.delete_invoiceitem",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "core_users.export_authorizationdefinition",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Sales.print_salesorder",
         "Hide": "0"
     },
     {
@@ -910,11 +700,6 @@
         "Hide": "0"
     },
     {
-        "Name": "View",
-        "Permission": "Delivery.view_proofofdeliveryfile",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "System.add_assignee_formulaupdate",
         "Hide": "0"
@@ -922,11 +707,6 @@
     {
         "Name": "Print",
         "Permission": "core_users.print_authorization",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Invoice.add_invoice",
         "Hide": "0"
     },
     {
@@ -960,16 +740,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Print",
-        "Permission": "Invoice.print_invoice",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Dispatch.assignee_bypass_dispatchitem",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "core_users.add_assignee",
         "Hide": "0"
@@ -990,23 +760,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Delete",
-        "Permission": "Dispatch.delete_dispatchplan",
-        "Hide": "0"
-    },
-    {
         "Name": "Download",
         "Permission": "core_users.download_permissiondetail",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Dispatch.add_assignee_dispatchitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "thirdparty.view_synctrigger",
         "Hide": "0"
     },
     {
@@ -1017,16 +772,6 @@
     {
         "Name": "Reports",
         "Permission": "core_users.reports_device",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Dispatch.print_dispatchitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Dispatch.delete_dispatchitem",
         "Hide": "0"
     },
     {
@@ -1042,11 +787,6 @@
     {
         "Name": "Download",
         "Permission": "System.download_notification",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Delivery.assignee_bypass_proofofdeliveryfile",
         "Hide": "0"
     },
     {
@@ -1092,11 +832,6 @@
     {
         "Name": "Add",
         "Permission": "admin.add_logentry",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Dispatch.delete_dispatchorderitem",
         "Hide": "0"
     },
     {
@@ -1150,11 +885,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Dispatch.reports_dispatchitem",
-        "Hide": "0"
-    },
-    {
         "Name": "View",
         "Permission": "System.view_attachment",
         "Hide": "0"
@@ -1162,11 +892,6 @@
     {
         "Name": "Export",
         "Permission": "System.export_template",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Sales.assignee_bypass_salesorder",
         "Hide": "0"
     },
     {
@@ -1182,11 +907,6 @@
     {
         "Name": "Add",
         "Permission": "System.add_assignee_announcements",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Invoice.delete_invoice",
         "Hide": "0"
     },
     {
@@ -1217,11 +937,6 @@
     {
         "Name": "Reports",
         "Permission": "System.reports_announcements",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Delivery.add_proofofdeliveryfile",
         "Hide": "0"
     },
     {
@@ -1256,16 +971,6 @@
     },
     {
         "Name": "Change",
-        "Permission": "Dispatch.change_dispatchorderitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Sales.view_salesorderhistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
         "Permission": "core_users.change_djangoapp",
         "Hide": "0"
     },
@@ -1295,11 +1000,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Cancel",
-        "Permission": "Invoice.cancel_invoice",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "System.export_error",
         "Hide": "0"
@@ -1307,16 +1007,6 @@
     {
         "Name": "Add",
         "Permission": "core_users.add_assignee_authorization",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "thirdparty.view_synclog",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "thirdparty.add_assignee_synctrigger",
         "Hide": "0"
     },
     {
@@ -1350,21 +1040,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Download",
-        "Permission": "Sales.download_salesorderitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Delivery.print_proofofdeliveryfile",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Delivery.export_proofofdelivery",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "General.add_assignee_importpermission",
         "Hide": "0"
@@ -1390,23 +1065,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Print",
-        "Permission": "Delivery.print_proofofdelivery",
-        "Hide": "0"
-    },
-    {
         "Name": "Reports",
         "Permission": "System.reports_notificationusers",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Dispatch.export_dispatchitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Dispatch.add_assignee_dispatchplan",
         "Hide": "0"
     },
     {
@@ -1425,23 +1085,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Export",
-        "Permission": "Invoice.export_payment",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "System.add_assignee_taskscheduler",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Invoice.download_payment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Invoice.import_payment",
         "Hide": "0"
     },
     {
@@ -1452,11 +1097,6 @@
     {
         "Name": "Print",
         "Permission": "System.print_announcements",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Invoice.export_invoice",
         "Hide": "0"
     },
     {
@@ -1530,18 +1170,8 @@
         "Hide": "0"
     },
     {
-        "Name": "View",
-        "Permission": "Dispatch.view_dispatchorderitem",
-        "Hide": "0"
-    },
-    {
         "Name": "Assignee",
         "Permission": "System.assignee_bypass_error",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Sales.view_salesorderitem",
         "Hide": "0"
     },
     {
@@ -1556,22 +1186,12 @@
     },
     {
         "Name": "Add",
-        "Permission": "Dispatch.add_dispatchplan",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
         "Permission": "System.add_notificationusers",
         "Hide": "0"
     },
     {
         "Name": "Reports",
         "Permission": "System.reports_menuitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Sales.view_salesorder",
         "Hide": "0"
     },
     {
@@ -1582,11 +1202,6 @@
     {
         "Name": "Download",
         "Permission": "System.download_notificationusers",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Invoice.reports_invoiceitem",
         "Hide": "0"
     },
     {
@@ -1615,11 +1230,6 @@
         "Hide": "0"
     },
     {
-        "Name": "View",
-        "Permission": "Invoice.view_payment",
-        "Hide": "0"
-    },
-    {
         "Name": "Download",
         "Permission": "core_users.download_authorization",
         "Hide": "0"
@@ -1627,21 +1237,6 @@
     {
         "Name": "Import",
         "Permission": "core_users.import_authorizationdefinition",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "thirdparty.delete_synclog",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Sales.change_salesorderitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Invoice.print_invoiceitem",
         "Hide": "0"
     },
     {
@@ -1657,11 +1252,6 @@
     {
         "Name": "Reports",
         "Permission": "System.reports_activitylog",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Invoice.print_payment",
         "Hide": "0"
     },
     {
@@ -1700,18 +1290,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Delivery.reports_proofofdelivery",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "Users.export_user",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Sales.reports_salesorderhistory",
         "Hide": "0"
     },
     {
@@ -1745,11 +1325,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Sales.add_assignee_salesorderitem",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "core_users.export_permissiondetail",
         "Hide": "0"
@@ -1765,11 +1340,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Download",
-        "Permission": "Sales.download_salesorderhistory",
-        "Hide": "0"
-    },
-    {
         "Name": "Reports",
         "Permission": "System.reports_savedfilter",
         "Hide": "0"
@@ -1777,21 +1347,6 @@
     {
         "Name": "Import",
         "Permission": "core_users.import_assignee",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Delivery.import_proofofdelivery",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Invoice.import_invoice",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Dispatch.add_dispatchorderitem",
         "Hide": "0"
     },
     {
@@ -1875,16 +1430,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Import",
-        "Permission": "thirdparty.import_synclog",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Dispatch.download_dispatchorderitem",
-        "Hide": "0"
-    },
-    {
         "Name": "Delete",
         "Permission": "System.delete_activitylog",
         "Hide": "0"
@@ -1900,11 +1445,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "Dispatch.reports_dispatchplan",
-        "Hide": "0"
-    },
-    {
         "Name": "Can delete group",
         "Permission": "auth.delete_group",
         "Hide": "0"
@@ -1915,18 +1455,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Delivery.add_assignee_proofofdelivery",
-        "Hide": "0"
-    },
-    {
         "Name": "Change",
         "Permission": "System.change_menuitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "thirdparty.import_synctrigger",
         "Hide": "0"
     },
     {
@@ -1962,11 +1492,6 @@
     {
         "Name": "Change",
         "Permission": "System.change_recentactivity",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Sales.assignee_bypass_salesorderhistory",
         "Hide": "0"
     },
     {
@@ -2020,11 +1545,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Export",
-        "Permission": "Delivery.export_proofofdeliveryfile",
-        "Hide": "0"
-    },
-    {
         "Name": "Download",
         "Permission": "System.download_announcements",
         "Hide": "0"
@@ -2032,11 +1552,6 @@
     {
         "Name": "Reports",
         "Permission": "System.reports_taskscheduler",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "thirdparty.print_synclog",
         "Hide": "0"
     },
     {
@@ -2105,31 +1620,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Export",
-        "Permission": "Sales.export_salesorder",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "thirdparty.add_assignee_synclog",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Sales.add_assignee_salesorderhistory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Delivery.delete_proofofdeliveryfile",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Sales.add_salesorder",
-        "Hide": "0"
-    },
-    {
         "Name": "View",
         "Permission": "System.view_report",
         "Hide": "0"
@@ -2150,11 +1640,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "Invoice.assignee_bypass_payment",
-        "Hide": "0"
-    },
-    {
         "Name": "Import",
         "Permission": "System.import_activitylog",
         "Hide": "0"
@@ -2167,11 +1652,6 @@
     {
         "Name": "Delete",
         "Permission": "contenttypes.delete_contenttype",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "thirdparty.download_synclog",
         "Hide": "0"
     },
     {
@@ -2192,11 +1672,6 @@
     {
         "Name": "Assignee",
         "Permission": "Users.assignee_bypass_user",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Sales.delete_salesorderhistory",
         "Hide": "0"
     },
     {
@@ -2227,11 +1702,6 @@
     {
         "Name": "Add",
         "Permission": "System.add_assignee_template",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Sales.delete_salesorder",
         "Hide": "0"
     },
     {
@@ -2267,11 +1737,6 @@
     {
         "Name": "Add",
         "Permission": "core_users.add_assignee_permissiondetail",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Sales.import_salesorder",
         "Hide": "0"
     },
     {
@@ -2380,11 +1845,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Print",
-        "Permission": "Sales.print_salesorderhistory",
-        "Hide": "0"
-    },
-    {
         "Name": "Download",
         "Permission": "System.download_error",
         "Hide": "0"
@@ -2397,16 +1857,6 @@
     {
         "Name": "Export",
         "Permission": "sessions.export_session",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Dispatch.assignee_bypass_dispatchplan",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Dispatch.add_assignee_dispatchorderitem",
         "Hide": "0"
     },
     {
@@ -2430,11 +1880,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Download",
-        "Permission": "Delivery.download_proofofdeliveryfile",
-        "Hide": "0"
-    },
-    {
         "Name": "Export",
         "Permission": "System.export_filterpreset",
         "Hide": "0"
@@ -2452,16 +1897,6 @@
     {
         "Name": "Add",
         "Permission": "sessions.add_assignee_session",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Dispatch.download_dispatchplan",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Invoice.export_invoiceitem",
         "Hide": "0"
     },
     {
@@ -2520,11 +1955,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Can view proof of delivery",
-        "Permission": "Delivery.view_proofofdelivery",
-        "Hide": "0"
-    },
-    {
         "Name": "Assignee",
         "Permission": "core_users.assignee_bypass_device",
         "Hide": "0"
@@ -2537,11 +1967,6 @@
     {
         "Name": "Print",
         "Permission": "System.print_alertconfigusers",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Sales.reports_salesorderitem",
         "Hide": "0"
     },
     {
@@ -2600,18 +2025,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Can delete proof of delivery",
-        "Permission": "Delivery.delete_proofofdelivery",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "core_users.add_assignee_contenttypedetail",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Sales.change_salesorderhistory",
         "Hide": "0"
     },
     {
@@ -2622,11 +2037,6 @@
     {
         "Name": "Reports",
         "Permission": "System.reports_backup",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "thirdparty.change_synclog",
         "Hide": "0"
     },
     {
@@ -2650,11 +2060,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Export",
-        "Permission": "Dispatch.export_dispatchorderitem",
-        "Hide": "0"
-    },
-    {
         "Name": "Change",
         "Permission": "System.change_menu",
         "Hide": "0"
@@ -2662,11 +2067,6 @@
     {
         "Name": "Download",
         "Permission": "core_users.download_assigneedefnition",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Delivery.reports_proofofdeliveryfile",
         "Hide": "0"
     },
     {
@@ -2705,11 +2105,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "Invoice.assignee_bypass_invoiceitem",
-        "Hide": "0"
-    },
-    {
         "Name": "Delete",
         "Permission": "System.delete_formula",
         "Hide": "0"
@@ -2732,11 +2127,6 @@
     {
         "Name": "Add",
         "Permission": "System.add_formula",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Invoice.change_invoiceitem",
         "Hide": "0"
     },
     {
@@ -2795,11 +2185,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Delete",
-        "Permission": "Invoice.delete_payment",
-        "Hide": "0"
-    },
-    {
         "Name": "Reports",
         "Permission": "System.reports_alertconfigusers",
         "Hide": "0"
@@ -2855,11 +2240,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Invoice.add_assignee_invoice",
-        "Hide": "0"
-    },
-    {
         "Name": "Can change user",
         "Permission": "Users.change_user",
         "Hide": "0"
@@ -2867,11 +2247,6 @@
     {
         "Name": "View",
         "Permission": "System.view_taskscheduler",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Delivery.assignee_bypass_proofofdelivery",
         "Hide": "0"
     },
     {
@@ -2962,11 +2337,6 @@
     {
         "Name": "Import",
         "Permission": "System.import_menuitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Sales.change_salesorder",
         "Hide": "0"
     },
     {
@@ -3090,23 +2460,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "Dispatch.assignee_bypass_dispatchorderitem",
-        "Hide": "0"
-    },
-    {
         "Name": "Change",
         "Permission": "core_users.change_codetemplate",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Dispatch.change_dispatchitem",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "thirdparty.print_synctrigger",
         "Hide": "0"
     },
     {
@@ -3190,11 +2545,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Can change proof of delivery",
-        "Permission": "Delivery.change_proofofdelivery",
-        "Hide": "0"
-    },
-    {
         "Name": "Print",
         "Permission": "System.print_alertconfig",
         "Hide": "0"
@@ -3212,11 +2562,6 @@
     {
         "Name": "Reports",
         "Permission": "General.reports_importpermission",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Invoice.view_invoice",
         "Hide": "0"
     },
     {
@@ -3255,23 +2600,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Assignee",
-        "Permission": "thirdparty.assignee_bypass_synclog",
-        "Hide": "0"
-    },
-    {
         "Name": "Print",
         "Permission": "System.print_filterpreset",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Sales.add_assignee_salesorder",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Sales.import_salesorderhistory",
         "Hide": "0"
     },
     {
@@ -3282,16 +2612,6 @@
     {
         "Name": "Export",
         "Permission": "auth.export_group",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Dispatch.view_dispatchplan",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "thirdparty.add_synctrigger",
         "Hide": "0"
     },
     {
@@ -3345,33 +2665,13 @@
         "Hide": "0"
     },
     {
-        "Name": "Download",
-        "Permission": "thirdparty.download_synctrigger",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Invoice.reports_payment",
-        "Hide": "0"
-    },
-    {
         "Name": "Assignee",
         "Permission": "System.assignee_bypass_savedfilter",
         "Hide": "0"
     },
     {
-        "Name": "Reports",
-        "Permission": "thirdparty.reports_synctrigger",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "System.add_filterpreset",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Invoice.view_invoiceitem",
         "Hide": "0"
     },
     {
@@ -3387,11 +2687,6 @@
     {
         "Name": "Add",
         "Permission": "System.add_assignee_notification",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Dispatch.print_dispatchplan",
         "Hide": "0"
     },
     {
@@ -3412,11 +2707,6 @@
     {
         "Name": "Delete",
         "Permission": "core_users.delete_assignee",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Invoice.import_invoiceitem",
         "Hide": "0"
     },
     {
@@ -3442,11 +2732,6 @@
     {
         "Name": "Assignee",
         "Permission": "System.assignee_bypass_temporaryverification",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Invoice.add_assignee_invoiceitem",
         "Hide": "0"
     },
     {
@@ -3482,11 +2767,6 @@
     {
         "Name": "Assignee",
         "Permission": "System.assignee_bypass_taskscheduler",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Sales.export_salesorderhistory",
         "Hide": "0"
     },
     {
@@ -3530,506 +2810,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Export",
-        "Permission": "Dispatch.export_dispatchplanattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Sales.delete_salesorderattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Sales.add_salesorderattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Sales.change_salesorderattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Dispatch.download_dispatchplanattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Sales.download_salesorderscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Sales.add_assignee_salesorderattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Sales.assignee_bypass_salesorderattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Dispatch.assignee_bypass_dispatchplanattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Dispatch.import_dispatchplanattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Sales.reports_salesorderattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Sales.import_salesorderscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Sales.export_salesorderscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Sales.download_salesorderitemscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Dispatch.add_assignee_dispatchplanattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Sales.change_salesorderitemscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Dispatch.view_dispatchplanattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Sales.assignee_bypass_salesorderscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Sales.change_salesorderscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Sales.add_assignee_salesorderitemscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Sales.download_salesorderattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Sales.assignee_bypass_salesorderitemscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Sales.reports_salesorderscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Sales.print_salesorderattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Sales.view_salesorderitemscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Sales.delete_salesorderitemscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Sales.export_salesorderitemscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Sales.add_salesorderscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Sales.print_salesorderscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Sales.add_salesorderitemscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Dispatch.add_dispatchplanattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Dispatch.change_dispatchplanattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Sales.view_salesorderattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Dispatch.delete_dispatchplanattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Sales.reports_salesorderitemscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Sales.view_salesorderscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Dispatch.reports_dispatchplanattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Sales.import_salesorderitemscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Sales.delete_salesorderscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Sales.import_salesorderattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Sales.export_salesorderattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Dispatch.print_dispatchplanattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Sales.add_assignee_salesorderscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Sales.print_salesorderitemscheme",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Receipts.export_receipt",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Receipts.delete_customercredit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Receipts.reports_receipt",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Receipts.reports_receiptallocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Receipts.export_receiptallocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can cancel receipt",
-        "Permission": "Receipts.cancel_receipt",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Receipts.add_customercredit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Receipts.download_customercredit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Receipts.assignee_bypass_receipt",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Receipts.import_receipt",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Receipts.assignee_bypass_receiptallocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Receipts.import_receiptattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Receipts.import_customercredit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Receipts.delete_creditutilization",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Receipts.view_receiptattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Receipts.add_assignee_customercredit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can delete receipt",
-        "Permission": "Receipts.delete_receipt",
-        "Hide": "1"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Receipts.reports_creditutilization",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can add receipt",
-        "Permission": "Receipts.add_receipt",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Receipts.print_customercredit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Receipts.export_customercredit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Receipts.download_receiptallocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Receipts.view_creditutilization",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Receipts.view_customercredit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Receipts.print_creditutilization",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Receipts.assignee_bypass_receiptattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Receipts.export_receiptattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Receipts.add_creditutilization",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Receipts.add_assignee_receiptallocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Receipts.change_creditutilization",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Receipts.delete_receiptallocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Receipts.import_creditutilization",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Receipts.delete_receiptattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Receipts.change_receiptallocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Receipts.add_receiptattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can view receipt",
-        "Permission": "Receipts.view_receipt",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Receipts.assignee_bypass_customercredit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Receipts.print_receiptallocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Receipts.download_receiptattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Receipts.export_creditutilization",
-        "Hide": "0"
-    },
-    {
-        "Name": "Import",
-        "Permission": "Receipts.import_receiptallocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Receipts.download_creditutilization",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Receipts.add_receiptallocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Receipts.view_receiptallocation",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Receipts.download_receipt",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Receipts.add_assignee_receipt",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Receipts.assignee_bypass_creditutilization",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Receipts.add_assignee_creditutilization",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Receipts.add_assignee_receiptattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Receipts.change_customercredit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Receipts.change_receiptattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Can change receipt",
-        "Permission": "Receipts.change_receipt",
-        "Hide": "1"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Receipts.print_receiptattachment",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Receipts.reports_customercredit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Print",
-        "Permission": "Receipts.print_receipt",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Receipts.reports_receiptattachment",
-        "Hide": "0"
-    },
-    {
         "Name": "Add",
         "Permission": "token_blacklist.add_outstandingtoken",
         "Hide": "0"
@@ -4037,11 +2817,6 @@
     {
         "Name": "Print",
         "Permission": "token_blacklist.print_blacklistedtoken",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Receipts.add_assignee_customerledgerentry",
         "Hide": "0"
     },
     {
@@ -4057,16 +2832,6 @@
     {
         "Name": "Export",
         "Permission": "token_blacklist.export_outstandingtoken",
-        "Hide": "0"
-    },
-    {
-        "Name": "Assignee",
-        "Permission": "Receipts.assignee_bypass_customerledgerentry",
-        "Hide": "0"
-    },
-    {
-        "Name": "Reports",
-        "Permission": "Receipts.reports_customerledgerentry",
         "Hide": "0"
     },
     {
@@ -4115,11 +2880,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Import",
-        "Permission": "Receipts.import_customerledgerentry",
-        "Hide": "0"
-    },
-    {
         "Name": "Download",
         "Permission": "token_blacklist.download_blacklistedtoken",
         "Hide": "0"
@@ -4130,23 +2890,8 @@
         "Hide": "0"
     },
     {
-        "Name": "Add",
-        "Permission": "Receipts.add_customerledgerentry",
-        "Hide": "0"
-    },
-    {
         "Name": "Import",
         "Permission": "token_blacklist.import_blacklistedtoken",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Receipts.view_customerledgerentry",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Receipts.delete_customerledgerentry",
         "Hide": "0"
     },
     {
@@ -4160,33 +2905,13 @@
         "Hide": "0"
     },
     {
-        "Name": "Print",
-        "Permission": "Receipts.print_customerledgerentry",
-        "Hide": "0"
-    },
-    {
         "Name": "Download",
         "Permission": "token_blacklist.download_outstandingtoken",
         "Hide": "0"
     },
     {
-        "Name": "Change",
-        "Permission": "Receipts.change_customerledgerentry",
-        "Hide": "0"
-    },
-    {
-        "Name": "Download",
-        "Permission": "Receipts.download_customerledgerentry",
-        "Hide": "0"
-    },
-    {
         "Name": "Reports",
         "Permission": "token_blacklist.reports_outstandingtoken",
-        "Hide": "0"
-    },
-    {
-        "Name": "Export",
-        "Permission": "Receipts.export_customerledgerentry",
         "Hide": "0"
     },
     {

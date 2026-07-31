@@ -158,6 +158,8 @@ class LeadViewSet(viewsets.ModelViewSet):
             'total': qs.count(),
             'today': qs.filter(created_on__date=today).count(),
             'new': qs.filter(status='NEW_LEAD').count(),
+            'hot_leads': qs.filter(status='HOT_LEAD').count(),
+            'prospects': qs.filter(status='PROSPECT').count(),
             'site_visit_scheduled': qs.filter(status='SITE_VISIT_SCHEDULED').count(),
             'booking': qs.filter(status='BOOKING').count(),
             'registration': qs.filter(status='REGISTRATION').count(),

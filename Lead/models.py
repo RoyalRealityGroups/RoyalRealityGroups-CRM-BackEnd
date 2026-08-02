@@ -16,20 +16,11 @@ LEAD_SOURCE_CHOICES = [
     ('MANUAL', 'Manual Entry'),
 ]
 
-# Lead Status choices - sequential pipeline
+# Lead Status choices
 LEAD_STATUS_CHOICES = [
-    ('NEW_LEAD', 'New Lead'),
-    ('CONTACT_ATTEMPTED', 'Contact Attempted'),
-    ('CONNECTED', 'Connected'),
-    ('PROSPECT', 'Prospect'),
-    ('INTERESTED', 'Interested'),
-    ('HOT_LEAD', 'Hot Lead'),
-    ('SITE_VISIT_SCHEDULED', 'Site Visit Scheduled'),
-    ('SITE_VISIT_COMPLETED', 'Site Visit Completed'),
-    ('NEGOTIATION', 'Negotiation'),
-    ('BOOKING', 'Booking'),
-    ('REGISTRATION', 'Registration'),
-    ('LOST', 'Lost'),
+    ('ONGOING', 'Ongoing'),
+    ('LIVE', 'Live'),
+    ('DEAD', 'Dead'),
 ]
 
 
@@ -71,7 +62,7 @@ class Lead(CoreModel):
     )
 
     # Status
-    status = models.CharField(max_length=30, choices=LEAD_STATUS_CHOICES, default='NEW_LEAD', db_index=True)
+    status = models.CharField(max_length=30, choices=LEAD_STATUS_CHOICES, default='ONGOING', db_index=True)
 
     # Additional Information
     remarks = models.TextField(blank=True, null=True)

@@ -157,13 +157,9 @@ class LeadViewSet(viewsets.ModelViewSet):
         return Response({
             'total': qs.count(),
             'today': qs.filter(created_on__date=today).count(),
-            'new': qs.filter(status='NEW_LEAD').count(),
-            'hot_leads': qs.filter(status='HOT_LEAD').count(),
-            'prospects': qs.filter(status='PROSPECT').count(),
-            'site_visit_scheduled': qs.filter(status='SITE_VISIT_SCHEDULED').count(),
-            'booking': qs.filter(status='BOOKING').count(),
-            'registration': qs.filter(status='REGISTRATION').count(),
-            'lost': qs.filter(status='LOST').count(),
+            'ongoing': qs.filter(status='ONGOING').count(),
+            'live': qs.filter(status='LIVE').count(),
+            'dead': qs.filter(status='DEAD').count(),
             'by_source': list(
                 qs.values('lead_source').annotate(
                     count=__import__('django.db.models', fromlist=['Count']).Count('id')
@@ -271,7 +267,7 @@ class LeadFollowUpViewSet(viewsets.ModelViewSet):
         today = timezone.now().date()
         followups = self.get_queryset().filter(
             next_follow_up_date__lt=today
-        ).exclude(lead__status__in=['LOST', 'REGISTRATION'])
+        ).exclude(lead__status__in=['DEAD'])
         serializer = LeadFollowUpSerializer(followups, many=True)
         return Response(serializer.data)
 
@@ -295,7 +291,7 @@ class LeadFollowUpViewSet(viewsets.ModelViewSet):
         qs = self.get_queryset().filter(
             next_follow_up_date__lte=today
         ).exclude(
-            lead__status__in=['LOST', 'REGISTRATION']
+            lead__status__in=['DEAD']
         )
 
         if not user.is_superuser and not user.is_staff:

@@ -10,7 +10,7 @@ from .models import Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck
 from .serializers import (
     LeadSerializer, LeadStatusHistorySerializer, LeadFollowUpSerializer,
     LeadCrossCheckSerializer,
-    LEAD_SOURCE_CHOICES_LIST, LEAD_STATUS_CHOICES_LIST,
+    LEAD_SOURCE_CHOICES_LIST, LEAD_STATUS_CHOICES_LIST, LEAD_BUCKET_CHOICES_LIST,
     FOLLOW_UP_TYPE_CHOICES_LIST,
 )
 
@@ -21,7 +21,7 @@ class LeadFilter(django_filters.FilterSet):
 
     class Meta:
         model = Lead
-        fields = ['status', 'lead_source', 'assigned_employee', 'from_date', 'to_date']
+        fields = ['status', 'bucket', 'lead_source', 'assigned_employee', 'from_date', 'to_date']
 
 
 class LeadViewSet(viewsets.ModelViewSet):
@@ -145,6 +145,7 @@ class LeadViewSet(viewsets.ModelViewSet):
         return Response({
             'lead_sources': LEAD_SOURCE_CHOICES_LIST,
             'lead_statuses': LEAD_STATUS_CHOICES_LIST,
+            'lead_buckets': LEAD_BUCKET_CHOICES_LIST,
             'follow_up_types': FOLLOW_UP_TYPE_CHOICES_LIST,
         })
 

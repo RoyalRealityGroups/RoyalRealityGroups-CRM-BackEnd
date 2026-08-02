@@ -3,13 +3,14 @@ from django.db.models import Q
 from django.apps import apps
 from .models import (
     Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck,
-    LEAD_SOURCE_CHOICES, LEAD_STATUS_CHOICES,
+    LEAD_SOURCE_CHOICES, LEAD_STATUS_CHOICES, LEAD_BUCKET_CHOICES,
 )
 
 
 class LeadSerializer(serializers.ModelSerializer):
     assigned_employee_name = serializers.SerializerMethodField(read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
+    bucket_display = serializers.CharField(source='get_bucket_display', read_only=True)
     lead_source_display = serializers.CharField(source='get_lead_source_display', read_only=True)
     interested_project_name = serializers.CharField(source='interested_project.name', read_only=True)
 
@@ -20,7 +21,7 @@ class LeadSerializer(serializers.ModelSerializer):
             'budget', 'preferred_area', 'property_requirement', 'lead_source',
             'lead_source_display', 'assigned_employee', 'assigned_employee_name',
             'interested_project', 'interested_project_name',
-            'status', 'status_display', 'remarks',
+            'status', 'status_display', 'bucket', 'bucket_display', 'remarks',
             'cross_lead_override', 'cross_lead_override_reason',
             'created_on', 'modified_on', 'created_by_type', 'created_by_identifier',
             'modified_by_type', 'modified_by_identifier'
@@ -253,6 +254,7 @@ class LeadCrossCheckSerializer(serializers.ModelSerializer):
 # Choices for reference
 LEAD_SOURCE_CHOICES_LIST = [{'value': k, 'label': v} for k, v in LEAD_SOURCE_CHOICES]
 LEAD_STATUS_CHOICES_LIST = [{'value': k, 'label': v} for k, v in LEAD_STATUS_CHOICES]
+LEAD_BUCKET_CHOICES_LIST = [{'value': k, 'label': v} for k, v in LEAD_BUCKET_CHOICES]
 
 FOLLOW_UP_TYPE_CHOICES = [
     ('CALL', 'Call'),

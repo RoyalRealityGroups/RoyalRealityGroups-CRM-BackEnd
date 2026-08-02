@@ -16,6 +16,13 @@ LEAD_SOURCE_CHOICES = [
     ('MANUAL', 'Manual Entry'),
 ]
 
+# Lead Bucket choices
+LEAD_BUCKET_CHOICES = [
+    ('NEW_LEAD', 'New Lead'),
+    ('HOT_LEAD', 'Hot Lead'),
+    ('PROSPECTS', 'Prospects'),
+]
+
 # Lead Status choices
 LEAD_STATUS_CHOICES = [
     ('ONGOING', 'Ongoing'),
@@ -63,6 +70,9 @@ class Lead(CoreModel):
 
     # Status
     status = models.CharField(max_length=30, choices=LEAD_STATUS_CHOICES, default='ONGOING', db_index=True)
+
+    # Bucket
+    bucket = models.CharField(max_length=20, choices=LEAD_BUCKET_CHOICES, blank=True, null=True, db_index=True)
 
     # Additional Information
     remarks = models.TextField(blank=True, null=True)

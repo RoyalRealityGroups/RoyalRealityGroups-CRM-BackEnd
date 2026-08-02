@@ -73,6 +73,9 @@ class Booking(CoreModel):
     agreed_price = models.DecimalField(max_digits=14, decimal_places=2, null=True, blank=True)
     booking_amount = models.DecimalField(max_digits=14, decimal_places=2)
     booking_date = models.DateField(db_index=True)
+    property_cost = models.DecimalField(max_digits=14, decimal_places=2, null=True, blank=True, help_text='Total property cost')
+    revenue = models.DecimalField(max_digits=14, decimal_places=2, null=True, blank=True, help_text='Revenue from this booking')
+    incentive = models.DecimalField(max_digits=14, decimal_places=2, null=True, blank=True, help_text='Incentive/commission for sales executive')
 
     # Team
     sales_executive = models.ForeignKey(

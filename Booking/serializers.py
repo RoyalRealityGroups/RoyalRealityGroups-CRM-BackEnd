@@ -32,6 +32,7 @@ class BookingSerializer(serializers.ModelSerializer):
             'project', 'project_name',
             'unit_type', 'plot', 'plot_number_display', 'flat', 'flat_unit_display', 'unit_number',
             'agreed_price', 'booking_amount', 'booking_date',
+            'property_cost', 'revenue', 'incentive',
             'sales_executive', 'sales_executive_name',
             'status', 'status_display',
             'cancellation_reason', 'cancelled_date', 'remarks',

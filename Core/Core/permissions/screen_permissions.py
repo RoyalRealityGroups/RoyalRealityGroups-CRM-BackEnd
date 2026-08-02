@@ -35,9 +35,9 @@ URL_TO_PERMISSION_MODEL = {
     # Documents
     '/api/documents/': ('Documents', 'document'),
 
-    # Reports & Dashboards (exempt)
+    # Reports & Dashboards
     '/api/re-reports/': None,
-    '/api/dashboards/': None,
+    '/api/dashboards/': ('dashboards', 'dashboard'),
 
     # User Management
     '/api/usermanagement/': ('Users', 'user'),

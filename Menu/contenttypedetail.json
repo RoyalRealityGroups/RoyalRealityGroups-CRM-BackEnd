@@ -364,5 +364,11 @@
         "ContentType": "document",
         "App": "Documents",
         "Hide": "0"
+    },
+    {
+        "Name": "Dashboard",
+        "ContentType": "dashboard",
+        "App": "dashboards",
+        "Hide": "0"
     }
 ]

@@ -8,7 +8,7 @@
         "Click": "",
         "Menu": "MENU-001",
         "Submenu": "SBM-000",
-        "Permission": "",
+        "Permission": "dashboards.view_dashboard",
         "Description": "Application dashboard overview",
         "Created On": "2026-07-11 00:00:00",
         "Modified On": "2026-07-11 00:00:00"

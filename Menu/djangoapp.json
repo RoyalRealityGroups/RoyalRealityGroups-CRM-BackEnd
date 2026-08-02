@@ -130,5 +130,11 @@
         "App_Label": "ProjectManagement",
         "Hide": "0",
         "sequence": "80"
+    },
+    {
+        "Name": "Dashboards",
+        "App_Label": "dashboards",
+        "Hide": "0",
+        "sequence": "10"
     }
 ]

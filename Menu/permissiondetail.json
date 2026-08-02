@@ -3183,5 +3183,10 @@
         "Name": "View",
         "Permission": "ProjectManagement.view_project",
         "Hide": "0"
+    },
+    {
+        "Name": "View",
+        "Permission": "dashboards.view_dashboard",
+        "Hide": "0"
     }
 ]

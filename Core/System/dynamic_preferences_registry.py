@@ -336,65 +336,6 @@ class AMCUEnableAutoSync(ChoicePreference):
 
 
 @global_preferences_registry.register
-class FocusSyncOn(ChoicePreference):
-    choices = [
-                ('T', 'TRUE'),
-                ('F', 'FALSE'),
-            ]
-    section = thirdparty
-    name = 'FOCUS_SYNC_ON'
-    default = ''
-    required = True
-    verbose_name ='FOCUS_SYNC_ON'
-
-
-@global_preferences_registry.register
-class FocusBaseUrl(StringPreference):
-    section = thirdparty
-    name = 'FOCUS_BASEURL'
-    default = ''
-    required = True
-    verbose_name ='FOCUS_BASEURL'
-
-
-@global_preferences_registry.register
-class FocusCompanyCode(StringPreference):
-    section = thirdparty
-    name = 'FOCUS_COMPANY_CODE'
-    default = ''
-    required = True
-    verbose_name ='FOCUS_COMPANY_CODE'
-
-
-@global_preferences_registry.register
-class FocusUserName(StringPreference):
-    section = thirdparty
-    name = 'FOCUS_USERNAME'
-    default = ''
-    required = True
-    verbose_name ='FOCUS_USERNAME'
-
-
-@global_preferences_registry.register
-class FocusPassword(StringPreference):
-    section = thirdparty
-    name = 'FOCUS_PASSWORD'
-    default = ''
-    required = True
-    verbose_name ='FOCUS_PASSWORD'
-
-
-
-@global_preferences_registry.register
-class FocusLastSyncOn(StringPreference):
-    section = thirdparty
-    name = 'FOCUS_LAST_SYNC_ON'
-    default = ''
-    required = True
-    verbose_name ='FOCUS_LAST_SYNC_ON'
-
-
-@global_preferences_registry.register
 class AmcuSyncOn(ChoicePreference):
     choices = [
                 ('T', 'TRUE'),

@@ -962,12 +962,6 @@ class SyncJsonDataView(APIView):
 
         amcu_enable_auto_sync = GLOBAL_VARS['THIRDPARTY__AMCU_ENABLE_AUTOSYNC']
 
-        focus_base_url = GLOBAL_VARS['THIRDPARTY__FOCUS_BASEURL']
-        focus_username = GLOBAL_VARS['THIRDPARTY__FOCUS_USERNAME']
-        focus_password = GLOBAL_VARS['THIRDPARTY__FOCUS_PASSWORD']
-        focus_companycode = GLOBAL_VARS['THIRDPARTY__FOCUS_COMPANY_CODE']
-        focus_sync_on = GLOBAL_VARS['THIRDPARTY__FOCUS_SYNC_ON']
-
         amcu_api_key = GLOBAL_VARS['THIRDPARTY__AMCU_API_KEY']
         amcu_username = GLOBAL_VARS['THIRDPARTY__AMCU_PASSWORD']
         amcu_password = GLOBAL_VARS['THIRDPARTY__AMCU_USERNAME']
@@ -978,12 +972,6 @@ class SyncJsonDataView(APIView):
         return Response({
             'enable_auto_sync': enable_auto_sync,
             'amcu_enable_auto_sync': amcu_enable_auto_sync,
-
-            'focus_base_url': focus_base_url,
-            'focus_username': focus_username,
-            'focus_password': focus_password,
-            'focus_companycode': focus_companycode,
-            'focus_sync_on': focus_sync_on,
 
             'amcu_api_key': amcu_api_key,
             'amcu_username': amcu_username,
@@ -1006,47 +994,6 @@ class SyncJsonDataView(APIView):
                 updated_data['enable_auto_sync'] = enable_auto_sync
             except ValidationError:
                 errors['enable_auto_sync'] = 'Invalid Input.'
-
-
-        if 'focus_base_url' in request.data:
-            base_url = request.data['focus_base_url']
-            if base_url:
-                global_preferences['THIRDPARTY__FOCUS_BASEURL'] = base_url
-                updated_data['focus_base_url'] = base_url
-
-
-        if 'focus_username' in request.data:
-            username = request.data['focus_username']
-            try:
-                global_preferences['THIRDPARTY__FOCUS_USERNAME'] = username
-                updated_data['focus_username'] = username
-            except ValidationError:
-                errors['focus_username'] = 'Invalid Username.'
-
-        if 'focus_password' in request.data:
-            password = request.data['focus_password']
-            try:
-                global_preferences['THIRDPARTY__FOCUS_PASSWORD'] = password
-                updated_data['focus_password'] = password
-            except ValidationError:
-                errors['focus_password'] = 'Invalid Password.'
-
-        if 'focus_companycode' in request.data:
-            company_code = request.data['focus_companycode']
-            try:
-                global_preferences['THIRDPARTY__FOCUS_COMPANY_CODE'] = company_code
-                updated_data['focus_companycode'] = company_code
-            except ValidationError:
-                errors['focus_companycode'] = 'Invalid CompanyCode.'
-
-
-        if 'focus_sync_on' in request.data:
-            sync_on = request.data['focus_sync_on']
-            try:
-                global_preferences['THIRDPARTY__FOCUS_SYNC_ON'] = sync_on
-                updated_data['focus_sync_on'] = sync_on
-            except ValidationError:
-                errors['focus_sync_on'] = 'Invalid Input.'
 
 # -----------------------------------------------------------------------  AMCU ------------------
 

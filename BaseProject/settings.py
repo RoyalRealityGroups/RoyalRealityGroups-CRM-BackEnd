@@ -254,28 +254,13 @@ DATABASES = {
     },
 }
 
-# Redis Cache Configuration
+# Cache Configuration
 CACHES = {
     "default": {
-        "BACKEND": "django_redis.cache.RedisCache" if os.getenv("USE_REDIS", "False") == "True" else "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": os.getenv("REDIS_URL", "redis://127.0.0.1:6379/1") if os.getenv("USE_REDIS", "False") == "True" else "unique-snowflake",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "CONNECTION_POOL_KWARGS": {
-                "max_connections": 50,
-                "retry_on_timeout": True,
-            },
-            "SOCKET_CONNECT_TIMEOUT": 5,
-            "SOCKET_TIMEOUT": 5,
-        } if os.getenv("USE_REDIS", "False") == "True" else {},
-        "KEY_PREFIX": "sales_app",
-        "TIMEOUT": 300,  # 5 minutes default
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
     }
 }
-
-# Session cache configuration (optional but recommended)
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-SESSION_CACHE_ALIAS = "default"
 
 CACHE_TIME_OUT_ONE_YEAR = 60 * 60 * 24 * 365
 CACHE_TIME_OUT_ONE_MONTH = 60 * 60 * 24 * 30
@@ -566,14 +551,3 @@ IO_SECRET = os.getenv('IO_SECRET')
 # Enforce IO_SECRET only when IOServer is enabled in production
 if not DEBUG and IO_SERVER_URL and not IO_SECRET:
     raise Exception("IO_SECRET environment variable must be set when IO_SERVER_URL is configured in production")
-
-
-
-FOCUS_SYNC_ON = os.getenv('FOCUS_SYNC_ON', False)
-FOCUS_BASEURL = os.getenv('FOCUS_BASEURL', None)
-FOCUS_COMPANY_CODE = os.getenv('FOCUS_COMPANY_CODE', None)
-FOCUS_USERNAME = os.getenv('FOCUS_USERNAME', None)
-FOCUS_PASSWORD = os.getenv('FOCUS_PASSWORD', None)
-
-FOCUS_API2_BASEURL = os.getenv('FOCUS_API2_BASEURL', None)
-FOCUS_API2_TOKEN = os.getenv('FOCUS_API2_TOKEN', None)

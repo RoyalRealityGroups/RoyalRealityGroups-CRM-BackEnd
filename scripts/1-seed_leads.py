@@ -19,7 +19,7 @@ if not os.environ.get('DJANGO_SETTINGS_MODULE'):
     django.setup()
 
 from django.contrib.auth import get_user_model
-from Lead.models import Lead, LeadFollowUp, LEAD_SOURCE_CHOICES, LEAD_STATUS_CHOICES
+from Lead.models import Lead, LeadFollowUp, LEAD_SOURCE_CHOICES, LEAD_STATUS_CHOICES, LEAD_BUCKET_CHOICES
 
 User = get_user_model()
 
@@ -92,6 +92,7 @@ FOLLOW_UP_NOTES = [
 
 SOURCES = [s[0] for s in LEAD_SOURCE_CHOICES]
 STATUSES = [s[0] for s in LEAD_STATUS_CHOICES]
+BUCKETS = [s[0] for s in LEAD_BUCKET_CHOICES]
 FOLLOWUP_TYPES = ['CALL', 'WHATSAPP', 'MEETING', 'SITE_VISIT']
 
 # Status distribution — weighted to show realistic pipeline
@@ -163,6 +164,7 @@ def seed_leads():
             assigned_employee=assigned_user,
             interested_project=project,
             status=status,
+            bucket=random.choice(BUCKETS + [None]),  # ~25% chance of no bucket
             remarks=f"Interested in {random.choice(PROPERTY_TYPES)} at {random.choice(AREAS)}.",
             created_by_type='User',
             created_by_identifier=str(assigned_user.id),

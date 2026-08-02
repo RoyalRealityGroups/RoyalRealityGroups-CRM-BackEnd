@@ -95,7 +95,7 @@ STATUSES = [s[0] for s in LEAD_STATUS_CHOICES]
 FOLLOWUP_TYPES = ['CALL', 'WHATSAPP', 'MEETING', 'SITE_VISIT']
 
 # Status distribution — weighted to show realistic pipeline
-STATUS_WEIGHTS = [0.12, 0.08, 0.10, 0.15, 0.12, 0.12, 0.10, 0.08, 0.05, 0.08]
+STATUS_WEIGHTS = [0.45, 0.35, 0.20]  # ONGOING, LIVE, DEAD
 
 
 def get_assignable_users():

@@ -377,22 +377,6 @@ class DashboardSummaryView(APIView):
             },
             'bookings': {
                 'total': active_bkg.count(),
-                'this_month': active_bkg.filter(
-                    booking_date__year=today.year,
-                    booking_date__month=today.month
-                ).count(),
-            },
-            'registrations': {
-                'total': bkg_qs.filter(status='REGISTERED').count(),
-            },
-            'revenue': {
-                'total': float(active_bkg.aggregate(t=Sum('agreed_price'))['t'] or 0),
-                'this_month': float(
-                    active_bkg.filter(
-                        booking_date__year=today.year,
-                        booking_date__month=today.month
-                    ).aggregate(t=Sum('agreed_price'))['t'] or 0
-                ),
             },
             'employee_performance': employee_performance[:10],
             'project_performance': project_performance,

@@ -365,7 +365,8 @@ class DashboardSummaryView(APIView):
                 ).count(),
             },
             'lead_pipeline': list(
-                lead_qs.values('status')
+                lead_qs.filter(status__in=['ONGOING', 'LIVE', 'DEAD'])
+                .values('status')
                 .annotate(count=Count('id'))
                 .order_by('-count')
             ),

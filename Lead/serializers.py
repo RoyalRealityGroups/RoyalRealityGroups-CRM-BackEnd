@@ -282,7 +282,8 @@ class CallLogSerializer(serializers.ModelSerializer):
 
     def get_called_by_name(self, obj):
         if obj.called_by:
-            return obj.called_by.get_full_name() or obj.called_by.username
+            full_name = f"{obj.called_by.first_name} {obj.called_by.last_name}".strip()
+            return full_name or obj.called_by.username
         return None
 
     def create(self, validated_data):

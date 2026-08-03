@@ -12,6 +12,7 @@ URL_TO_PERMISSION_MODEL = {
     # Lead Management
     '/api/lead/followups/reminders/': None,  # exempt
     '/api/lead/leads/choices/': None,        # exempt
+    '/api/lead/call-logs/': None,            # exempt — mobile app sync
     '/api/lead/followups/': ('Lead', 'leadfollowup'),
     '/api/lead/leads/cross_check/': ('Lead', 'lead'),
     '/api/lead/leads/export/': ('Lead', 'lead'),

@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.db.models import Q
 from django.apps import apps
 from .models import (
-    Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck,
+    Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck, CallLog,
     LEAD_SOURCE_CHOICES, LEAD_STATUS_CHOICES, LEAD_BUCKET_CHOICES,
 )
 
@@ -263,3 +263,52 @@ FOLLOW_UP_TYPE_CHOICES = [
     ('SITE_VISIT', 'Site Visit'),
 ]
 FOLLOW_UP_TYPE_CHOICES_LIST = [{'value': k, 'label': v} for k, v in FOLLOW_UP_TYPE_CHOICES]
+
+
+class CallLogSerializer(serializers.ModelSerializer):
+    lead_name       = serializers.CharField(source='lead.name', read_only=True, default=None)
+    called_by_name  = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = CallLog
+        fields = [
+            'id', 'phone_number', 'call_type', 'duration_secs',
+            'called_at', 'device_platform',
+            'lead', 'lead_name',
+            'called_by', 'called_by_name',
+            'created_at',
+        ]
+        read_only_fields = ('id', 'lead', 'called_by', 'created_at', 'lead_name', 'called_by_name')
+
+    def get_called_by_name(self, obj):
+        if obj.called_by:
+            return obj.called_by.get_full_name() or obj.called_by.username
+        return None
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        phone = validated_data.get('phone_number', '').strip()
+        called_at = validated_data.get('called_at')
+
+        # Duplicate guard — same phone + called_at + user → return existing
+        existing = CallLog.objects.filter(
+            phone_number=phone,
+            called_at=called_at,
+            called_by=user,
+        ).first()
+        if existing:
+            self._was_existing = True
+            return existing
+
+        self._was_existing = False
+
+        # Auto-match lead by phone number (mobile or alternate)
+        from django.db.models import Q as DQ
+        lead = Lead.objects.filter(
+            DQ(mobile=phone) | DQ(alternate_number=phone),
+            is_deleted=False
+        ).first()
+
+        validated_data['called_by'] = user
+        validated_data['lead'] = lead
+        return super().create(validated_data)

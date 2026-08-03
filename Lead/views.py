@@ -6,10 +6,10 @@ from django_filters import rest_framework as django_filters
 from rest_framework import filters
 from django.utils import timezone
 
-from .models import Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck
+from .models import Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck, CallLog
 from .serializers import (
     LeadSerializer, LeadStatusHistorySerializer, LeadFollowUpSerializer,
-    LeadCrossCheckSerializer,
+    LeadCrossCheckSerializer, CallLogSerializer,
     LEAD_SOURCE_CHOICES_LIST, LEAD_STATUS_CHOICES_LIST, LEAD_BUCKET_CHOICES_LIST,
     FOLLOW_UP_TYPE_CHOICES_LIST,
 )
@@ -368,3 +368,52 @@ class LeadFollowUpViewSet(viewsets.ModelViewSet):
             )
             response['Content-Disposition'] = 'attachment; filename="FollowUp_Report.xlsx"'
             return response
+
+
+class CallLogViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for Call Logs — synced from Android mobile app.
+
+    POST   /api/lead/call-logs/          — sync a call log
+    GET    /api/lead/call-logs/          — list (filter by ?phone_number=)
+    GET    /api/lead/call-logs/{id}/     — retrieve single
+    PATCH  /api/lead/call-logs/{id}/     — update
+    """
+    serializer_class = CallLogSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    http_method_names = ['get', 'post', 'patch', 'head', 'options']
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = CallLog.objects.select_related('lead', 'called_by')
+
+        # Agents see only their own logs; superusers/managers see all
+        if not user.is_superuser and not user.is_staff:
+            qs = qs.filter(called_by=user)
+
+        # Filter by phone number if provided
+        phone = self.request.query_params.get('phone_number')
+        if phone:
+            qs = qs.filter(phone_number=phone)
+
+        return qs.order_by('-called_at')
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+
+        # Duplicate guard — serializer returns existing record, use 200 not 201
+        was_duplicate = CallLog.objects.filter(
+            phone_number=instance.phone_number,
+            called_at=instance.called_at,
+            called_by=request.user,
+        ).count() > 0 and not getattr(instance, '_state', None)
+
+        out = self.get_serializer(instance)
+        # Check if this was a pre-existing record (duplicate) — return 200
+        from rest_framework.response import Response
+        from rest_framework import status as drf_status
+        existing_before = getattr(serializer, '_was_existing', False)
+        status_code = drf_status.HTTP_200_OK if existing_before else drf_status.HTTP_201_CREATED
+        return Response(out.data, status=status_code)

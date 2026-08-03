@@ -30,7 +30,6 @@ LEAD_STATUS_CHOICES = [
     ('DEAD', 'Dead'),
 ]
 
-
 class Lead(CoreModel):
     """Lead model - Module 2: Lead Management"""
 
@@ -150,3 +149,38 @@ class LeadCrossCheck(models.Model):
     def __str__(self):
         return f"{self.original_lead.name} → {self.duplicate_of.name} ({self.match_field})"
 
+
+
+class CallLog(models.Model):
+    """
+    Call Log — synced from Android mobile app.
+    Auto-matches to a Lead by phone number on create.
+    """
+    CALL_TYPE_CHOICES = [
+        ('outgoing', 'Outgoing'),
+        ('incoming', 'Incoming'),
+        ('missed',   'Missed'),
+        ('rejected', 'Rejected'),
+        ('unknown',  'Unknown'),
+    ]
+
+    phone_number    = models.CharField(max_length=20, db_index=True)
+    call_type       = models.CharField(max_length=10, choices=CALL_TYPE_CHOICES)
+    duration_secs   = models.PositiveIntegerField(default=0)
+    called_at       = models.DateTimeField(db_index=True)
+    device_platform = models.CharField(max_length=10, default='android')
+    called_by       = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name='call_logs'
+    )
+    lead            = models.ForeignKey(
+        Lead, on_delete=models.SET_NULL, null=True, blank=True, related_name='call_logs'
+    )
+    created_at      = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-called_at']
+        # Prevent duplicate syncs from the same device
+        unique_together = [['phone_number', 'called_at', 'called_by']]
+
+    def __str__(self):
+        return f"{self.call_type} — {self.phone_number} by {self.called_by} at {self.called_at}"

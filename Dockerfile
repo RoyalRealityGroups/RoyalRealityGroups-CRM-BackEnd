@@ -1,5 +1,5 @@
-ARG PYTHON_VERSION=3.10.12
-FROM python:${PYTHON_VERSION}-slim
+ARG PYTHON_VERSION=3.11-slim
+FROM python:${PYTHON_VERSION}
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -14,13 +14,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     postgresql-client \
     libpq-dev \
     gcc \
+    build-essential \
+    libmagic1 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /app
 
-RUN python -m venv venv \
-&& /app/venv/bin/pip install --upgrade pip \
-&& /app/venv/bin/pip install --no-cache-dir -r /app/requirements.txt
+RUN python -m venv venv && /app/venv/bin/pip install --upgrade pip && /app/venv/bin/pip install --no-cache-dir -r /app/requirements.txt
 
 COPY . /app
 

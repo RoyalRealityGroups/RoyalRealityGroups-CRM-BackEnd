@@ -29,7 +29,11 @@ class SystemConfig(AppConfig):
             from Core.System.database_event_listener import start_listener
             start_alert_scheduler_thread()
             # start_task_scheduler_thread()  # Disabled to prevent repeated SQL queries
-            initialize_templates()
+            try:
+                initialize_templates()
+            except Exception:
+                # Another worker already inserted; safe to ignore
+                pass
             register_signals()
             start_listener()
 

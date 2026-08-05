@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     build-essential \
     libmagic1 \
+    dos2unix \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /app
@@ -23,6 +24,9 @@ COPY requirements.txt /app
 RUN python -m venv venv && /app/venv/bin/pip install --upgrade pip && /app/venv/bin/pip install --no-cache-dir -r /app/requirements.txt
 
 COPY . /app
+
+# Fix Windows line endings in shell scripts
+RUN find /app -name "*.sh" -exec dos2unix {} \; && chmod +x /app/entrypoint.sh
 
 ENV VIRTUAL_ENV=/app/venv
 ENV PATH=/app/venv/bin:$PATH

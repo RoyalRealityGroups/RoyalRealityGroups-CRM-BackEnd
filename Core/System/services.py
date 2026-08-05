@@ -974,12 +974,6 @@ def initialize_templates():
         },
     ]
     
-    # Get all existing template names
-    existing_template_names = set(Template.objects.values_list('name', flat=True))
-    
-    # Filter out templates that already exist
-    
-    for data in template_data :
-        if data['name'] not in existing_template_names:
-            Template.objects.create(**data)
+    for data in template_data:
+        Template.objects.get_or_create(name=data['name'], defaults=data)
     

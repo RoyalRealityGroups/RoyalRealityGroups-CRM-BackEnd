@@ -1,5 +1,5 @@
-ARG PYTHON_VERSION=3.10.12
-FROM python:${PYTHON_VERSION}-slim
+ARG PYTHON_VERSION=3.11-slim
+FROM python:${PYTHON_VERSION}
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -14,15 +14,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     postgresql-client \
     libpq-dev \
     gcc \
+    build-essential \
+    libmagic1 \
+    dos2unix \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /app
 
-RUN python -m venv venv \
-&& /app/venv/bin/pip install --upgrade pip \
-&& /app/venv/bin/pip install --no-cache-dir -r /app/requirements.txt
+RUN python -m venv venv && /app/venv/bin/pip install --upgrade pip && /app/venv/bin/pip install --no-cache-dir -r /app/requirements.txt
 
 COPY . /app
+
+# Fix Windows line endings in shell scripts
+RUN find /app -name "*.sh" -exec dos2unix {} \; && chmod +x /app/entrypoint.sh
 
 ENV VIRTUAL_ENV=/app/venv
 ENV PATH=/app/venv/bin:$PATH

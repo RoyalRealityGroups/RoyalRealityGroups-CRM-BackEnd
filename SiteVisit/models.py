@@ -21,15 +21,13 @@ from Users.models import User
 
 SITE_VISIT_STATUS_CHOICES = [
     ('SCHEDULED', 'Scheduled'),
-    ('CONFIRMED', 'Confirmed'),
     ('COMPLETED', 'Completed'),
     ('CANCELLED', 'Cancelled'),
 ]
 
 # Valid status transitions
 SITE_VISIT_STATUS_TRANSITIONS = {
-    'SCHEDULED': {'CONFIRMED', 'CANCELLED'},
-    'CONFIRMED': {'SCHEDULED', 'COMPLETED', 'CANCELLED'},
+    'SCHEDULED': {'COMPLETED', 'CANCELLED'},
     'COMPLETED': set(),   # Terminal
     'CANCELLED': set(),   # Terminal
 }

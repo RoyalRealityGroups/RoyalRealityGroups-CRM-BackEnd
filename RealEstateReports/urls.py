@@ -10,6 +10,7 @@ from .views import (
     RegistrationReportView,
     EmployeePerformanceReportView,
     DashboardSummaryView,
+    TodaysInsightsDetailView,
 )
 
 urlpatterns = [
@@ -32,4 +33,7 @@ urlpatterns = [
 
     # Combined dashboard summary
     path('dashboard-summary/', DashboardSummaryView.as_view(), name='report-dashboard-summary'),
+
+    # Today's Insights detailed view
+    path('todays-insights/', TodaysInsightsDetailView.as_view(), name='todays-insights-detail'),
 ]

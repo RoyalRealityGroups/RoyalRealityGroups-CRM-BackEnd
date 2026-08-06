@@ -256,35 +256,118 @@ class DashboardSummaryView(APIView):
     """
     Module 12 - Dashboard KPIs.
     Returns data for both Team Leader and Director dashboards.
+
+    Data scoping:
+      - Superuser / staff: sees ALL data
+      - Regular user (e.g. sales executive): sees only their OWN data
     """
     permission_classes = [permissions.IsAuthenticated]
 
+    def _is_admin(self, user):
+        """Check if user should see all data (superuser, staff, or has ALL data scope)."""
+        if user.is_superuser or user.is_staff:
+            return True
+        # Check if user has 'ALL' lead_data_scope (director-level)
+        return getattr(user, 'lead_data_scope', 'OWN') == 'ALL'
+
+    def _scope_leads(self, qs, user):
+        if self._is_admin(user):
+            return qs
+        return qs.filter(assigned_employee=user)
+
+    def _scope_site_visits(self, qs, user):
+        if self._is_admin(user):
+            return qs
+        return qs.filter(assigned_employee=user)
+
+    def _scope_bookings(self, qs, user):
+        if self._is_admin(user):
+            return qs
+        return qs.filter(sales_executive=user)
+
+    def _scope_call_logs(self, qs, user):
+        if self._is_admin(user):
+            return qs
+        return qs.filter(called_by=user)
+
     def get(self, request):
         from django.utils import timezone
-        from Lead.models import Lead
+        from Lead.models import Lead, CallLog
         from SiteVisit.models import SiteVisit
         from Booking.models import Booking
         from Users.models import User
         from django.db.models import Sum, Count
         from django.db.models import Q as models_Q
+        from django.db.models.functions import TruncHour
 
         today = timezone.now().date()
         user = request.user
+        is_admin = self._is_admin(user)
 
-        lead_qs = Lead.objects.filter(is_deleted=False)
-        sv_qs = SiteVisit.objects.filter(is_deleted=False)
-        bkg_qs = Booking.objects.filter(is_deleted=False)
+        # Base querysets (soft-delete aware)
+        lead_qs = self._scope_leads(Lead.objects.filter(is_deleted=False), user)
+        sv_qs = self._scope_site_visits(SiteVisit.objects.filter(is_deleted=False), user)
+        bkg_qs = self._scope_bookings(Booking.objects.filter(is_deleted=False), user)
         active_bkg = bkg_qs.exclude(status='CANCELLED')
+        call_qs = self._scope_call_logs(CallLog.objects.all(), user)
 
-        # Employee performance (top performers)
-        employees = User.objects.filter(is_active=True, is_superuser=False)[:20]
+        # ---- TODAY'S INSIGHTS (summary for the card) ----
+        today_calls = call_qs.filter(called_at__date=today).count()
+        today_leads = lead_qs.filter(created_on__date=today).count()
+        today_followups_done = 0
+        try:
+            from Lead.models import LeadFollowUp
+            fu_qs = LeadFollowUp.objects.filter(lead__is_deleted=False, follow_up_date=today)
+            if not is_admin:
+                fu_qs = fu_qs.filter(models_Q(created_by=user) | models_Q(lead__assigned_employee=user))
+            today_followups_done = fu_qs.count()
+        except Exception:
+            pass
+
+        todays_insights = {
+            'calls': today_calls,
+            'leads_entered': today_leads,
+            'follow_ups': today_followups_done,
+            'site_visits': sv_qs.filter(visit_date=today).count(),
+        }
+
+        # ---- CALLING TREND (hourly for today, 0-23) ----
+        today_calls_qs = call_qs.filter(called_at__date=today)
+        hourly_data = list(
+            today_calls_qs
+            .annotate(hour=TruncHour('called_at'))
+            .values('hour')
+            .annotate(count=Count('id'))
+            .order_by('hour')
+        )
+        # Build full 24-hour array
+        hourly_map = {row['hour'].hour: row['count'] for row in hourly_data}
+        calling_trend = [
+            {'hour': h, 'label': f"{h:02d}:00", 'calls': hourly_map.get(h, 0)}
+            for h in range(24)
+        ]
+
+        # ---- EMPLOYEE PERFORMANCE TABLE (with calls) ----
+        if is_admin:
+            employees = User.objects.filter(is_active=True, is_superuser=False)[:20]
+        else:
+            # Non-admin sees only themselves
+            employees = User.objects.filter(id=user.id)
+
+        all_leads = Lead.objects.filter(is_deleted=False)
+        all_sv = SiteVisit.objects.filter(is_deleted=False)
+        all_bkg = Booking.objects.filter(is_deleted=False)
+        all_calls = CallLog.objects.all()
+
         employee_performance = []
         for emp in employees:
-            leads = lead_qs.filter(assigned_employee=emp).count()
-            visits = sv_qs.filter(assigned_employee=emp).count()
-            bookings = active_bkg.filter(sales_executive=emp).count()
-            registrations = bkg_qs.filter(sales_executive=emp, status='REGISTERED').count()
-            if leads > 0 or visits > 0 or bookings > 0:
+            leads = all_leads.filter(assigned_employee=emp).count()
+            visits = all_sv.filter(assigned_employee=emp).count()
+            bookings = all_bkg.exclude(status='CANCELLED').filter(sales_executive=emp).count()
+            registrations = all_bkg.filter(sales_executive=emp, status='REGISTERED').count()
+            calls = all_calls.filter(called_by=emp).count()
+            today_emp_calls = all_calls.filter(called_by=emp, called_at__date=today).count()
+            if leads > 0 or visits > 0 or bookings > 0 or calls > 0:
                 employee_performance.append({
                     'employee_id': str(emp.id),
                     'employee_name': f"{emp.first_name} {emp.last_name}".strip() or emp.username,
@@ -293,10 +376,12 @@ class DashboardSummaryView(APIView):
                     'site_visits': visits,
                     'bookings': bookings,
                     'registrations': registrations,
+                    'calls_total': calls,
+                    'calls_today': today_emp_calls,
                 })
-        employee_performance.sort(key=lambda x: x['bookings'], reverse=True)
+        employee_performance.sort(key=lambda x: x['calls_today'], reverse=True)
 
-        # Project performance
+        # ---- PROJECT PERFORMANCE ----
         project_performance = list(
             active_bkg.values('project__id', 'project__name')
             .annotate(
@@ -311,75 +396,159 @@ class DashboardSummaryView(APIView):
             row['project_name'] = row.pop('project__name', '') or ''
             row['revenue'] = float(row['revenue'] or 0)
 
-        # Monthly trend (last 12 months)
-        from django.db.models.functions import TruncMonth
-        from datetime import timedelta
-        twelve_months_ago = today - timedelta(days=365)
-
-        monthly_leads = list(
-            lead_qs.filter(created_on__date__gte=twelve_months_ago)
-            .annotate(month=TruncMonth('created_on'))
-            .values('month')
+        # ---- LEAD PIPELINE ----
+        lead_pipeline = list(
+            lead_qs.filter(status__in=['ONGOING', 'LIVE', 'DEAD'])
+            .values('status')
             .annotate(count=Count('id'))
-            .order_by('month')
-        )
-        monthly_bookings = list(
-            active_bkg.filter(booking_date__gte=twelve_months_ago)
-            .annotate(month=TruncMonth('booking_date'))
-            .values('month')
-            .annotate(count=Count('id'))
-            .order_by('month')
-        )
-        monthly_visits = list(
-            sv_qs.filter(visit_date__gte=twelve_months_ago)
-            .annotate(month=TruncMonth('visit_date'))
-            .values('month')
-            .annotate(count=Count('id'))
-            .order_by('month')
+            .order_by('-count')
         )
 
-        # Merge into single trend array
-        months_map = {}
-        for row in monthly_leads:
-            key = row['month'].strftime('%b %Y')
-            months_map.setdefault(key, {'month': key, 'leads': 0, 'site_visits': 0, 'bookings': 0})
-            months_map[key]['leads'] = row['count']
-        for row in monthly_visits:
-            key = row['month'].strftime('%b %Y')
-            months_map.setdefault(key, {'month': key, 'leads': 0, 'site_visits': 0, 'bookings': 0})
-            months_map[key]['site_visits'] = row['count']
-        for row in monthly_bookings:
-            key = row['month'].strftime('%b %Y')
-            months_map.setdefault(key, {'month': key, 'leads': 0, 'site_visits': 0, 'bookings': 0})
-            months_map[key]['bookings'] = row['count']
-
-        monthly_trend = sorted(months_map.values(), key=lambda x: x['month'])
+        # ---- SITE VISITS SUMMARY ----
+        site_visits_summary = {
+            'total': sv_qs.count(),
+            'today': sv_qs.filter(visit_date=today).count(),
+            'completed': sv_qs.filter(status='COMPLETED').count(),
+            'scheduled': sv_qs.filter(status='SCHEDULED').count(),
+        }
 
         return Response({
+            'todays_insights': todays_insights,
             'leads': {
                 'total': lead_qs.count(),
-                'today': lead_qs.filter(created_on__date=today).count(),
+                'today': today_leads,
                 'this_month': lead_qs.filter(
                     created_on__year=today.year,
                     created_on__month=today.month
                 ).count(),
             },
-            'lead_pipeline': list(
-                lead_qs.filter(status__in=['ONGOING', 'LIVE', 'DEAD'])
-                .values('status')
-                .annotate(count=Count('id'))
-                .order_by('-count')
-            ),
-            'site_visits': {
-                'total': sv_qs.count(),
-                'today': sv_qs.filter(visit_date=today).count(),
-                'completed': sv_qs.filter(status='COMPLETED').count(),
-                'scheduled': sv_qs.filter(status='SCHEDULED').count(),
-            },
+            'calling_trend': calling_trend,
+            'lead_pipeline': lead_pipeline,
+            'site_visits': site_visits_summary,
             'bookings': {
                 'total': active_bkg.count(),
             },
             'employee_performance': employee_performance[:10],
             'project_performance': project_performance,
-            'monthly_trend': monthly_trend,
+            'is_admin_view': is_admin,
+        })
+
+
+class TodaysInsightsDetailView(APIView):
+    """
+    Detailed view for Today's Insights card.
+    Returns granular breakdown: calls by type, leads entered, follow-ups done,
+    conversions, hourly call distribution, and per-lead call details.
+
+    Data scoping: same as DashboardSummaryView.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        from django.utils import timezone
+        from Lead.models import Lead, CallLog, LeadFollowUp
+        from SiteVisit.models import SiteVisit
+        from Booking.models import Booking
+        from django.db.models import Count, Sum, Avg, Q as models_Q
+        from django.db.models.functions import TruncHour
+
+        today = timezone.now().date()
+        now = timezone.now()
+        user = request.user
+        is_admin = user.is_superuser or user.is_staff or getattr(user, 'lead_data_scope', 'OWN') == 'ALL'
+
+        # --- Scoped querysets ---
+        if is_admin:
+            call_qs = CallLog.objects.filter(called_at__date=today)
+            lead_qs = Lead.objects.filter(is_deleted=False, created_on__date=today)
+            fu_qs = LeadFollowUp.objects.filter(lead__is_deleted=False, follow_up_date=today)
+            sv_qs = SiteVisit.objects.filter(is_deleted=False, visit_date=today)
+            bkg_qs = Booking.objects.filter(is_deleted=False, booking_date=today)
+        else:
+            call_qs = CallLog.objects.filter(called_at__date=today, called_by=user)
+            lead_qs = Lead.objects.filter(is_deleted=False, created_on__date=today, assigned_employee=user)
+            fu_qs = LeadFollowUp.objects.filter(
+                lead__is_deleted=False, follow_up_date=today
+            ).filter(models_Q(created_by=user) | models_Q(lead__assigned_employee=user))
+            sv_qs = SiteVisit.objects.filter(is_deleted=False, visit_date=today, assigned_employee=user)
+            bkg_qs = Booking.objects.filter(is_deleted=False, booking_date=today, sales_executive=user)
+
+        # --- Call summary ---
+        calls_by_type = list(
+            call_qs.values('call_type').annotate(count=Count('id')).order_by('-count')
+        )
+        total_calls = call_qs.count()
+        total_duration = call_qs.aggregate(total=Sum('duration_secs'))['total'] or 0
+        avg_duration = call_qs.aggregate(avg=Avg('duration_secs'))['avg'] or 0
+
+        # --- Hourly distribution ---
+        hourly_data = list(
+            call_qs.annotate(hour=TruncHour('called_at'))
+            .values('hour')
+            .annotate(count=Count('id'))
+            .order_by('hour')
+        )
+        hourly_map = {row['hour'].hour: row['count'] for row in hourly_data}
+        hourly_distribution = [
+            {'hour': h, 'label': f"{h:02d}:00", 'calls': hourly_map.get(h, 0)}
+            for h in range(24)
+        ]
+
+        # --- Peak hour ---
+        peak_hour = max(hourly_distribution, key=lambda x: x['calls']) if total_calls > 0 else None
+
+        # --- Leads entered today ---
+        leads_entered = lead_qs.count()
+        leads_by_source = list(
+            lead_qs.values('lead_source').annotate(count=Count('id')).order_by('-count')
+        )
+
+        # --- Follow-ups ---
+        followups_done = fu_qs.count()
+        followups_by_type = list(
+            fu_qs.values('follow_up_type').annotate(count=Count('id')).order_by('-count')
+        )
+
+        # --- Site visits today ---
+        site_visits_today = sv_qs.count()
+        sv_completed = sv_qs.filter(status='COMPLETED').count()
+
+        # --- Bookings today ---
+        bookings_today = bkg_qs.exclude(status='CANCELLED').count()
+
+        # --- Recent calls (last 20) ---
+        recent_calls = list(
+            call_qs.order_by('-called_at')[:20].values(
+                'id', 'phone_number', 'call_type', 'duration_secs', 'called_at',
+                'lead__name', 'lead__id', 'called_by__first_name', 'called_by__last_name',
+                'called_by__username',
+            )
+        )
+        for c in recent_calls:
+            name = f"{c.pop('called_by__first_name', '') or ''} {c.pop('called_by__last_name', '') or ''}".strip()
+            c['called_by_name'] = name or c.pop('called_by__username', 'Unknown')
+            if 'called_by__username' in c:
+                del c['called_by__username']
+            c['lead_name'] = c.pop('lead__name', None)
+            c['lead_id'] = str(c.pop('lead__id', '') or '') if c.get('lead__id') else None
+
+        return Response({
+            'server_now': now.isoformat(),
+            'is_admin_view': is_admin,
+            'summary': {
+                'total_calls': total_calls,
+                'total_duration_secs': total_duration,
+                'avg_duration_secs': round(avg_duration, 1),
+                'leads_entered': leads_entered,
+                'follow_ups_done': followups_done,
+                'site_visits': site_visits_today,
+                'site_visits_completed': sv_completed,
+                'bookings': bookings_today,
+                'peak_hour': peak_hour,
+            },
+            'calls_by_type': calls_by_type,
+            'leads_by_source': leads_by_source,
+            'followups_by_type': followups_by_type,
+            'hourly_distribution': hourly_distribution,
+            'recent_calls': recent_calls,
         })

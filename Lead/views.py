@@ -36,6 +36,11 @@ class LeadViewSet(viewsets.ModelViewSet):
     ordering_fields = ['created_on', 'status', 'name']
     ordering = ['-created_on']
 
+    def get_queryset(self):
+        from utils import apply_data_scope
+        qs = super().get_queryset()
+        return apply_data_scope(qs, self.request.user, 'lead', employee_field='assigned_employee')
+
     def perform_create(self, serializer):
         serializer.save()
 
@@ -250,6 +255,11 @@ class LeadFollowUpViewSet(viewsets.ModelViewSet):
     search_fields = ['lead__name', 'lead__mobile', 'lead__code', 'discussion_notes']
     ordering_fields = ['follow_up_date', 'next_follow_up_date']
     ordering = ['-follow_up_date']
+
+    def get_queryset(self):
+        from utils import apply_data_scope
+        qs = super().get_queryset()
+        return apply_data_scope(qs, self.request.user, 'followup', employee_field='lead__assigned_employee')
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)

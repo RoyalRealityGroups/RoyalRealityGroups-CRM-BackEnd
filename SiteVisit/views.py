@@ -31,7 +31,11 @@ class SiteVisitViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        from utils import apply_data_scope
         qs = super().get_queryset()
+        # Apply data scope first
+        qs = apply_data_scope(qs, self.request.user, 'sitevisit', employee_field='assigned_employee')
+        # Then apply date filters
         from_date = self.request.query_params.get('from_date')
         to_date = self.request.query_params.get('to_date')
         if from_date:

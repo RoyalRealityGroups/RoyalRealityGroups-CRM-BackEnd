@@ -24,7 +24,11 @@ class BookingViewSet(viewsets.ModelViewSet):
     ordering = ['-booking_date']
 
     def get_queryset(self):
+        from utils import apply_data_scope
         qs = super().get_queryset()
+        # Apply data scope
+        qs = apply_data_scope(qs, self.request.user, 'booking', employee_field='sales_executive')
+        # Then apply date filters
         from_date = self.request.query_params.get('from_date')
         to_date = self.request.query_params.get('to_date')
         if from_date:

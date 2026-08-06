@@ -179,3 +179,52 @@ def apply_company_location_filter_for_users(queryset, user):
     if filters:
         return queryset.filter(filters).distinct()
     return queryset
+
+
+# =============================================================================
+# DATA SCOPING — role-based data visibility
+# =============================================================================
+
+def apply_data_scope(queryset, user, screen, employee_field='assigned_employee'):
+    """
+    Apply data scope filtering based on user's data_scope setting for a screen.
+
+    Args:
+        queryset: The queryset to filter
+        user: The authenticated user (Users.User instance)
+        screen: Screen name key ('lead', 'followup', 'sitevisit', 'booking')
+        employee_field: The field name on the model that links to the employee/user
+
+    Returns:
+        Filtered queryset
+
+    Scope levels:
+        ALL  — user sees all records (director/admin)
+        TEAM — user sees own records + records of team members (reporting to them)
+        OWN  — user sees only their own records (sales executive)
+    """
+    if not getattr(user, 'is_authenticated', False):
+        return queryset.none()
+
+    # Superusers and staff always see everything
+    if user.is_superuser or user.is_staff:
+        return queryset
+
+    # Get the data scope for this screen
+    scope_field = f'{screen}_data_scope'
+    scope = getattr(user, scope_field, 'OWN')
+
+    if scope == 'ALL':
+        return queryset
+
+    if scope == 'TEAM':
+        # Get all team member IDs (users who report to this user, recursively)
+        team_ids = set()
+        team_ids.add(user.id)
+        if hasattr(user, 'get_team_users'):
+            for member in user.get_team_users():
+                team_ids.add(member.id)
+        return queryset.filter(**{f'{employee_field}__in': team_ids})
+
+    # OWN — default: only see records assigned to this user
+    return queryset.filter(**{employee_field: user})

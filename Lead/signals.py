@@ -11,10 +11,13 @@ def create_lead_status_history(sender, instance, created, **kwargs):
     if instance.created_by_identifier:
         try:
             user = User.objects.get(id=instance.created_by_identifier)
-        except User.DoesNotExist:
+        except (User.DoesNotExist, Exception):
             pass
     
     if created:
+        # Skip status history for public/anonymous leads (no valid user)
+        if user is None:
+            return
         LeadStatusHistory.objects.create(
             lead=instance,
             from_status=None,
@@ -24,6 +27,8 @@ def create_lead_status_history(sender, instance, created, **kwargs):
         )
     else:
         if hasattr(instance, '_previous_status') and instance._previous_status != instance.status:
+            if user is None:
+                return
             LeadStatusHistory.objects.create(
                 lead=instance,
                 from_status=instance._previous_status,

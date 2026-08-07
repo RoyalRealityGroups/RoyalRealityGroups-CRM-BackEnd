@@ -1248,7 +1248,7 @@ class AlertConfigCreate(generics.CreateAPIView):
 class AlertConfigDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AlertConfigSerializer
     model = serializer_class.Meta.model
-    queryset = model.objects.filter(is_active = True, is_deleted = False)
+    queryset = model.objects.filter(is_deleted = False)
 
     def perform_update(self, serializer):
         serializer.save()
@@ -1256,6 +1256,102 @@ class AlertConfigDetail(generics.RetrieveUpdateDestroyAPIView):
     def perform_destroy(self, instance):
         instance.is_deleted=True
         instance.save()
+
+
+class AlertConfigStatusToggle(APIView):
+    """Toggle is_active status of an AlertConfig."""
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, pk):
+        alert = get_object_or_404(AlertConfig, pk=pk, is_deleted=False)
+        is_active = request.data.get('is_active')
+        if not isinstance(is_active, bool):
+            return Response(
+                {"error": "is_active must be a boolean value"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        alert.is_active = is_active
+        alert.save(update_fields=['is_active'])
+        return Response(
+            {"id": alert.id, "is_active": alert.is_active},
+            status=status.HTTP_200_OK
+        )
+
+
+class AlertConfigEventsMetadata(APIView):
+    """
+    Returns available modules and events for alert trigger creation.
+    Groups ContentTypes by app_label, filtered to CRM-relevant apps only.
+    """
+    permission_classes = [IsAuthenticated]
+
+    # Only expose meaningful CRM app labels
+    ALLOWED_APPS = [
+        'Lead', 'Booking', 'Inventory', 'ProjectManagement',
+        'SiteVisit', 'Documents', 'Users', 'General',
+    ]
+
+    def get(self, request):
+        from django.contrib.contenttypes.models import ContentType
+
+        # Event choices from AlertConfig
+        events = [
+            {"id": choice[0], "name": choice[1]}
+            for choice in AlertConfig.EVENT_CHOICES
+        ]
+
+        # Group content types by app_label
+        content_types = ContentType.objects.filter(
+            app_label__in=self.ALLOWED_APPS
+        ).order_by('app_label', 'model')
+
+        modules = {}
+        for ct in content_types:
+            app = ct.app_label
+            if app not in modules:
+                modules[app] = {
+                    "app_label": app,
+                    "name": app.replace('Management', ' Management').replace('Visit', ' Visit'),
+                    "screens": []
+                }
+            modules[app]["screens"].append({
+                "id": ct.id,
+                "model": ct.model,
+                "name": ct.model_class()._meta.verbose_name.title() if ct.model_class() else ct.model.title(),
+            })
+
+        # Channel / type choices
+        channels = [
+            {"id": choice[0], "name": choice[1]}
+            for choice in AlertConfig.TYPE_CHOICES
+        ]
+
+        # Sender type / recipient choices
+        recipient_types = [
+            {"id": choice[0], "name": choice[1]}
+            for choice in AlertConfig.SENDER_TYPE_CHOICES
+        ]
+
+        # Priority choices
+        priorities = [
+            {"id": choice[0], "name": choice[1]}
+            for choice in AlertConfig.MESSAGE_PRIORITY_CHOICES
+        ]
+
+        # Notification type choices
+        notification_types = [
+            {"id": choice[0], "name": choice[1]}
+            for choice in AlertConfig.NOTIFICATION_TYPE_CHOICES
+        ]
+
+        return Response({
+            "modules": list(modules.values()),
+            "events": events,
+            "channels": channels,
+            "recipient_types": recipient_types,
+            "priorities": priorities,
+            "notification_types": notification_types,
+        }, status=status.HTTP_200_OK)
 
 
 

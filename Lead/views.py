@@ -9,7 +9,7 @@ from django.utils import timezone
 from .models import Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck, CallLog
 from .serializers import (
     LeadSerializer, LeadStatusHistorySerializer, LeadFollowUpSerializer,
-    LeadCrossCheckSerializer, CallLogSerializer,
+    LeadCrossCheckSerializer, CallLogSerializer, PublicLeadSerializer,
     LEAD_SOURCE_CHOICES_LIST, LEAD_STATUS_CHOICES_LIST, LEAD_BUCKET_CHOICES_LIST,
     FOLLOW_UP_TYPE_CHOICES_LIST,
 )
@@ -427,3 +427,22 @@ class CallLogViewSet(viewsets.ModelViewSet):
         existing_before = getattr(serializer, '_was_existing', False)
         status_code = drf_status.HTTP_200_OK if existing_before else drf_status.HTTP_201_CREATED
         return Response(out.data, status=status_code)
+
+
+class PublicLeadCreateView(generics.CreateAPIView):
+    """
+    Public endpoint for lead creation from website contact forms.
+    No authentication required.
+    """
+    serializer_class = PublicLeadSerializer
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = []  # No auth needed
+
+    def perform_create(self, serializer):
+        serializer.save(
+            lead_source='WEBSITE',
+            status='ONGOING',
+            bucket='NEW_LEAD',
+            created_by_type='Website',
+            created_by_identifier='public_form',
+        )

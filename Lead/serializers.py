@@ -322,3 +322,28 @@ class CallLogSerializer(serializers.ModelSerializer):
         validated_data['called_by'] = user
         validated_data['lead'] = lead
         return super().create(validated_data)
+
+
+class PublicLeadSerializer(serializers.ModelSerializer):
+    """
+    Minimal serializer for public website lead forms.
+    Only accepts basic contact info - no auth required.
+    """
+
+    class Meta:
+        model = Lead
+        fields = [
+            'name', 'mobile', 'alternate_number', 'email',
+            'budget', 'preferred_area', 'property_requirement',
+            'remarks', 'interested_project',
+        ]
+
+    def validate_mobile(self, value):
+        if not value or len(value.strip()) < 10:
+            raise serializers.ValidationError("A valid mobile number is required.")
+        return value.strip()
+
+    def validate_name(self, value):
+        if not value or len(value.strip()) < 2:
+            raise serializers.ValidationError("Name is required.")
+        return value.strip()

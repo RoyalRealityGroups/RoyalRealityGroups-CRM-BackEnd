@@ -1341,7 +1341,7 @@ class AuthorizationDefinitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = AuthorizationDefinition
         read_only_fields = ['id', 'level_authorizations']
-        fields = ('id', 'code', 'authorization_name', 'effective_from', 'has_all_companies', 'has_all_locations', 'status', 'auto_approve_creator_level', 'screen', 'screen_id', 'level', 'send_sms', 'send_email', 'send_notification', 'level_authorizations')
+        fields = ('id', 'code', 'authorization_name', 'effective_from', 'has_all_companies', 'has_all_locations', 'status', 'auto_approve_creator_level', 'screen', 'screen_id', 'level', 'send_sms', 'send_email', 'send_notification', 'level_authorizations', 'companies', 'company_ids', 'locations', 'location_ids')
 
 
 class AuthorizationSerializer(serializers.ModelSerializer):

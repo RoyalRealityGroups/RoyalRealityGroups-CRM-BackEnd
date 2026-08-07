@@ -13,6 +13,7 @@ class LeadSerializer(serializers.ModelSerializer):
     bucket_display = serializers.CharField(source='get_bucket_display', read_only=True)
     lead_source_display = serializers.CharField(source='get_lead_source_display', read_only=True)
     interested_project_name = serializers.CharField(source='interested_project.name', read_only=True)
+    created_on = serializers.DateTimeField(required=False, allow_null=True)
 
     class Meta:
         model = Lead
@@ -26,7 +27,7 @@ class LeadSerializer(serializers.ModelSerializer):
             'created_on', 'modified_on', 'created_by_type', 'created_by_identifier',
             'modified_by_type', 'modified_by_identifier'
         ]
-        read_only_fields = ('code', 'created_on', 'modified_on')
+        read_only_fields = ('code', 'modified_on')
 
     def get_assigned_employee_name(self, obj):
         if obj.assigned_employee:
@@ -63,11 +64,19 @@ class LeadSerializer(serializers.ModelSerializer):
                 'matched_fields': fields,
             })
 
+        # Handle custom created_on (user-provided date/time)
+        custom_created_on = validated_data.pop('created_on', None)
+
         validated_data['created_by_type'] = 'User'
         validated_data['created_by_identifier'] = str(user.id)
         validated_data['modified_by_type'] = 'User'
         validated_data['modified_by_identifier'] = str(user.id)
         lead = super().create(validated_data)
+
+        # Override created_on if user provided a custom date/time
+        if custom_created_on:
+            Lead.objects.filter(pk=lead.pk).update(created_on=custom_created_on)
+            lead.refresh_from_db()
 
         if duplicates:
             self._create_duplicate_notification(lead, duplicates, user)

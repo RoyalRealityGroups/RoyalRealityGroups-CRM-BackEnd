@@ -95,6 +95,52 @@ class GeneralSettings(models.Model):
         help_text='Lock account after N failed login attempts (0 = unlimited)',
     )
 
+    # --- Firebase FCM Configuration ---
+    fcm_enabled = models.BooleanField(
+        default=False,
+        help_text='Enable Firebase Cloud Messaging push notifications',
+    )
+    fcm_service_account_json = models.TextField(
+        blank=True, default='',
+        help_text='Firebase service account JSON (from Firebase Console → Project Settings → Service Accounts)',
+    )
+    fcm_project_id = models.CharField(
+        max_length=200, blank=True, default='',
+        help_text='Firebase Project ID (e.g., "my-project-12345")',
+    )
+    fcm_sender_id = models.CharField(
+        max_length=100, blank=True, default='',
+        help_text='Firebase Cloud Messaging Sender ID',
+    )
+    fcm_web_app_id = models.CharField(
+        max_length=200, blank=True, default='',
+        help_text='Firebase Web App ID (from Firebase Console → Project Settings → Your apps)',
+    )
+    fcm_android_app_id = models.CharField(
+        max_length=200, blank=True, default='',
+        help_text='Firebase Android App ID (from google-services.json → mobilesdk_app_id)',
+    )
+    fcm_ios_app_id = models.CharField(
+        max_length=200, blank=True, default='',
+        help_text='Firebase iOS App ID (from GoogleService-Info.plist → GOOGLE_APP_ID)',
+    )
+    fcm_api_key = models.CharField(
+        max_length=200, blank=True, default='',
+        help_text='Firebase Web API Key',
+    )
+    fcm_auth_domain = models.CharField(
+        max_length=200, blank=True, default='',
+        help_text='Firebase Auth Domain (e.g., "project-id.firebaseapp.com")',
+    )
+    fcm_storage_bucket = models.CharField(
+        max_length=200, blank=True, default='',
+        help_text='Firebase Storage Bucket URL (optional)',
+    )
+    fcm_vapid_key = models.CharField(
+        max_length=500, blank=True, default='',
+        help_text='VAPID Key for Web Push (Firebase Console → Cloud Messaging → Web Push certificates)',
+    )
+
     class Meta:
         verbose_name = "General Settings"
         verbose_name_plural = "General Settings"

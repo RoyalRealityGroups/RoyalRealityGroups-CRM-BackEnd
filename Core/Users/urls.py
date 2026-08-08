@@ -38,6 +38,7 @@ urlpatterns = [
 
     # -------------------- Devices & Device Logs -------------------- #
     path('userdevices/me', views.UserDevicesByMe.as_view()),
+    path('userdevices/update-fcm/', views.UpdateDeviceFcmToken.as_view()),
     path("userdevices/<str:pk>", views.UserDevices.as_view()),
     path('userdevices/user/<str:user_identifier>/<str:user_type>', views.UserDevicesByUser.as_view()),
     path('devicelog/', views.DeviceLogs.as_view(), name='devicelogall'),

@@ -86,8 +86,10 @@ urlpatterns = [
     path('templates/status/<str:template_id>/', views.TemplateStatusUpdateView.as_view(), name='template-status-update'),
 
     path('alertconfigs/create/', views.AlertConfigCreate.as_view()),
+    path('alertconfigs/events/', views.AlertConfigEventsMetadata.as_view()),
     path('alertconfigs/', views.AlertConfigList.as_view()),
     path('alertconfigs/<int:pk>', views.AlertConfigDetail.as_view()),
+    path('alertconfigs/<int:pk>/status/', views.AlertConfigStatusToggle.as_view()),
 
 
     path('annoncements/create/', views.AnnouncementCreate.as_view()),

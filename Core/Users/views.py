@@ -550,6 +550,45 @@ class UserDevices(generics.RetrieveAPIView):
     search_fields = ['name', 'user_identifier', 'user_type']
     ordering_fields = ['id']
 
+
+class UpdateDeviceFcmToken(APIView):
+    """Update FCM token for the current user's web device."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        fcmtoken = request.data.get('fcmtoken', '')
+        if not fcmtoken:
+            return Response({'error': 'fcmtoken is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = request.user
+        # Find or create a web device for this user
+        device = Device.objects.filter(
+            user_identifier=str(user.id),
+            user_type='User',
+            type=Device.WEB,
+            is_active=True,
+            is_deleted=False,
+        ).first()
+
+        if device:
+            device.fcmtoken = fcmtoken
+            device.save(update_fields=['fcmtoken'])
+        else:
+            # Update the most recent active device for this user
+            device = Device.objects.filter(
+                user_identifier=str(user.id),
+                user_type='User',
+                is_active=True,
+                is_deleted=False,
+            ).order_by('-created_on').first()
+            if device:
+                device.fcmtoken = fcmtoken
+                device.save(update_fields=['fcmtoken'])
+            else:
+                return Response({'error': 'No device found for this user'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'message': 'FCM token updated', 'device_id': str(device.id)}, status=status.HTTP_200_OK)
+
 class UserDevicesByUser(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = DeviceSerializer

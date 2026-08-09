@@ -468,12 +468,10 @@ def send_alert(alert, instance= None ):
         user_obj = user_by_type_id(instance.created_by_type,instance.created_by_identifier)
         if user_obj:
             users.append(user_obj)
+        else:
+            log.warning(f"No user found for created_by_type={getattr(instance, 'created_by_type', None)}, created_by_identifier={getattr(instance, 'created_by_identifier', None)}")
 
     elif alert.sender_type == 2:  # Groups
-        # if len(alert.send_to_groups.all()) == 0:
-        #     log.warning(f"alert:{alert} has no send_to_groups")
-        #     return
-        # else:
         for user_model in settings.USER_MODELS:
             model_path = user_model.get('model')
             model_class = apps.get_model(model_path)
@@ -587,8 +585,6 @@ def send_alert(alert, instance= None ):
 
 
 def model_signal_handler(sender, instance,  created=None, **kwargs):
-    # print(f"Signal triggered for {sender.__name__} - Instance: {instance}")
-    # event = 3 if created is None else (1 if created else 2)
     if created is not None:
         event = 1 if created else 2  # post_save -> create or update
     else:
@@ -598,6 +594,7 @@ def model_signal_handler(sender, instance,  created=None, **kwargs):
         event = 3
 
     alerts = AlertConfig.objects.filter(screen__app_label = sender._meta.app_label, screen__model= sender._meta.model_name, event_type=event, is_active=True)
+    
     for alert in alerts:
         send_alert(alert, instance)
 

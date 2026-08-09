@@ -7,16 +7,24 @@ on:
       - completed
     branches:
       - main
+      - testing
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     if: github.event.workflow_run.conclusion == 'success'
+
     permissions:
       actions: read
       contents: read
 
+    env:
+      DEPLOY_PATH: ${{ github.event.workflow_run.head_branch == 'main' && secrets.BE_DEV_TARGET_PATH || secrets.BE_TESTING_TARGET_PATH }}
+      SERVICE_NAME: ${{ github.event.workflow_run.head_branch == 'main' && secrets.BE_DEV_SERVICE_NAME || secrets.BE_TESTING_SERVICE_NAME }}
+
     steps:
+
       - name: Stop services before deployment
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -25,7 +33,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            sudo systemctl stop ${{ secrets.BE_SERVICE_NAME }}.socket ${{ secrets.BE_SERVICE_NAME }}.service || true
+            sudo systemctl stop ${{ env.SERVICE_NAME }}.socket ${{ env.SERVICE_NAME }}.service || true
 
       - name: Deploy on Server
         uses: appleboy/ssh-action@v1.2.0
@@ -35,11 +43,10 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            cd ${{ secrets.BE_TARGET_PATH }} &&
-            git pull origin main &&
+            cd "${{ env.DEPLOY_PATH }}" &&
+            git pull origin "${{ github.event.workflow_run.head_branch }}" &&
             source venv/bin/activate &&
             pip install -r requirements.txt &&
             python manage.py migrate &&
             python manage.py collectstatic --noinput &&
-            sudo systemctl start ${{ secrets.BE_SERVICE_NAME }}.socket ${{ secrets.BE_SERVICE_NAME }}.service nginx
-
+            sudo systemctl start ${{ env.SERVICE_NAME }}.socket ${{ env.SERVICE_NAME }}.service

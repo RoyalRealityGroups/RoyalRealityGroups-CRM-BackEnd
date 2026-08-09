@@ -20,14 +20,6 @@ jobs:
       contents: read
 
     steps:
-      - name: Download Dev Build Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: RRG-BackEnd-Build-main
-          path: backend
-          run-id: ${{ github.event.workflow_run.id }}
-          github-token: ${{ secrets.GITHUB }}
-
       - name: Stop Dev Service
         uses: appleboy/ssh-action@v1.2.0
         with:

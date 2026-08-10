@@ -43,9 +43,9 @@ class UserAdmin(ImportExportMixin,  admin.ModelAdmin):
     )
     list_select_related = []  # Disable automatic select_related
     fields=(
-        'username','email','phone','alternate_phone','password','first_name','last_name','gender',
-        'profilepicture','address','pincode','device_access','is_email_verified','is_phone_verified',
-        'is_active','is_staff','is_guest','groups','companies','has_all_companies','locations','has_all_locations',
+        'username','email','phone','password','first_name','last_name','gender',
+        'profilepicture','device_access','is_email_verified','is_phone_verified',
+        'is_active','is_staff','groups',
         'designation','reporting_manager','user_status','must_reset_password',
         'lead_data_scope','followup_data_scope','sitevisit_data_scope','booking_data_scope',
         'receive_email','receive_sms','receive_notification','erp_id','erp_code',
@@ -65,7 +65,7 @@ class UserAdmin(ImportExportMixin,  admin.ModelAdmin):
         # Only select what's needed for list display
         return qs.only(
             'id', 'username', 'email', 'phone', 'first_name', 'last_name',
-            'is_active', 'is_staff', 'channel_partner_type', 'created_at'
+            'is_active', 'is_staff', 'created_at'
         )
     
     # def get_queryset(self, request):

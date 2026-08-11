@@ -2,12 +2,35 @@
 
 ## Base URL
 ```
-http://16.113.17.48:8000/api/
+http://<server>:8000/api/
 ```
 
 ---
 
-## Endpoint 1 — Sync a Call Log Entry
+## Overview
+
+The Call Logs API allows Android mobile apps to sync phone call records to the CRM.
+Each call log is automatically matched to a Lead by phone number.
+
+### Duplicate Handling
+- If the **same call** is synced again (same `phone_number` + `called_at` + same user), **no new record is created** — instead the existing record's `call_count` is incremented.
+- If the **same number is called again** at a different time (`called_at` differs), a **new record** is created with `call_count = 1`.
+- `call_count` tracks how many times a duplicate sync was received for the same call.
+
+---
+
+## Authentication
+
+Include the access token in every request:
+```
+Authorization: Bearer <access_token>
+```
+
+---
+
+## Endpoints
+
+### Endpoint 1 — Sync a Call Log Entry
 
 **`POST /api/lead/call-logs/`**
 
@@ -19,7 +42,7 @@ http://16.113.17.48:8000/api/
   "phone_number":    "+919876543210",
   "call_type":       "outgoing",
   "duration_secs":   65,
-  "called_at":       "2025-07-10T08:30:00.000Z",
+  "called_at":       "2026-08-11T08:30:00.000Z",
   "device_platform": "android"
 }
 ```
@@ -32,38 +55,49 @@ http://16.113.17.48:8000/api/
 | `call_type` | string (enum) | yes | One of: `outgoing`, `incoming`, `missed`, `rejected`, `unknown` |
 | `duration_secs` | integer | yes | Call duration in seconds. `0` for missed/rejected |
 | `called_at` | string (ISO 8601 UTC) | yes | Exact timestamp of the call from device |
-| `device_platform` | string | yes | Always `"android"` from mobile (iOS does not sync) |
+| `device_platform` | string | yes | Always `"android"` from mobile |
 
-**Response `201 Created`:**
+**Response `201 Created` (new call):**
 ```json
 {
-  "id":             "123",
+  "id":             1,
   "phone_number":   "+919876543210",
   "call_type":      "outgoing",
   "duration_secs":  65,
-  "called_at":      "2025-07-10T08:30:00.000Z",
-  "lead":           "456",
+  "called_at":      "2026-08-11T08:30:00.000Z",
+  "device_platform":"android",
+  "lead":           "abc-uuid",
   "lead_name":      "John Doe",
-  "called_by_name": "Agent Name"
+  "called_by":      42,
+  "called_by_name": "Ravi Kumar",
+  "call_count":     1,
+  "created_at":     "2026-08-11T08:31:00.000Z"
 }
 ```
 
-**Response Fields:**
+**Response `200 OK` (duplicate — same phone + called_at + user):**
 
-| Field | Type | Nullable | Description |
-|---|---|---|---|
-| `id` | string/int | no | Record ID |
-| `phone_number` | string | no | Same as request |
-| `call_type` | string | no | Same as request |
-| `duration_secs` | integer | no | Same as request |
-| `called_at` | string (ISO 8601) | no | Same as request |
-| `lead` | string/int | yes | Auto-matched lead ID by phone number (null if no match) |
-| `lead_name` | string | yes | Matched lead's name (null if no match) |
-| `called_by_name` | string | no | Full name of the authenticated user |
+Returns the same shape as above with `call_count` incremented:
+```json
+{
+  "id":             1,
+  "phone_number":   "+919876543210",
+  "call_type":      "outgoing",
+  "duration_secs":  65,
+  "called_at":      "2026-08-11T08:30:00.000Z",
+  "device_platform":"android",
+  "lead":           "abc-uuid",
+  "lead_name":      "John Doe",
+  "called_by":      42,
+  "called_by_name": "Ravi Kumar",
+  "call_count":     2,
+  "created_at":     "2026-08-11T08:31:00.000Z"
+}
+```
 
 ---
 
-## Endpoint 2 — Get Call History for a Phone Number
+### Endpoint 2 — Get Call History for a Phone Number
 
 **`GET /api/lead/call-logs/?phone_number=+919876543210&page_size=10`**
 
@@ -73,8 +107,8 @@ http://16.113.17.48:8000/api/
 
 | Param | Type | Required | Description |
 |---|---|---|---|
-| `phone_number` | string | yes | Filter logs by this number |
-| `page_size` | integer | no | Default `10`, max suggested `50` |
+| `phone_number` | string | no | Filter logs by this number |
+| `page_size` | integer | no | Default `10`, max `100` |
 
 **Response `200 OK`:**
 ```json
@@ -84,56 +118,52 @@ http://16.113.17.48:8000/api/
   "previous": null,
   "results": [
     {
-      "id":             "123",
+      "id":             2,
       "phone_number":   "+919876543210",
       "call_type":      "outgoing",
       "duration_secs":  65,
-      "called_at":      "2025-07-10T08:30:00.000Z",
-      "lead":           "456",
+      "called_at":      "2026-08-11T08:30:00.000Z",
+      "device_platform":"android",
+      "lead":           "abc-uuid",
       "lead_name":      "John Doe",
-      "called_by_name": "Agent Name"
+      "called_by":      42,
+      "called_by_name": "Ravi Kumar",
+      "call_count":     3,
+      "created_at":     "2026-08-11T08:31:00.000Z"
     },
     {
-      "id":             "120",
+      "id":             1,
       "phone_number":   "+919876543210",
       "call_type":      "missed",
       "duration_secs":  0,
-      "called_at":      "2025-07-09T14:15:00.000Z",
-      "lead":           "456",
+      "called_at":      "2026-08-10T14:15:00.000Z",
+      "device_platform":"android",
+      "lead":           "abc-uuid",
       "lead_name":      "John Doe",
-      "called_by_name": "Agent Name"
+      "called_by":      42,
+      "called_by_name": "Ravi Kumar",
+      "call_count":     1,
+      "created_at":     "2026-08-10T14:16:00.000Z"
     }
   ]
 }
 ```
 
-> Results must be ordered by `called_at` descending (most recent first).
+> Results ordered by `called_at` descending (most recent first).
 
 ---
 
-## Endpoint 3 — Get a Single Call Log Record
+### Endpoint 3 — Get a Single Call Log Record
 
 **`GET /api/lead/call-logs/{id}/`**
 
 **Auth:** Bearer token
 
-**Response `200 OK`:**
-```json
-{
-  "id":             "123",
-  "phone_number":   "+919876543210",
-  "call_type":      "outgoing",
-  "duration_secs":  65,
-  "called_at":      "2025-07-10T08:30:00.000Z",
-  "lead":           "456",
-  "lead_name":      "John Doe",
-  "called_by_name": "Agent Name"
-}
-```
+**Response `200 OK`:** Same shape as above including `call_count`.
 
 ---
 
-## Endpoint 4 — Update a Call Log Record
+### Endpoint 4 — Update a Call Log Record
 
 **`PATCH /api/lead/call-logs/{id}/`**
 
@@ -144,31 +174,97 @@ http://16.113.17.48:8000/api/
 {
   "call_type":      "outgoing",
   "duration_secs":  65,
-  "called_at":      "2025-07-10T08:30:00.000Z"
+  "called_at":      "2026-08-11T08:30:00.000Z"
 }
 ```
 
-**Response `200 OK`:** Returns the full updated record (same shape as Endpoint 3).
+**Response `200 OK`:** Returns the full updated record.
 
 ---
 
-## URL Registration
+### Endpoint 5 — Call Count Summary per Phone Number
 
-Add to `lead/urls.py`:
+**`GET /api/lead/call-logs/summary/`**
 
-```python
-from rest_framework.routers import DefaultRouter
-from .views import CallLogViewSet
+**Auth:** Bearer token
 
-router = DefaultRouter()
-router.register(r'call-logs', CallLogViewSet, basename='call-log')
+Returns the total number of distinct call records per phone number (not `call_count` — this counts actual separate calls).
+
+**Query Parameters:**
+
+| Param | Type | Required | Description |
+|---|---|---|---|
+| `phone_number` | string | no | Filter to a specific number |
+
+**Response `200 OK`:**
+```json
+{
+  "count": 2,
+  "results": [
+    {
+      "phone_number":   "+919876543210",
+      "call_count":     5,
+      "last_called_at": "2026-08-11T08:30:00.000Z"
+    },
+    {
+      "phone_number":   "+919123456789",
+      "call_count":     2,
+      "last_called_at": "2026-08-10T11:00:00.000Z"
+    }
+  ]
+}
 ```
 
-This registers all four endpoints above automatically.
+---
+
+## Response Fields Reference
+
+| Field | Type | Nullable | Description |
+|---|---|---|---|
+| `id` | integer | no | Record ID |
+| `phone_number` | string | no | The phone number of the call |
+| `call_type` | string | no | `outgoing`, `incoming`, `missed`, `rejected`, `unknown` |
+| `duration_secs` | integer | no | Duration in seconds (`0` for missed/rejected) |
+| `called_at` | string (ISO 8601) | no | Timestamp of the call |
+| `device_platform` | string | no | Always `android` |
+| `lead` | string (UUID) | yes | Auto-matched lead ID (`null` if no match) |
+| `lead_name` | string | yes | Matched lead's name (`null` if no match) |
+| `called_by` | integer | no | ID of the authenticated user |
+| `called_by_name` | string | no | Full name or username of the caller |
+| `call_count` | integer | no | How many times this exact call was synced (starts at 1, increments on duplicate sync) |
+| `created_at` | string (ISO 8601) | no | When the record was first created in the CRM |
 
 ---
 
-## Django Model
+## Call Type Values
+
+| Value | Description |
+|---|---|
+| `outgoing` | Call made by the agent |
+| `incoming` | Call received by the agent |
+| `missed` | Incoming call not answered |
+| `rejected` | Call actively rejected |
+| `unknown` | Type could not be determined |
+
+---
+
+## Key Behaviours
+
+1. **Auto-match lead** — on `POST`, server searches `Lead.mobile` and `Lead.alternate_number` for a match. If found, `lead` FK is auto-set. If not found, `lead` is `null` — request still succeeds.
+
+2. **`called_by` is server-side** — always set from the authenticated user. Never accepted from the request body.
+
+3. **Duplicate sync handling** — if the same `phone_number + called_at + called_by` already exists, the existing record's `call_count` is incremented and returned with `200 OK`. No new row is created.
+
+4. **Different call = new record** — if `called_at` differs (even for the same phone number), a new row is created with `call_count = 1`.
+
+5. **Visibility** — agents see only their own call logs. Superusers and staff see all logs.
+
+6. **No DELETE** — call logs cannot be deleted via the API.
+
+---
+
+## DB Model
 
 ```python
 class CallLog(models.Model):
@@ -180,26 +276,35 @@ class CallLog(models.Model):
         ('unknown',  'Unknown'),
     ]
 
-    phone_number     = models.CharField(max_length=20)
-    call_type        = models.CharField(max_length=10, choices=CALL_TYPE_CHOICES)
-    duration_secs    = models.PositiveIntegerField(default=0)
-    called_at        = models.DateTimeField()
-    device_platform  = models.CharField(max_length=10, default='android')
-    called_by        = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    lead             = models.ForeignKey('Lead', on_delete=models.SET_NULL, null=True, blank=True)
-    created_at       = models.DateTimeField(auto_now_add=True)
+    phone_number    = models.CharField(max_length=20, db_index=True)
+    call_type       = models.CharField(max_length=10, choices=CALL_TYPE_CHOICES)
+    duration_secs   = models.PositiveIntegerField(default=0)
+    called_at       = models.DateTimeField(db_index=True)
+    device_platform = models.CharField(max_length=10, default='android')
+    called_by       = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    lead            = models.ForeignKey('Lead', on_delete=models.SET_NULL, null=True, blank=True)
+    call_count      = models.PositiveIntegerField(default=1)
+    created_at      = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-called_at']
 ```
 
+**DB Table:** `Lead_calllog`
+
 ---
 
-## Key Backend Behaviors
+## Error Responses
 
-1. **Auto-match lead** — on `POST`, look up `Lead` by `phone_number` and auto-assign the `lead` FK if found. Do not fail if no match found, just leave `lead` as null.
-2. **`called_by`** — always set from `request.user` on the server side, never accepted from the request body.
-3. **`called_by_name`** — read-only serializer field returning `called_by.get_full_name()` or `called_by.username`.
-4. **`lead_name`** — read-only serializer field returning the matched lead's name, null if no lead matched.
-5. **Duplicate guard** — if a record with the same `phone_number` + `called_at` + `called_by` already exists, return the existing record with `200` instead of creating a duplicate.
-6. **Permissions** — authenticated users only. Agents see only their own logs; superusers/managers see all (follow the same permission pattern used in `lead/leads/`).
+| Status | Meaning |
+|---|---|
+| `400 Bad Request` | Missing required fields or invalid values |
+| `401 Unauthorized` | Missing or invalid Bearer token |
+| `404 Not Found` | Record does not exist or not accessible |
+
+**Example 401:**
+```json
+{
+  "detail": "Token has expired"
+}
+```

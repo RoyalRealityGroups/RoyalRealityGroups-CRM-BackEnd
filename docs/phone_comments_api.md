@@ -124,6 +124,26 @@ old comment is moved to `comment_history` and new comment becomes current.
 
 **`GET /api/lead/phone-comments/?phone_number=9876543210`**
 
+**Query Parameters:**
+
+| Param | Type | Required | Description | Example |
+|---|---|---|---|---|
+| `phone_number` | string | no | Filter by exact phone number | `9876543210` |
+| `from_date` | YYYY-MM-DD | no | Filter by `updated_at` from this date (inclusive) | `2026-08-01` |
+| `to_date` | YYYY-MM-DD | no | Filter by `updated_at` up to this date (inclusive) | `2026-08-11` |
+| `ordering` | string | no | Sort field. Prefix `-` for descending | `-updated_at` |
+| `page` | integer | no | Page number (default: `1`) | `1` |
+| `page_size` | integer | no | Records per page (default: `10`, max: `100`) | `20` |
+
+**Available `ordering` values:**
+- `updated_at` / `-updated_at` ← default desc
+- `created_at` / `-created_at`
+
+**Full example:**
+```
+GET /api/lead/phone-comments/?phone_number=9876543210&from_date=2026-08-01&to_date=2026-08-11&ordering=-updated_at&page=1&page_size=10
+```
+
 **Response `200 OK`:**
 ```json
 {
@@ -154,6 +174,8 @@ old comment is moved to `comment_history` and new comment becomes current.
 **`GET /api/lead/phone-comments/`**
 
 Returns all comments by the authenticated user, ordered by most recently updated.
+
+> Supports the same filters as Endpoint 2: `phone_number`, `from_date`, `to_date`, `ordering`, `page`, `page_size`.
 
 ---
 

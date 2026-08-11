@@ -111,11 +111,58 @@ Agents see only their own logs. Superusers see all.
 
 **Query Parameters:**
 
-| Param | Type | Description |
-|---|---|---|
-| `phone_number` | string | Filter by phone number |
-| `page` | integer | Page number (default: 1) |
-| `page_size` | integer | Records per page (default: 10) |
+| Param | Type | Required | Description | Example |
+|---|---|---|---|---|
+| `phone_number` | string | no | Filter by exact phone number | `9876543210` |
+| `call_type` | string | no | Filter by call type | `outgoing` |
+| `device_platform` | string | no | Filter by platform | `android` |
+| `from_date` | YYYY-MM-DD | no | Filter calls from this date (inclusive) | `2026-08-01` |
+| `to_date` | YYYY-MM-DD | no | Filter calls up to this date (inclusive) | `2026-08-11` |
+| `ordering` | string | no | Sort field. Prefix `-` for descending | `-called_at` |
+| `page` | integer | no | Page number (default: `1`) | `2` |
+| `page_size` | integer | no | Records per page (default: `10`, max: `100`) | `20` |
+
+**Available `ordering` values:**
+- `called_at` / `-called_at` ← default desc
+- `duration_secs` / `-duration_secs`
+- `created_at` / `-created_at`
+
+**Full example:**
+```
+GET /api/lead/call-logs/?phone_number=9876543210&call_type=outgoing&from_date=2026-08-01&to_date=2026-08-11&ordering=-called_at&page=1&page_size=20
+```
+
+**Response `200 OK`:**
+```json
+{
+  "count": 2,
+  "next": "http://<server>/api/lead/call-logs/?page=2",
+  "previous": null,
+  "results": [
+    {
+      "id":             2,
+      "phone_number":   "9876543210",
+      "call_type":      "outgoing",
+      "duration_secs":  65,
+      "called_at":      "2026-08-11T10:00:00.000Z",
+      "device_platform":"android",
+      "lead":           "abc-uuid",
+      "lead_name":      "John Doe",
+      "called_by":      "uuid",
+      "called_by_name": "Ravi Kumar",
+      "call_count":     3,
+      "call_times":     [
+        "2026-08-11T10:00:00.000Z",
+        "2026-08-11T10:00:00.000Z",
+        "2026-08-11T10:00:00.000Z"
+      ],
+      "created_at":     "2026-08-11T10:01:00.000Z"
+    }
+  ]
+}
+```
+
+> Ordered by `called_at` descending by default (most recent first).
 
 **Response `200 OK`:**
 ```json
@@ -179,13 +226,18 @@ Agents see only their own logs. Superusers see all.
 
 **`GET /api/lead/call-logs/summary/`**
 
-Returns total distinct call records per phone number.
+Returns total distinct call records per phone number for the authenticated user.
 
 **Query Parameters:**
 
-| Param | Type | Description |
-|---|---|---|
-| `phone_number` | string | Filter to a specific number |
+| Param | Type | Required | Description | Example |
+|---|---|---|---|---|
+| `phone_number` | string | no | Filter to a specific number | `9876543210` |
+
+**Full example:**
+```
+GET /api/lead/call-logs/summary/?phone_number=9876543210
+```
 
 **Response `200 OK`:**
 ```json
@@ -196,6 +248,11 @@ Returns total distinct call records per phone number.
       "phone_number":   "9876543210",
       "call_count":     5,
       "last_called_at": "2026-08-11T10:00:00.000Z"
+    },
+    {
+      "phone_number":   "9123456789",
+      "call_count":     2,
+      "last_called_at": "2026-08-10T14:00:00.000Z"
     }
   ]
 }

@@ -384,27 +384,39 @@ class CallLogViewSet(viewsets.ModelViewSet):
     """
     ViewSet for Call Logs — synced from Android mobile app.
 
-    POST   /api/lead/call-logs/          — sync a call log
-    GET    /api/lead/call-logs/          — list (filter by ?phone_number=)
-    GET    /api/lead/call-logs/{id}/     — retrieve single
-    PATCH  /api/lead/call-logs/{id}/     — update
+    POST   /api/lead/call-logs/                        — sync a call log
+    GET    /api/lead/call-logs/                        — list (filter by ?phone_number=, ?call_type=, ?from_date=, ?to_date=)
+    GET    /api/lead/call-logs/{id}/                   — retrieve single
+    PATCH  /api/lead/call-logs/{id}/                   — update
+    GET    /api/lead/call-logs/summary/                — call count per phone number
     """
     serializer_class = CallLogSerializer
     permission_classes = [permissions.IsAuthenticated]
     http_method_names = ['get', 'post', 'patch', 'head', 'options']
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_fields = ['call_type', 'device_platform']
+    ordering_fields = ['called_at', 'created_at', 'duration_secs']
+    ordering = ['-called_at']
 
     def get_queryset(self):
         user = self.request.user
         qs = CallLog.objects.select_related('lead', 'called_by')
 
-        # Agents see only their own logs; superusers/managers see all
         if not user.is_superuser and not user.is_staff:
             qs = qs.filter(called_by=user)
 
-        # Filter by phone number if provided
+        # Filter by phone number
         phone = self.request.query_params.get('phone_number')
         if phone:
             qs = qs.filter(phone_number=phone)
+
+        # Date range filters
+        from_date = self.request.query_params.get('from_date')
+        to_date = self.request.query_params.get('to_date')
+        if from_date:
+            qs = qs.filter(called_at__date__gte=from_date)
+        if to_date:
+            qs = qs.filter(called_at__date__lte=to_date)
 
         return qs.order_by('-called_at')
 
@@ -471,7 +483,7 @@ class PhoneCommentViewSet(viewsets.ModelViewSet):
     Phone number comments — one comment per phone per user (upserted).
 
     POST   /api/lead/phone-comments/            — create or update comment
-    GET    /api/lead/phone-comments/            — list all my comments
+    GET    /api/lead/phone-comments/            — list (?phone_number=, ?from_date=, ?to_date=)
     GET    /api/lead/phone-comments/?phone_number=xxx — get comment for a number
     GET    /api/lead/phone-comments/{id}/       — get single
     PATCH  /api/lead/phone-comments/{id}/       — update comment text
@@ -480,6 +492,9 @@ class PhoneCommentViewSet(viewsets.ModelViewSet):
     serializer_class = PhoneCommentSerializer
     permission_classes = [permissions.IsAuthenticated]
     http_method_names = ['get', 'post', 'patch', 'delete', 'head', 'options']
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['updated_at', 'created_at']
+    ordering = ['-updated_at']
 
     def get_queryset(self):
         user = self.request.user
@@ -491,5 +506,12 @@ class PhoneCommentViewSet(viewsets.ModelViewSet):
         phone = self.request.query_params.get('phone_number')
         if phone:
             qs = qs.filter(phone_number=phone)
+
+        from_date = self.request.query_params.get('from_date')
+        to_date = self.request.query_params.get('to_date')
+        if from_date:
+            qs = qs.filter(updated_at__date__gte=from_date)
+        if to_date:
+            qs = qs.filter(updated_at__date__lte=to_date)
 
         return qs.order_by('-updated_at')

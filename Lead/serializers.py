@@ -285,9 +285,10 @@ class CallLogSerializer(serializers.ModelSerializer):
             'called_at', 'device_platform',
             'lead', 'lead_name',
             'called_by', 'called_by_name',
+            'call_count',
             'created_at',
         ]
-        read_only_fields = ('id', 'lead', 'called_by', 'created_at', 'lead_name', 'called_by_name')
+        read_only_fields = ('id', 'lead', 'called_by', 'created_at', 'lead_name', 'called_by_name', 'call_count')
 
     def get_called_by_name(self, obj):
         if obj.called_by:
@@ -300,19 +301,21 @@ class CallLogSerializer(serializers.ModelSerializer):
         phone = validated_data.get('phone_number', '').strip()
         called_at = validated_data.get('called_at')
 
-        # Duplicate guard — same phone + called_at + user → return existing
+        # Check for exact duplicate — same phone + called_at + user
         existing = CallLog.objects.filter(
             phone_number=phone,
             called_at=called_at,
             called_by=user,
         ).first()
+
         if existing:
+            # Increment count on the existing record, don't create a new one
+            existing.call_count += 1
+            existing.save(update_fields=['call_count'])
             self._was_existing = True
             return existing
 
-        self._was_existing = False
-
-        # Auto-match lead by phone number (mobile or alternate)
+        # New call — auto-match lead by phone number
         from django.db.models import Q as DQ
         lead = Lead.objects.filter(
             DQ(mobile=phone) | DQ(alternate_number=phone),
@@ -321,6 +324,8 @@ class CallLogSerializer(serializers.ModelSerializer):
 
         validated_data['called_by'] = user
         validated_data['lead'] = lead
+        validated_data['call_count'] = 1
+        self._was_existing = False
         return super().create(validated_data)
 
 

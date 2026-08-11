@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck
+from .models import Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck, CallLog
 
 
 @admin.register(Lead)
@@ -34,3 +34,13 @@ class LeadCrossCheckAdmin(admin.ModelAdmin):
     list_display = ('original_lead', 'duplicate_of', 'match_field', 'created_by', 'created_on')
     search_fields = ('original_lead__name', 'duplicate_of__name')
     raw_id_fields = ('original_lead', 'duplicate_of', 'created_by')
+
+
+@admin.register(CallLog)
+class CallLogAdmin(admin.ModelAdmin):
+    list_display = ('phone_number', 'call_type', 'duration_secs', 'called_at', 'called_by', 'lead', 'device_platform', 'created_at')
+    list_filter = ('call_type', 'device_platform', 'called_at')
+    search_fields = ('phone_number', 'called_by__username', 'lead__name')
+    readonly_fields = ('created_at',)
+    raw_id_fields = ('called_by', 'lead')
+    date_hierarchy = 'called_at'

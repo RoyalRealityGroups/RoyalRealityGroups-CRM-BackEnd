@@ -413,20 +413,38 @@ class CallLogViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
 
-        # Duplicate guard — serializer returns existing record, use 200 not 201
-        was_duplicate = CallLog.objects.filter(
-            phone_number=instance.phone_number,
-            called_at=instance.called_at,
-            called_by=request.user,
-        ).count() > 0 and not getattr(instance, '_state', None)
-
         out = self.get_serializer(instance)
-        # Check if this was a pre-existing record (duplicate) — return 200
         from rest_framework.response import Response
         from rest_framework import status as drf_status
         existing_before = getattr(serializer, '_was_existing', False)
         status_code = drf_status.HTTP_200_OK if existing_before else drf_status.HTTP_201_CREATED
         return Response(out.data, status=status_code)
+
+    @action(detail=False, methods=['get'])
+    def summary(self, request):
+        """
+        Returns call count per phone number for the current user.
+        GET /api/lead/call-logs/summary/
+        """
+        from django.db.models import Count, Max
+        user = request.user
+        qs = CallLog.objects.all()
+        if not user.is_superuser and not user.is_staff:
+            qs = qs.filter(called_by=user)
+
+        phone = request.query_params.get('phone_number')
+        if phone:
+            qs = qs.filter(phone_number=phone)
+
+        data = list(
+            qs.values('phone_number')
+            .annotate(
+                call_count=Count('id'),
+                last_called_at=Max('called_at'),
+            )
+            .order_by('-call_count')
+        )
+        return Response({'count': len(data), 'results': data})
 
 
 class PublicLeadCreateView(generics.CreateAPIView):

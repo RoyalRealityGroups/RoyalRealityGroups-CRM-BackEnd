@@ -176,11 +176,10 @@ class CallLog(models.Model):
         Lead, on_delete=models.SET_NULL, null=True, blank=True, related_name='call_logs'
     )
     created_at      = models.DateTimeField(auto_now_add=True)
+    call_count      = models.PositiveIntegerField(default=1, help_text='How many times this call was synced (same phone+time)')
 
     class Meta:
         ordering = ['-called_at']
-        # Prevent duplicate syncs from the same device
-        unique_together = [['phone_number', 'called_at', 'called_by']]
 
     def __str__(self):
         return f"{self.call_type} — {self.phone_number} by {self.called_by} at {self.called_at}"

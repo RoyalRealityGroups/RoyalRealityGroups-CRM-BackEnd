@@ -386,6 +386,12 @@ class PhoneCommentSerializer(serializers.ModelSerializer):
         phone = validated_data.get('phone_number', '').strip()
         new_comment = validated_data.get('comment', '').strip()
 
+        # Validate — phone number must exist in CallLog for this user
+        if not CallLog.objects.filter(phone_number=phone, called_by=user).exists():
+            raise serializers.ValidationError({
+                'phone_number': 'This phone number does not exist in your call logs. You can only comment on numbers you have called.'
+            })
+
         # Auto-match lead
         from django.db.models import Q as DQ
         from django.utils import timezone

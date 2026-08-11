@@ -177,6 +177,7 @@ class CallLog(models.Model):
     )
     created_at      = models.DateTimeField(auto_now_add=True)
     call_count      = models.PositiveIntegerField(default=1, help_text='How many times this call was synced (same phone+time)')
+    call_times      = models.JSONField(default=list, blank=True, help_text='List of all called_at timestamps for this number')
 
     class Meta:
         ordering = ['-called_at']

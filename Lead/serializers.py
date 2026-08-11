@@ -285,10 +285,10 @@ class CallLogSerializer(serializers.ModelSerializer):
             'called_at', 'device_platform',
             'lead', 'lead_name',
             'called_by', 'called_by_name',
-            'call_count',
+            'call_count', 'call_times',
             'created_at',
         ]
-        read_only_fields = ('id', 'lead', 'called_by', 'created_at', 'lead_name', 'called_by_name', 'call_count')
+        read_only_fields = ('id', 'lead', 'called_by', 'created_at', 'lead_name', 'called_by_name', 'call_count', 'call_times')
 
     def get_called_by_name(self, obj):
         if obj.called_by:
@@ -309,9 +309,12 @@ class CallLogSerializer(serializers.ModelSerializer):
         ).first()
 
         if existing:
-            # Increment count on the existing record, don't create a new one
+            # Increment count and append timestamp to call_times
+            times = existing.call_times or []
+            times.append(called_at.isoformat() if hasattr(called_at, 'isoformat') else str(called_at))
             existing.call_count += 1
-            existing.save(update_fields=['call_count'])
+            existing.call_times = times
+            existing.save(update_fields=['call_count', 'call_times'])
             self._was_existing = True
             return existing
 
@@ -322,9 +325,12 @@ class CallLogSerializer(serializers.ModelSerializer):
             is_deleted=False
         ).first()
 
+        # Initialize call_times with first timestamp
+        first_time = called_at.isoformat() if hasattr(called_at, 'isoformat') else str(called_at)
         validated_data['called_by'] = user
         validated_data['lead'] = lead
         validated_data['call_count'] = 1
+        validated_data['call_times'] = [first_time]
         self._was_existing = False
         return super().create(validated_data)
 

@@ -367,12 +367,13 @@ class PhoneCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = PhoneComment
         fields = [
-            'id', 'phone_number', 'comment',
+            'id', 'phone_number', 'comment', 'comment_history',
             'lead', 'lead_name',
             'commented_by', 'commented_by_name',
             'created_at', 'updated_at',
         ]
-        read_only_fields = ('id', 'lead', 'commented_by', 'created_at', 'updated_at', 'lead_name', 'commented_by_name')
+        read_only_fields = ('id', 'lead', 'commented_by', 'created_at', 'updated_at',
+                            'lead_name', 'commented_by_name', 'comment_history')
 
     def get_commented_by_name(self, obj):
         if obj.commented_by:
@@ -383,21 +384,54 @@ class PhoneCommentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = self.context['request'].user
         phone = validated_data.get('phone_number', '').strip()
+        new_comment = validated_data.get('comment', '').strip()
 
         # Auto-match lead
         from django.db.models import Q as DQ
+        from django.utils import timezone
         lead = Lead.objects.filter(
             DQ(mobile=phone) | DQ(alternate_number=phone),
             is_deleted=False
         ).first()
 
-        # Upsert — one comment per phone per user
-        obj, created = PhoneComment.objects.update_or_create(
+        # Check if comment already exists for this phone + user
+        existing = PhoneComment.objects.filter(
             phone_number=phone,
             commented_by=user,
-            defaults={
-                'comment': validated_data['comment'],
-                'lead': lead,
-            }
+        ).first()
+
+        if existing:
+            # Append old comment to history before replacing
+            history = existing.comment_history or []
+            history.append({
+                'comment': existing.comment,
+                'commented_at': existing.updated_at.isoformat() if existing.updated_at else timezone.now().isoformat(),
+            })
+            existing.comment = new_comment
+            existing.comment_history = history
+            existing.lead = lead
+            existing.save(update_fields=['comment', 'comment_history', 'lead', 'updated_at'])
+            return existing
+
+        # New comment
+        obj = PhoneComment.objects.create(
+            phone_number=phone,
+            commented_by=user,
+            lead=lead,
+            comment=new_comment,
+            comment_history=[],
         )
         return obj
+
+    def update(self, instance, validated_data):
+        from django.utils import timezone
+        new_comment = validated_data.get('comment')
+        if new_comment and new_comment != instance.comment:
+            # Append old comment to history
+            history = instance.comment_history or []
+            history.append({
+                'comment': instance.comment,
+                'commented_at': instance.updated_at.isoformat() if instance.updated_at else timezone.now().isoformat(),
+            })
+            validated_data['comment_history'] = history
+        return super().update(instance, validated_data)

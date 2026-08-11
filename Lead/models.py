@@ -201,6 +201,7 @@ class PhoneComment(models.Model):
         help_text='Auto-matched lead by phone number'
     )
     comment = models.TextField()
+    comment_history = models.JSONField(default=list, blank=True, help_text='List of all previous comments with timestamps')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

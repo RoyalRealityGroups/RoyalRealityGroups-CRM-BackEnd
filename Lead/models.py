@@ -181,6 +181,10 @@ class CallLog(models.Model):
 
     class Meta:
         ordering = ['-called_at']
+        indexes = [
+            models.Index(fields=['phone_number', 'called_by']),
+            models.Index(fields=['called_at']),
+        ]
 
     def __str__(self):
         return f"{self.call_type} — {self.phone_number} by {self.called_by} at {self.called_at}"
@@ -208,6 +212,9 @@ class PhoneComment(models.Model):
     class Meta:
         ordering = ['-updated_at']
         unique_together = [['phone_number', 'commented_by']]
+        indexes = [
+            models.Index(fields=['phone_number', 'commented_by']),
+        ]
 
     def __str__(self):
         return f"{self.phone_number} — {self.commented_by} — {self.comment[:40]}"

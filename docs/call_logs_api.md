@@ -9,11 +9,13 @@ Each call log is automatically matched to a Lead by phone number.
 
 **Authentication:** Bearer token (JWT) required on all endpoints.
 
+**DB Table:** `Lead_calllog`
+
+**Indexes:** `phone_number`, `called_at`, `(phone_number, called_by)` composite
+
 ---
 
 ## Authentication
-
-Include the access token in every request header:
 
 ```
 Authorization: Bearer <access_token>
@@ -21,56 +23,83 @@ Authorization: Bearer <access_token>
 
 ---
 
+## Duplicate Handling & Call Count
+
+- Every POST creates a new record **unless** the exact same call is synced again (same `phone_number` + `called_at` + same user).
+- On an exact duplicate sync → **no new row** is created. Instead `call_count` is incremented and the `called_at` is appended to `call_times`.
+- On a new call to the same number (different `called_at`) → new row with `call_count = 1`.
+- `call_count` — how many times this exact call was synced.
+- `call_times` — list of all timestamps when this call was synced (including duplicates).
+
+---
+
 ## Endpoints
+
+---
 
 ### 1. Sync a Call Log
 
 **`POST /api/lead/call-logs/`**
 
-Syncs a single call record from the device. Auto-matches to a Lead by phone number.
-If the same record already exists (same phone + timestamp + user), returns the existing record with `200` instead of creating a duplicate.
-
 **Request Body:**
-
 ```json
 {
-  "phone_number":    "+919876543210",
+  "phone_number":    "9876543210",
   "call_type":       "outgoing",
   "duration_secs":   65,
-  "called_at":       "2026-08-03T08:30:00.000Z",
+  "called_at":       "2026-08-11T08:30:00.000Z",
   "device_platform": "android"
 }
 ```
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `phone_number` | string | yes | Dialed/received number (digits + optional leading `+`) |
-| `call_type` | string | yes | One of: `outgoing`, `incoming`, `missed`, `rejected`, `unknown` |
-| `duration_secs` | integer | yes | Call duration in seconds. `0` for missed/rejected |
-| `called_at` | string (ISO 8601 UTC) | yes | Exact timestamp of the call from the device |
-| `device_platform` | string | yes | Always `"android"` (iOS does not sync) |
+| `phone_number` | string | yes | Dialed/received number |
+| `call_type` | string | yes | `outgoing`, `incoming`, `missed`, `rejected`, `unknown` |
+| `duration_secs` | integer | yes | Duration in seconds. `0` for missed/rejected |
+| `called_at` | string (ISO 8601 UTC) | yes | Exact call timestamp from device |
+| `device_platform` | string | yes | Always `"android"` |
 
-**Response `201 Created` (new record):**
-
+**Response `201 Created` (new call):**
 ```json
 {
   "id":             1,
-  "phone_number":   "+919876543210",
+  "phone_number":   "9876543210",
   "call_type":      "outgoing",
   "duration_secs":  65,
-  "called_at":      "2026-08-03T08:30:00.000Z",
+  "called_at":      "2026-08-11T08:30:00.000Z",
   "device_platform":"android",
-  "lead":           "abc123",
+  "lead":           "abc-uuid",
   "lead_name":      "John Doe",
-  "called_by":      42,
+  "called_by":      "uuid",
   "called_by_name": "Ravi Kumar",
-  "created_at":     "2026-08-03T08:31:00.000Z"
+  "call_count":     1,
+  "call_times":     ["2026-08-11T08:30:00.000Z"],
+  "created_at":     "2026-08-11T08:31:00.000Z"
 }
 ```
 
-**Response `200 OK` (duplicate — record already exists):**
-
-Returns the same shape as above with the existing record's data.
+**Response `200 OK` (duplicate sync — same phone + called_at + user):**
+```json
+{
+  "id":             1,
+  "phone_number":   "9876543210",
+  "call_type":      "outgoing",
+  "duration_secs":  65,
+  "called_at":      "2026-08-11T08:30:00.000Z",
+  "device_platform":"android",
+  "lead":           "abc-uuid",
+  "lead_name":      "John Doe",
+  "called_by":      "uuid",
+  "called_by_name": "Ravi Kumar",
+  "call_count":     2,
+  "call_times":     [
+    "2026-08-11T08:30:00.000Z",
+    "2026-08-11T08:30:00.000Z"
+  ],
+  "created_at":     "2026-08-11T08:31:00.000Z"
+}
+```
 
 ---
 
@@ -78,23 +107,17 @@ Returns the same shape as above with the existing record's data.
 
 **`GET /api/lead/call-logs/`**
 
-Returns call logs for the authenticated user. Superusers/managers see all logs.
+Agents see only their own logs. Superusers see all.
 
 **Query Parameters:**
 
-| Param | Type | Required | Description |
-|---|---|---|---|
-| `phone_number` | string | no | Filter by phone number |
-| `page` | integer | no | Page number (default: 1) |
-| `page_size` | integer | no | Records per page (default: 10, max: 100) |
-
-**Example:**
-```
-GET /api/lead/call-logs/?phone_number=+919876543210&page_size=10
-```
+| Param | Type | Description |
+|---|---|---|
+| `phone_number` | string | Filter by phone number |
+| `page` | integer | Page number (default: 1) |
+| `page_size` | integer | Records per page (default: 10) |
 
 **Response `200 OK`:**
-
 ```json
 {
   "count": 2,
@@ -103,35 +126,28 @@ GET /api/lead/call-logs/?phone_number=+919876543210&page_size=10
   "results": [
     {
       "id":             2,
-      "phone_number":   "+919876543210",
+      "phone_number":   "9876543210",
       "call_type":      "outgoing",
       "duration_secs":  65,
-      "called_at":      "2026-08-03T08:30:00.000Z",
+      "called_at":      "2026-08-11T10:00:00.000Z",
       "device_platform":"android",
-      "lead":           "abc123",
+      "lead":           "abc-uuid",
       "lead_name":      "John Doe",
-      "called_by":      42,
+      "called_by":      "uuid",
       "called_by_name": "Ravi Kumar",
-      "created_at":     "2026-08-03T08:31:00.000Z"
-    },
-    {
-      "id":             1,
-      "phone_number":   "+919876543210",
-      "call_type":      "missed",
-      "duration_secs":  0,
-      "called_at":      "2026-08-02T14:15:00.000Z",
-      "device_platform":"android",
-      "lead":           "abc123",
-      "lead_name":      "John Doe",
-      "called_by":      42,
-      "called_by_name": "Ravi Kumar",
-      "created_at":     "2026-08-02T14:16:00.000Z"
+      "call_count":     3,
+      "call_times":     [
+        "2026-08-11T10:00:00.000Z",
+        "2026-08-11T10:00:00.000Z",
+        "2026-08-11T10:00:00.000Z"
+      ],
+      "created_at":     "2026-08-11T10:01:00.000Z"
     }
   ]
 }
 ```
 
-> Results are ordered by `called_at` descending (most recent first).
+> Ordered by `called_at` descending (most recent first).
 
 ---
 
@@ -139,25 +155,7 @@ GET /api/lead/call-logs/?phone_number=+919876543210&page_size=10
 
 **`GET /api/lead/call-logs/{id}/`**
 
-**Response `200 OK`:**
-
-```json
-{
-  "id":             1,
-  "phone_number":   "+919876543210",
-  "call_type":      "outgoing",
-  "duration_secs":  65,
-  "called_at":      "2026-08-03T08:30:00.000Z",
-  "device_platform":"android",
-  "lead":           "abc123",
-  "lead_name":      "John Doe",
-  "called_by":      42,
-  "called_by_name": "Ravi Kumar",
-  "created_at":     "2026-08-03T08:31:00.000Z"
-}
-```
-
-**Response `404 Not Found`:** If the record does not exist or belongs to another user.
+**Response `200 OK`:** Full record including `call_count` and `call_times`.
 
 ---
 
@@ -165,19 +163,43 @@ GET /api/lead/call-logs/?phone_number=+919876543210&page_size=10
 
 **`PATCH /api/lead/call-logs/{id}/`**
 
-Update specific fields of an existing call log. All fields are optional.
-
-**Request Body:**
-
+**Request Body (all optional):**
 ```json
 {
-  "call_type":     "outgoing",
-  "duration_secs": 120,
-  "called_at":     "2026-08-03T08:30:00.000Z"
+  "call_type":     "incoming",
+  "duration_secs": 120
 }
 ```
 
-**Response `200 OK`:** Returns the full updated record (same shape as endpoint 3).
+**Response `200 OK`:** Full updated record.
+
+---
+
+### 5. Call Count Summary per Phone Number
+
+**`GET /api/lead/call-logs/summary/`**
+
+Returns total distinct call records per phone number.
+
+**Query Parameters:**
+
+| Param | Type | Description |
+|---|---|---|
+| `phone_number` | string | Filter to a specific number |
+
+**Response `200 OK`:**
+```json
+{
+  "count": 2,
+  "results": [
+    {
+      "phone_number":   "9876543210",
+      "call_count":     5,
+      "last_called_at": "2026-08-11T10:00:00.000Z"
+    }
+  ]
+}
+```
 
 ---
 
@@ -186,42 +208,39 @@ Update specific fields of an existing call log. All fields are optional.
 | Field | Type | Nullable | Description |
 |---|---|---|---|
 | `id` | integer | no | Record ID |
-| `phone_number` | string | no | The phone number of the call |
+| `phone_number` | string | no | The phone number |
 | `call_type` | string | no | `outgoing`, `incoming`, `missed`, `rejected`, `unknown` |
-| `duration_secs` | integer | no | Duration in seconds (`0` for missed/rejected) |
+| `duration_secs` | integer | no | Duration in seconds |
 | `called_at` | string (ISO 8601) | no | Timestamp of the call |
 | `device_platform` | string | no | Always `android` |
-| `lead` | string (UUID) | yes | Auto-matched lead ID (`null` if no match) |
-| `lead_name` | string | yes | Matched lead's name (`null` if no match) |
-| `called_by` | integer | no | ID of the authenticated user who made/received the call |
-| `called_by_name` | string | no | Full name or username of the caller |
-| `created_at` | string (ISO 8601) | no | Timestamp when the record was created in the CRM |
-
----
-
-## Call Type Values
-
-| Value | Description |
-|---|---|
-| `outgoing` | Call made by the agent |
-| `incoming` | Call received by the agent |
-| `missed` | Incoming call not answered |
-| `rejected` | Call actively rejected |
-| `unknown` | Type could not be determined |
+| `lead` | UUID | yes | Auto-matched lead ID |
+| `lead_name` | string | yes | Matched lead name |
+| `called_by` | UUID | no | Authenticated user ID |
+| `called_by_name` | string | no | Full name or username |
+| `call_count` | integer | no | Times this exact call was synced (starts at 1) |
+| `call_times` | array | no | List of all sync timestamps for this call |
+| `created_at` | string (ISO 8601) | no | When first created in CRM |
 
 ---
 
 ## Key Behaviours
 
-1. **Auto-match lead** — on `POST`, the server searches for a Lead with a matching `mobile` or `alternate_number`. If found, the `lead` FK is set automatically. If not found, `lead` is `null` — the request still succeeds.
+1. **Auto-match lead** — matches `Lead.mobile` and `Lead.alternate_number`. `lead` is `null` if no match.
+2. **`called_by` is server-side** — set from authenticated user, never from request body.
+3. **Duplicate sync** — same `phone_number + called_at + called_by` → increments `call_count`, appends to `call_times`, returns `200 OK`.
+4. **New call same number** — different `called_at` → new row with `call_count = 1`.
+5. **Visibility** — agents see only their own logs. Superusers see all.
+6. **No DELETE** — call logs cannot be deleted via API.
 
-2. **`called_by` is server-side** — always set from the authenticated user. Never accepted from the request body.
+---
 
-3. **Duplicate guard** — if a record with the same `phone_number` + `called_at` + `called_by` already exists, the existing record is returned with `200 OK` instead of creating a duplicate.
+## DB Indexes
 
-4. **Visibility** — agents see only their own call logs. Superusers and staff see all logs.
-
-5. **No DELETE** — call logs cannot be deleted via the API.
+| Index | Type | Purpose |
+|---|---|---|
+| `phone_number` | Single | Filter by number |
+| `called_at` | Single | Order by time |
+| `(phone_number, called_by)` | Composite | Most common query |
 
 ---
 
@@ -229,21 +248,6 @@ Update specific fields of an existing call log. All fields are optional.
 
 | Status | Meaning |
 |---|---|
-| `400 Bad Request` | Missing required fields or invalid values |
-| `401 Unauthorized` | Missing or invalid Bearer token |
-| `404 Not Found` | Record does not exist or not accessible |
-
-**Example 400:**
-```json
-{
-  "call_type": ["This field is required."],
-  "called_at": ["This field is required."]
-}
-```
-
-**Example 401:**
-```json
-{
-  "detail": "Authentication credentials were not provided."
-}
-```
+| `400 Bad Request` | Missing required fields |
+| `401 Unauthorized` | Missing or expired token |
+| `404 Not Found` | Record not found or not accessible |

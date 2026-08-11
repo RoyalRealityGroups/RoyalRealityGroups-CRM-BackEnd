@@ -2,16 +2,19 @@
 
 ## Overview
 
-The Phone Comments API allows mobile app users to add and manage notes/comments
-against a specific phone number (contact). One comment per phone number per user —
-posting again to the same number **updates** the existing comment (upsert).
+Allows mobile app users to add notes/comments against a phone number (contact-level note).
+One comment record per phone number per user. Posting again **updates** the existing comment
+and saves the old one to `comment_history`.
 
-Comments are automatically linked to a Lead if the phone number matches any lead's
-`mobile` or `alternate_number`.
+**Phone number must exist in the user's call logs** — you can only comment on numbers you have called.
 
 **Base URL:** `http://<server>:8000/api/lead/phone-comments/`
 
 **Authentication:** Bearer token (JWT) required on all endpoints.
+
+**DB Table:** `Lead_phonecomment`
+
+**Indexes:** `phone_number`, `(phone_number, commented_by)` composite + unique
 
 ---
 
@@ -19,6 +22,26 @@ Comments are automatically linked to a Lead if the phone number matches any lead
 
 ```
 Authorization: Bearer <access_token>
+```
+
+---
+
+## Comment History
+
+Every time a comment is updated, the **old comment is saved** to `comment_history` with its timestamp.
+
+- `comment` → always the **latest** comment
+- `comment_history` → all **previous** comments in order
+
+Example after 3 updates:
+```json
+{
+  "comment": "Very interested, finalizing soon",
+  "comment_history": [
+    { "comment": "First note — call back after 5pm", "commented_at": "2026-08-11T10:00:00Z" },
+    { "comment": "Budget revised to 50L",            "commented_at": "2026-08-11T14:30:00Z" }
+  ]
+}
 ```
 
 ---
@@ -31,8 +54,10 @@ Authorization: Bearer <access_token>
 
 **`POST /api/lead/phone-comments/`**
 
-Creates a new comment for a phone number. If a comment already exists for this
-phone number by the same user, it is **updated** — not duplicated.
+Creates a new comment. If a comment already exists for this number by the same user,
+old comment is moved to `comment_history` and new comment becomes current.
+
+**Validation:** `phone_number` must exist in the user's call logs (`/api/lead/call-logs/`).
 
 **Request Body:**
 ```json
@@ -44,7 +69,7 @@ phone number by the same user, it is **updated** — not duplicated.
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `phone_number` | string | yes | The phone number to attach the comment to |
+| `phone_number` | string | yes | Must exist in your call logs |
 | `comment` | string | yes | The note/comment text |
 
 **Response `201 Created` (new comment):**
@@ -53,61 +78,65 @@ phone number by the same user, it is **updated** — not duplicated.
   "id":                1,
   "phone_number":      "9876543210",
   "comment":           "Interested in 3BHK. Call back after 5pm.",
+  "comment_history":   [],
   "lead":              "abc-uuid",
   "lead_name":         "John Doe",
-  "commented_by":      42,
+  "commented_by":      "uuid",
   "commented_by_name": "Ravi Kumar",
   "created_at":        "2026-08-11T10:00:00.000Z",
   "updated_at":        "2026-08-11T10:00:00.000Z"
 }
 ```
 
-**Response `200 OK` (existing comment updated):**
+**Response `200 OK` (updated — previous comment saved to history):**
 ```json
 {
   "id":                1,
   "phone_number":      "9876543210",
   "comment":           "Budget revised to 50L. Very interested.",
+  "comment_history": [
+    {
+      "comment":      "Interested in 3BHK. Call back after 5pm.",
+      "commented_at": "2026-08-11T10:00:00.000Z"
+    }
+  ],
   "lead":              "abc-uuid",
   "lead_name":         "John Doe",
-  "commented_by":      42,
+  "commented_by":      "uuid",
   "commented_by_name": "Ravi Kumar",
   "created_at":        "2026-08-11T10:00:00.000Z",
-  "updated_at":        "2026-08-11T11:30:00.000Z"
+  "updated_at":        "2026-08-11T14:30:00.000Z"
 }
 ```
 
-> `lead` and `lead_name` are auto-populated if the phone number matches a lead.
-> They will be `null` if no match is found.
+**Response `400 Bad Request` (phone not in call logs):**
+```json
+{
+  "phone_number": [
+    "This phone number does not exist in your call logs. You can only comment on numbers you have called."
+  ]
+}
+```
 
 ---
 
-### 2. Get Comment for a Specific Phone Number
+### 2. Get Comment for a Phone Number
 
 **`GET /api/lead/phone-comments/?phone_number=9876543210`**
-
-Returns the comment for a given phone number by the authenticated user.
-
-**Query Parameters:**
-
-| Param | Type | Required | Description |
-|---|---|---|---|
-| `phone_number` | string | yes | The phone number to look up |
 
 **Response `200 OK`:**
 ```json
 {
   "count": 1,
-  "next": null,
-  "previous": null,
   "results": [
     {
       "id":                1,
       "phone_number":      "9876543210",
       "comment":           "Interested in 3BHK. Call back after 5pm.",
+      "comment_history":   [],
       "lead":              "abc-uuid",
       "lead_name":         "John Doe",
-      "commented_by":      42,
+      "commented_by":      "uuid",
       "commented_by_name": "Ravi Kumar",
       "created_at":        "2026-08-11T10:00:00.000Z",
       "updated_at":        "2026-08-11T10:00:00.000Z"
@@ -116,7 +145,7 @@ Returns the comment for a given phone number by the authenticated user.
 }
 ```
 
-> Returns empty `results: []` if no comment exists for that number.
+> Returns `results: []` if no comment exists for that number.
 
 ---
 
@@ -124,40 +153,7 @@ Returns the comment for a given phone number by the authenticated user.
 
 **`GET /api/lead/phone-comments/`**
 
-Returns all comments created by the authenticated user, ordered by most recently updated.
-
-**Response `200 OK`:**
-```json
-{
-  "count": 3,
-  "next": null,
-  "previous": null,
-  "results": [
-    {
-      "id":                2,
-      "phone_number":      "9123456789",
-      "comment":           "Not interested right now.",
-      "lead":              null,
-      "lead_name":         null,
-      "commented_by":      42,
-      "commented_by_name": "Ravi Kumar",
-      "created_at":        "2026-08-11T09:00:00.000Z",
-      "updated_at":        "2026-08-11T09:00:00.000Z"
-    },
-    {
-      "id":                1,
-      "phone_number":      "9876543210",
-      "comment":           "Interested in 3BHK. Call back after 5pm.",
-      "lead":              "abc-uuid",
-      "lead_name":         "John Doe",
-      "commented_by":      42,
-      "commented_by_name": "Ravi Kumar",
-      "created_at":        "2026-08-11T10:00:00.000Z",
-      "updated_at":        "2026-08-11T10:00:00.000Z"
-    }
-  ]
-}
-```
+Returns all comments by the authenticated user, ordered by most recently updated.
 
 ---
 
@@ -165,9 +161,7 @@ Returns all comments created by the authenticated user, ordered by most recently
 
 **`GET /api/lead/phone-comments/{id}/`**
 
-**Response `200 OK`:** Returns the full comment object (same shape as above).
-
-**Response `404 Not Found`:** If the record doesn't exist or belongs to another user.
+Returns the full comment record including `comment_history`.
 
 ---
 
@@ -175,16 +169,16 @@ Returns all comments created by the authenticated user, ordered by most recently
 
 **`PATCH /api/lead/phone-comments/{id}/`**
 
-Updates the comment text for an existing record.
+Updates comment text. Old comment is automatically moved to `comment_history`.
 
 **Request Body:**
 ```json
 {
-  "comment": "Updated note — confirmed budget of 60L."
+  "comment": "Confirmed budget of 60L. Site visit scheduled."
 }
 ```
 
-**Response `200 OK`:** Returns the updated record with new `updated_at`.
+**Response `200 OK`:** Full updated record with updated `comment_history`.
 
 ---
 
@@ -192,7 +186,7 @@ Updates the comment text for an existing record.
 
 **`DELETE /api/lead/phone-comments/{id}/`**
 
-Permanently deletes the comment.
+Permanently deletes the comment and its history.
 
 **Response `204 No Content`**
 
@@ -203,36 +197,43 @@ Permanently deletes the comment.
 | Field | Type | Nullable | Description |
 |---|---|---|---|
 | `id` | integer | no | Record ID |
-| `phone_number` | string | no | The phone number this comment is about |
-| `comment` | string | no | The note/comment text |
-| `lead` | string (UUID) | yes | Auto-matched lead ID (`null` if no match) |
-| `lead_name` | string | yes | Matched lead's name (`null` if no match) |
-| `commented_by` | integer | no | ID of the user who wrote the comment |
-| `commented_by_name` | string | no | Full name or username of the commenter |
-| `created_at` | string (ISO 8601) | no | When the comment was first created |
-| `updated_at` | string (ISO 8601) | no | When the comment was last updated |
+| `phone_number` | string | no | The phone number (must exist in call logs) |
+| `comment` | string | no | Latest comment text |
+| `comment_history` | array | no | All previous comments with timestamps |
+| `lead` | UUID | yes | Auto-matched lead ID |
+| `lead_name` | string | yes | Matched lead name |
+| `commented_by` | UUID | no | User who wrote the comment |
+| `commented_by_name` | string | no | Full name or username |
+| `created_at` | string (ISO 8601) | no | When first created |
+| `updated_at` | string (ISO 8601) | no | When last updated |
+
+### `comment_history` item shape:
+```json
+{
+  "comment":      "Previous comment text",
+  "commented_at": "2026-08-11T10:00:00.000Z"
+}
+```
 
 ---
 
 ## Key Behaviours
 
-1. **Upsert on POST** — one comment per phone number per user. Posting again to the same number updates the existing comment. No duplicates.
-
-2. **Auto-match lead** — when a comment is created/updated, the server searches `Lead.mobile` and `Lead.alternate_number`. If a match is found, `lead` FK is auto-set.
-
-3. **`commented_by` is server-side** — always set from the authenticated user. Never accepted from the request body.
-
-4. **Visibility** — users see only their own comments. Superusers and staff see all.
+1. **Phone must be in call logs** — `phone_number` must exist in `CallLog` for the authenticated user. Returns `400` otherwise.
+2. **Upsert on POST** — one record per phone per user. Old comment → `comment_history`. New comment → `comment`.
+3. **`commented_by` is server-side** — set from authenticated user, never from request body.
+4. **Auto-match lead** — matches `Lead.mobile` and `Lead.alternate_number`. `null` if no match.
+5. **Visibility** — users see only their own comments. Superusers see all.
+6. **History preserved on PATCH** — updating via PATCH also moves old comment to history.
 
 ---
 
-## DB Table
+## DB Indexes
 
-**Table name:** `Lead_phonecomment`
-
-```
-unique_together: [phone_number, commented_by]
-```
+| Index | Type | Purpose |
+|---|---|---|
+| `phone_number` | Single | Filter by number |
+| `(phone_number, commented_by)` | Composite + Unique | Primary lookup, enforces one comment per user per number |
 
 ---
 
@@ -240,21 +241,6 @@ unique_together: [phone_number, commented_by]
 
 | Status | Meaning |
 |---|---|
-| `400 Bad Request` | Missing `phone_number` or `comment` |
-| `401 Unauthorized` | Missing or invalid Bearer token |
-| `404 Not Found` | Record does not exist or not accessible |
-
-**Example 400:**
-```json
-{
-  "phone_number": ["This field is required."],
-  "comment": ["This field is required."]
-}
-```
-
-**Example 401:**
-```json
-{
-  "detail": "Token has expired"
-}
-```
+| `400 Bad Request` | Missing fields or phone not in call logs |
+| `401 Unauthorized` | Missing or expired token |
+| `404 Not Found` | Record not found or not accessible |

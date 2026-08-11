@@ -6,10 +6,10 @@ from django_filters import rest_framework as django_filters
 from rest_framework import filters
 from django.utils import timezone
 
-from .models import Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck, CallLog
+from .models import Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck, CallLog, PhoneComment
 from .serializers import (
     LeadSerializer, LeadStatusHistorySerializer, LeadFollowUpSerializer,
-    LeadCrossCheckSerializer, CallLogSerializer, PublicLeadSerializer,
+    LeadCrossCheckSerializer, CallLogSerializer, PhoneCommentSerializer, PublicLeadSerializer,
     LEAD_SOURCE_CHOICES_LIST, LEAD_STATUS_CHOICES_LIST, LEAD_BUCKET_CHOICES_LIST,
     FOLLOW_UP_TYPE_CHOICES_LIST,
 )
@@ -464,3 +464,32 @@ class PublicLeadCreateView(generics.CreateAPIView):
             created_by_type='Website',
             created_by_identifier='public_form',
         )
+
+
+class PhoneCommentViewSet(viewsets.ModelViewSet):
+    """
+    Phone number comments — one comment per phone per user (upserted).
+
+    POST   /api/lead/phone-comments/            — create or update comment
+    GET    /api/lead/phone-comments/            — list all my comments
+    GET    /api/lead/phone-comments/?phone_number=xxx — get comment for a number
+    GET    /api/lead/phone-comments/{id}/       — get single
+    PATCH  /api/lead/phone-comments/{id}/       — update comment text
+    DELETE /api/lead/phone-comments/{id}/       — delete
+    """
+    serializer_class = PhoneCommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    http_method_names = ['get', 'post', 'patch', 'delete', 'head', 'options']
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = PhoneComment.objects.select_related('lead', 'commented_by')
+
+        if not user.is_superuser and not user.is_staff:
+            qs = qs.filter(commented_by=user)
+
+        phone = self.request.query_params.get('phone_number')
+        if phone:
+            qs = qs.filter(phone_number=phone)
+
+        return qs.order_by('-updated_at')

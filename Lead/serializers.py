@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.db.models import Q
 from django.apps import apps
 from .models import (
-    Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck, CallLog,
+    Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck, CallLog, PhoneComment,
     LEAD_SOURCE_CHOICES, LEAD_STATUS_CHOICES, LEAD_BUCKET_CHOICES,
 )
 
@@ -352,3 +352,46 @@ class PublicLeadSerializer(serializers.ModelSerializer):
         if not value or len(value.strip()) < 2:
             raise serializers.ValidationError("Name is required.")
         return value.strip()
+
+
+class PhoneCommentSerializer(serializers.ModelSerializer):
+    commented_by_name = serializers.SerializerMethodField(read_only=True)
+    lead_name = serializers.CharField(source='lead.name', read_only=True, default=None)
+
+    class Meta:
+        model = PhoneComment
+        fields = [
+            'id', 'phone_number', 'comment',
+            'lead', 'lead_name',
+            'commented_by', 'commented_by_name',
+            'created_at', 'updated_at',
+        ]
+        read_only_fields = ('id', 'lead', 'commented_by', 'created_at', 'updated_at', 'lead_name', 'commented_by_name')
+
+    def get_commented_by_name(self, obj):
+        if obj.commented_by:
+            full_name = f"{obj.commented_by.first_name} {obj.commented_by.last_name}".strip()
+            return full_name or obj.commented_by.username
+        return None
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        phone = validated_data.get('phone_number', '').strip()
+
+        # Auto-match lead
+        from django.db.models import Q as DQ
+        lead = Lead.objects.filter(
+            DQ(mobile=phone) | DQ(alternate_number=phone),
+            is_deleted=False
+        ).first()
+
+        # Upsert — one comment per phone per user
+        obj, created = PhoneComment.objects.update_or_create(
+            phone_number=phone,
+            commented_by=user,
+            defaults={
+                'comment': validated_data['comment'],
+                'lead': lead,
+            }
+        )
+        return obj

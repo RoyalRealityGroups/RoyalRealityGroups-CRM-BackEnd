@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck, CallLog
+from .models import Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck, CallLog, PhoneComment
 
 
 @admin.register(Lead)
@@ -44,3 +44,11 @@ class CallLogAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at',)
     raw_id_fields = ('called_by', 'lead')
     date_hierarchy = 'called_at'
+
+
+@admin.register(PhoneComment)
+class PhoneCommentAdmin(admin.ModelAdmin):
+    list_display = ('phone_number', 'commented_by', 'lead', 'comment', 'updated_at')
+    search_fields = ('phone_number', 'commented_by__username', 'comment')
+    raw_id_fields = ('commented_by', 'lead')
+    readonly_fields = ('created_at', 'updated_at')

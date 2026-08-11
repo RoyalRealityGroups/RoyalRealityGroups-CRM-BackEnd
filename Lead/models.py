@@ -183,3 +183,29 @@ class CallLog(models.Model):
 
     def __str__(self):
         return f"{self.call_type} — {self.phone_number} by {self.called_by} at {self.called_at}"
+
+
+class PhoneComment(models.Model):
+    """
+    User comment on a phone number (contact-level note).
+    One comment per phone_number per user — upserted on POST.
+    """
+    phone_number = models.CharField(max_length=20, db_index=True)
+    commented_by = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='phone_comments'
+    )
+    lead = models.ForeignKey(
+        Lead, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='phone_comments',
+        help_text='Auto-matched lead by phone number'
+    )
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-updated_at']
+        unique_together = [['phone_number', 'commented_by']]
+
+    def __str__(self):
+        return f"{self.phone_number} — {self.commented_by} — {self.comment[:40]}"

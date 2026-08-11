@@ -6,10 +6,10 @@ from django_filters import rest_framework as django_filters
 from rest_framework import filters
 from django.utils import timezone
 
-from .models import Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck, CallLog
+from .models import Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck, CallLog, PhoneComment
 from .serializers import (
     LeadSerializer, LeadStatusHistorySerializer, LeadFollowUpSerializer,
-    LeadCrossCheckSerializer, CallLogSerializer, PublicLeadSerializer,
+    LeadCrossCheckSerializer, CallLogSerializer, PhoneCommentSerializer, PublicLeadSerializer,
     LEAD_SOURCE_CHOICES_LIST, LEAD_STATUS_CHOICES_LIST, LEAD_BUCKET_CHOICES_LIST,
     FOLLOW_UP_TYPE_CHOICES_LIST,
 )
@@ -384,27 +384,39 @@ class CallLogViewSet(viewsets.ModelViewSet):
     """
     ViewSet for Call Logs — synced from Android mobile app.
 
-    POST   /api/lead/call-logs/          — sync a call log
-    GET    /api/lead/call-logs/          — list (filter by ?phone_number=)
-    GET    /api/lead/call-logs/{id}/     — retrieve single
-    PATCH  /api/lead/call-logs/{id}/     — update
+    POST   /api/lead/call-logs/                        — sync a call log
+    GET    /api/lead/call-logs/                        — list (filter by ?phone_number=, ?call_type=, ?from_date=, ?to_date=)
+    GET    /api/lead/call-logs/{id}/                   — retrieve single
+    PATCH  /api/lead/call-logs/{id}/                   — update
+    GET    /api/lead/call-logs/summary/                — call count per phone number
     """
     serializer_class = CallLogSerializer
     permission_classes = [permissions.IsAuthenticated]
     http_method_names = ['get', 'post', 'patch', 'head', 'options']
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_fields = ['call_type', 'device_platform']
+    ordering_fields = ['called_at', 'created_at', 'duration_secs']
+    ordering = ['-called_at']
 
     def get_queryset(self):
         user = self.request.user
         qs = CallLog.objects.select_related('lead', 'called_by')
 
-        # Agents see only their own logs; superusers/managers see all
         if not user.is_superuser and not user.is_staff:
             qs = qs.filter(called_by=user)
 
-        # Filter by phone number if provided
+        # Filter by phone number
         phone = self.request.query_params.get('phone_number')
         if phone:
             qs = qs.filter(phone_number=phone)
+
+        # Date range filters
+        from_date = self.request.query_params.get('from_date')
+        to_date = self.request.query_params.get('to_date')
+        if from_date:
+            qs = qs.filter(called_at__date__gte=from_date)
+        if to_date:
+            qs = qs.filter(called_at__date__lte=to_date)
 
         return qs.order_by('-called_at')
 
@@ -413,20 +425,38 @@ class CallLogViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
 
-        # Duplicate guard — serializer returns existing record, use 200 not 201
-        was_duplicate = CallLog.objects.filter(
-            phone_number=instance.phone_number,
-            called_at=instance.called_at,
-            called_by=request.user,
-        ).count() > 0 and not getattr(instance, '_state', None)
-
         out = self.get_serializer(instance)
-        # Check if this was a pre-existing record (duplicate) — return 200
         from rest_framework.response import Response
         from rest_framework import status as drf_status
         existing_before = getattr(serializer, '_was_existing', False)
         status_code = drf_status.HTTP_200_OK if existing_before else drf_status.HTTP_201_CREATED
         return Response(out.data, status=status_code)
+
+    @action(detail=False, methods=['get'])
+    def summary(self, request):
+        """
+        Returns call count per phone number for the current user.
+        GET /api/lead/call-logs/summary/
+        """
+        from django.db.models import Count, Max
+        user = request.user
+        qs = CallLog.objects.all()
+        if not user.is_superuser and not user.is_staff:
+            qs = qs.filter(called_by=user)
+
+        phone = request.query_params.get('phone_number')
+        if phone:
+            qs = qs.filter(phone_number=phone)
+
+        data = list(
+            qs.values('phone_number')
+            .annotate(
+                call_count=Count('id'),
+                last_called_at=Max('called_at'),
+            )
+            .order_by('-call_count')
+        )
+        return Response({'count': len(data), 'results': data})
 
 
 class PublicLeadCreateView(generics.CreateAPIView):
@@ -446,3 +476,42 @@ class PublicLeadCreateView(generics.CreateAPIView):
             created_by_type='Website',
             created_by_identifier='public_form',
         )
+
+
+class PhoneCommentViewSet(viewsets.ModelViewSet):
+    """
+    Phone number comments — one comment per phone per user (upserted).
+
+    POST   /api/lead/phone-comments/            — create or update comment
+    GET    /api/lead/phone-comments/            — list (?phone_number=, ?from_date=, ?to_date=)
+    GET    /api/lead/phone-comments/?phone_number=xxx — get comment for a number
+    GET    /api/lead/phone-comments/{id}/       — get single
+    PATCH  /api/lead/phone-comments/{id}/       — update comment text
+    DELETE /api/lead/phone-comments/{id}/       — delete
+    """
+    serializer_class = PhoneCommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    http_method_names = ['get', 'post', 'patch', 'delete', 'head', 'options']
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['updated_at', 'created_at']
+    ordering = ['-updated_at']
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = PhoneComment.objects.select_related('lead', 'commented_by')
+
+        if not user.is_superuser and not user.is_staff:
+            qs = qs.filter(commented_by=user)
+
+        phone = self.request.query_params.get('phone_number')
+        if phone:
+            qs = qs.filter(phone_number=phone)
+
+        from_date = self.request.query_params.get('from_date')
+        to_date = self.request.query_params.get('to_date')
+        if from_date:
+            qs = qs.filter(updated_at__date__gte=from_date)
+        if to_date:
+            qs = qs.filter(updated_at__date__lte=to_date)
+
+        return qs.order_by('-updated_at')

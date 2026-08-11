@@ -176,11 +176,45 @@ class CallLog(models.Model):
         Lead, on_delete=models.SET_NULL, null=True, blank=True, related_name='call_logs'
     )
     created_at      = models.DateTimeField(auto_now_add=True)
+    call_count      = models.PositiveIntegerField(default=1, help_text='How many times this call was synced (same phone+time)')
+    call_times      = models.JSONField(default=list, blank=True, help_text='List of all called_at timestamps for this number')
 
     class Meta:
         ordering = ['-called_at']
-        # Prevent duplicate syncs from the same device
-        unique_together = [['phone_number', 'called_at', 'called_by']]
+        indexes = [
+            models.Index(fields=['phone_number', 'called_by']),
+            models.Index(fields=['called_at']),
+        ]
 
     def __str__(self):
         return f"{self.call_type} — {self.phone_number} by {self.called_by} at {self.called_at}"
+
+
+class PhoneComment(models.Model):
+    """
+    User comment on a phone number (contact-level note).
+    One comment per phone_number per user — upserted on POST.
+    """
+    phone_number = models.CharField(max_length=20, db_index=True)
+    commented_by = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='phone_comments'
+    )
+    lead = models.ForeignKey(
+        Lead, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='phone_comments',
+        help_text='Auto-matched lead by phone number'
+    )
+    comment = models.TextField()
+    comment_history = models.JSONField(default=list, blank=True, help_text='List of all previous comments with timestamps')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-updated_at']
+        unique_together = [['phone_number', 'commented_by']]
+        indexes = [
+            models.Index(fields=['phone_number', 'commented_by']),
+        ]
+
+    def __str__(self):
+        return f"{self.phone_number} — {self.commented_by} — {self.comment[:40]}"

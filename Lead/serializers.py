@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.db.models import Q
 from django.apps import apps
 from .models import (
-    Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck, CallLog,
+    Lead, LeadStatusHistory, LeadFollowUp, LeadCrossCheck, CallLog, PhoneComment,
     LEAD_SOURCE_CHOICES, LEAD_STATUS_CHOICES, LEAD_BUCKET_CHOICES,
 )
 
@@ -285,9 +285,10 @@ class CallLogSerializer(serializers.ModelSerializer):
             'called_at', 'device_platform',
             'lead', 'lead_name',
             'called_by', 'called_by_name',
+            'call_count', 'call_times',
             'created_at',
         ]
-        read_only_fields = ('id', 'lead', 'called_by', 'created_at', 'lead_name', 'called_by_name')
+        read_only_fields = ('id', 'lead', 'called_by', 'created_at', 'lead_name', 'called_by_name', 'call_count', 'call_times')
 
     def get_called_by_name(self, obj):
         if obj.called_by:
@@ -300,27 +301,37 @@ class CallLogSerializer(serializers.ModelSerializer):
         phone = validated_data.get('phone_number', '').strip()
         called_at = validated_data.get('called_at')
 
-        # Duplicate guard — same phone + called_at + user → return existing
+        # Check for exact duplicate — same phone + called_at + user
         existing = CallLog.objects.filter(
             phone_number=phone,
             called_at=called_at,
             called_by=user,
         ).first()
+
         if existing:
+            # Increment count and append timestamp to call_times
+            times = existing.call_times or []
+            times.append(called_at.isoformat() if hasattr(called_at, 'isoformat') else str(called_at))
+            existing.call_count += 1
+            existing.call_times = times
+            existing.save(update_fields=['call_count', 'call_times'])
             self._was_existing = True
             return existing
 
-        self._was_existing = False
-
-        # Auto-match lead by phone number (mobile or alternate)
+        # New call — auto-match lead by phone number
         from django.db.models import Q as DQ
         lead = Lead.objects.filter(
             DQ(mobile=phone) | DQ(alternate_number=phone),
             is_deleted=False
         ).first()
 
+        # Initialize call_times with first timestamp
+        first_time = called_at.isoformat() if hasattr(called_at, 'isoformat') else str(called_at)
         validated_data['called_by'] = user
         validated_data['lead'] = lead
+        validated_data['call_count'] = 1
+        validated_data['call_times'] = [first_time]
+        self._was_existing = False
         return super().create(validated_data)
 
 
@@ -347,3 +358,86 @@ class PublicLeadSerializer(serializers.ModelSerializer):
         if not value or len(value.strip()) < 2:
             raise serializers.ValidationError("Name is required.")
         return value.strip()
+
+
+class PhoneCommentSerializer(serializers.ModelSerializer):
+    commented_by_name = serializers.SerializerMethodField(read_only=True)
+    lead_name = serializers.CharField(source='lead.name', read_only=True, default=None)
+
+    class Meta:
+        model = PhoneComment
+        fields = [
+            'id', 'phone_number', 'comment', 'comment_history',
+            'lead', 'lead_name',
+            'commented_by', 'commented_by_name',
+            'created_at', 'updated_at',
+        ]
+        read_only_fields = ('id', 'lead', 'commented_by', 'created_at', 'updated_at',
+                            'lead_name', 'commented_by_name', 'comment_history')
+
+    def get_commented_by_name(self, obj):
+        if obj.commented_by:
+            full_name = f"{obj.commented_by.first_name} {obj.commented_by.last_name}".strip()
+            return full_name or obj.commented_by.username
+        return None
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        phone = validated_data.get('phone_number', '').strip()
+        new_comment = validated_data.get('comment', '').strip()
+
+        # Validate — phone number must exist in CallLog for this user
+        if not CallLog.objects.filter(phone_number=phone, called_by=user).exists():
+            raise serializers.ValidationError({
+                'phone_number': 'This phone number does not exist in your call logs. You can only comment on numbers you have called.'
+            })
+
+        # Auto-match lead
+        from django.db.models import Q as DQ
+        from django.utils import timezone
+        lead = Lead.objects.filter(
+            DQ(mobile=phone) | DQ(alternate_number=phone),
+            is_deleted=False
+        ).first()
+
+        # Check if comment already exists for this phone + user
+        existing = PhoneComment.objects.filter(
+            phone_number=phone,
+            commented_by=user,
+        ).first()
+
+        if existing:
+            # Append old comment to history before replacing
+            history = existing.comment_history or []
+            history.append({
+                'comment': existing.comment,
+                'commented_at': existing.updated_at.isoformat() if existing.updated_at else timezone.now().isoformat(),
+            })
+            existing.comment = new_comment
+            existing.comment_history = history
+            existing.lead = lead
+            existing.save(update_fields=['comment', 'comment_history', 'lead', 'updated_at'])
+            return existing
+
+        # New comment
+        obj = PhoneComment.objects.create(
+            phone_number=phone,
+            commented_by=user,
+            lead=lead,
+            comment=new_comment,
+            comment_history=[],
+        )
+        return obj
+
+    def update(self, instance, validated_data):
+        from django.utils import timezone
+        new_comment = validated_data.get('comment')
+        if new_comment and new_comment != instance.comment:
+            # Append old comment to history
+            history = instance.comment_history or []
+            history.append({
+                'comment': instance.comment,
+                'commented_at': instance.updated_at.isoformat() if instance.updated_at else timezone.now().isoformat(),
+            })
+            validated_data['comment_history'] = history
+        return super().update(instance, validated_data)

@@ -37,7 +37,7 @@ docopt==0.6.2
 drf-spectacular==0.28.0
 drf-yasg==1.21.15
 et_xmlfile==2.0.0
-firebase-admin==6.2.0
+firebase-admin==7.5.0
 fonttools==4.61.1
 google-api-core==2.28.1
 google-api-python-client==2.187.0

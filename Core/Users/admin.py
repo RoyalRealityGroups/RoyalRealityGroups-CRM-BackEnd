@@ -71,7 +71,8 @@ class DeviceAdmin( ImportExportMixin, ImportMixinAdmin, admin.ModelAdmin):
 
 
 class DeviceLogAdmin( admin.ModelAdmin):
-    fields=('device', 'ip_address','login','logout') # 'user',
+    fields=('device', 'ip_address','logout') # 'user',
+    readonly_fields = ('login',)
     list_display=('id', 'device', 'ip_address','login','logout','user_identifier','user_type','created_on','modified_on', ) # 'user',
     search_fields=('id','device__code','ip_address', 'user_identifier','user_type',) # 'user__username',
     # ordering=('id',)

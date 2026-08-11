@@ -561,20 +561,20 @@ class UpdateDeviceFcmToken(APIView):
             return Response({'error': 'fcmtoken is required'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = request.user
-        # Find or create a web device for this user
+        # Find the most recent active web device for this user
         device = Device.objects.filter(
             user_identifier=str(user.id),
             user_type='User',
             type=Device.WEB,
             is_active=True,
             is_deleted=False,
-        ).first()
+        ).order_by('-created_on').first()
 
         if device:
             device.fcmtoken = fcmtoken
             device.save(update_fields=['fcmtoken'])
         else:
-            # Update the most recent active device for this user
+            # Fallback: find any recent active device for this user
             device = Device.objects.filter(
                 user_identifier=str(user.id),
                 user_type='User',

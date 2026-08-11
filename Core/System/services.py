@@ -39,11 +39,16 @@ def firebase_init():
     if login:
         try:
             GLOBAL_VARS = global_preferences_registry.manager().all()
-            project_json = credentials.Certificate(json.loads(GLOBAL_VARS['JSON_DATA__JSONFILE'],strict=False))
+            json_data = GLOBAL_VARS.get('JSON_DATA__JSONFILE', '{}')
+            if not json_data or json_data == '{}':
+                log.error("[FCM] JSON_DATA__JSONFILE is empty or default '{}'. Firebase cannot initialize.")
+                return
+            project_json = credentials.Certificate(json.loads(json_data, strict=False))
             firebase_admin.initialize_app(project_json)
-            login=False
+            login = False
+            log.info("[FCM] Firebase initialized successfully.")
         except Exception as E:
-            pass
+            log.error(f"[FCM] Firebase initialization failed: {str(E)}")
     else:
         pass
 
@@ -94,36 +99,55 @@ def send_push_notification(user_identifier, title, user_type, message, type, ref
                 
     # Create notification user record
     NotificationUsers.objects.create(
-                    user_identifier=user_identifier,  # Assuming username is used for notifications
-                    user_type=user_type,  # Assuming default user type
+                    user_identifier=user_identifier,
+                    user_type=user_type,
                     notification=notification
                 )
     
     firebase_init()
-    alltokens = Device.objects.filter(Q(is_active=True) & (Q(socket=None) | Q(socket='')) & ~Q(fcmtoken='') & ~Q(fcmtoken=None) & Q(user_identifier=user_identifier) & Q(user_type=user_type)).values_list('fcmtoken', flat=True)
+    
+    alltokens = list(Device.objects.filter(Q(is_active=True) & (Q(socket=None) | Q(socket='')) & ~Q(fcmtoken='') & ~Q(fcmtoken=None) & Q(user_identifier=user_identifier) & Q(user_type=user_type)).values_list('fcmtoken', flat=True))
+    
+    # Filter out obviously invalid tokens (too short, literal "string", etc.)
+    alltokens = [t for t in alltokens if t and len(t) > 20 and t.lower() != 'string']
+    
+    if not alltokens:
+        return
     
     alltokens_split = [alltokens[i:i + 500] for i in range(0, len(alltokens), 500)]
-    
-    response = None  # Initialize response variable
     
     for i, tokens in enumerate(alltokens_split):
         dataObject = {
             'id': str(notification.id),
-            'message': message,
-            'type': str(type),
-            'ref_id': str(ref_id),
-            'modified_on': str(modified_on),
-            'web_navigation_url': str(web_navigation_url),
-            'mobile_navigation_url': str(mobile_navigation_url),
+            'message': message or '',
+            'type': str(type) if type else '',
+            'ref_id': str(ref_id) if ref_id else '',
+            'modified_on': str(modified_on) if modified_on else '',
         }
+        if web_navigation_url:
+            dataObject['web_navigation_url'] = str(web_navigation_url)
+        if mobile_navigation_url:
+            dataObject['mobile_navigation_url'] = str(mobile_navigation_url)
 
-        multicast_message = messaging.MulticastMessage(notification=messaging.Notification(title=str(user_identifier), body=message), data=dataObject, tokens=tokens)
-        response = messaging.send_multicast(multicast_message)
-
-    if response is not None:
-        pass
-    else:
-        pass
+        try:
+            messages = [
+                messaging.Message(
+                    notification=messaging.Notification(title=str(title or ''), body=message or ''),
+                    data=dataObject,
+                    token=token,
+                )
+                for token in tokens
+            ]
+            response = messaging.send_each(messages)
+            if response.responses:
+                for idx, resp in enumerate(response.responses):
+                    if resp.exception:
+                        # Auto-cleanup stale/invalid tokens
+                        if 'NOT_FOUND' in str(resp.exception) or 'UNREGISTERED' in str(resp.exception) or 'NotRegistered' in str(resp.exception) or 'INVALID_ARGUMENT' in str(resp.exception):
+                            stale_token = tokens[idx]
+                            Device.objects.filter(fcmtoken=stale_token).update(fcmtoken='')
+        except Exception as e:
+            log.error(f"[FCM-Push] send_each failed: {str(e)}")
 
 
 def send_push_notification_with_image(id, user,title, message, type, ref_id, modified_on, image_url=None):
@@ -149,22 +173,22 @@ def send_push_notification_with_image(id, user,title, message, type, ref_id, mod
 
         dataObject = {key: str(value) for key, value in dataObject.items()}
         
-        multicast_message = messaging.MulticastMessage(
-            notification=messaging.Notification(
-                title=str(title),
-                body=str(message),
-                image=str(image_url)
-            ),
-            data=dataObject,
-            tokens=tokens
-        )
-
-        response = messaging.send_multicast(multicast_message)
-
-    if response is not None:
-        pass
-    else:
-        pass
+        try:
+            messages = [
+                messaging.Message(
+                    notification=messaging.Notification(
+                        title=str(title),
+                        body=str(message),
+                        image=str(image_url) if image_url else None
+                    ),
+                    data=dataObject,
+                    token=token,
+                )
+                for token in tokens
+            ]
+            response = messaging.send_each(messages)
+        except Exception as e:
+            log.error(f"[FCM-Push] send_each (with image) failed: {str(e)}")
 
 
 
@@ -547,11 +571,29 @@ def send_alert(alert, instance= None ):
 
             except Exception as e:
                 log.error(f"Failed to add static value {alert.value}: {str(e)}")
+
+    if not users:
+        log.warning(f"[AlertTrigger] No recipients found for alert {alert.id} (sender_type={alert.sender_type}). Alert not sent.")
+        return
+    
+    log.info(f"[AlertTrigger] Alert {alert.id}: type={alert.type}, recipients={len(users)}, has_template={alert.template is not None}")
                 
     body = alert.template.message if alert.template else None
     subject = alert.subject_template.message if alert.subject_template else None  
     web_url = alert.web_navigation_url.message if alert.web_navigation_url else None
     mobile_url = alert.mobile_navigation_url.message if alert.mobile_navigation_url else None
+
+    # Auto-generate message if no template is configured
+    if not body or not subject:
+        event_names = dict(AlertConfig.EVENT_CHOICES)
+        event_label = event_names.get(alert.event_type, 'Updated')
+        model_name = alert.screen.model_class()._meta.verbose_name.title() if alert.screen else 'Record'
+        instance_str = str(instance) if instance else ''
+        
+        if not subject:
+            subject = f"{model_name} {event_label}"
+        if not body:
+            body = f"{model_name} '{instance_str}' has been {event_label.lower()}."
 
     if alert.type == 1:  # SMS
 
@@ -585,18 +627,30 @@ def send_alert(alert, instance= None ):
 
 
 def model_signal_handler(sender, instance,  created=None, **kwargs):
-    if created is not None:
-        event = 1 if created else 2  # post_save -> create or update
-    else:
-        event = 3  # post_delete -> delete
+    try:
+        if created is not None:
+            event = 1 if created else 2  # post_save -> create or update
+        else:
+            event = 3  # post_delete -> delete
 
-    if hasattr(instance, 'is_deleted') and instance.is_deleted:
-        event = 3
+        if hasattr(instance, 'is_deleted') and instance.is_deleted:
+            event = 3
 
-    alerts = AlertConfig.objects.filter(screen__app_label = sender._meta.app_label, screen__model= sender._meta.model_name, event_type=event, is_active=True)
-    
-    for alert in alerts:
-        send_alert(alert, instance)
+        # Skip signals from Notification/NotificationUsers to avoid infinite loop
+        if sender._meta.model_name in ('notification', 'notificationusers'):
+            return
+
+        alerts = AlertConfig.objects.filter(screen__app_label = sender._meta.app_label, screen__model= sender._meta.model_name, event_type=event, is_active=True)
+        
+        log.info(f"[AlertTrigger] Signal fired: model={sender._meta.app_label}.{sender._meta.model_name}, event={event}, alerts_found={alerts.count()}")
+        
+        for alert in alerts:
+            try:
+                send_alert(alert, instance)
+            except Exception as e:
+                log.error(f"[AlertTrigger] Failed to send alert {alert.id} for {sender._meta.model_name}: {str(e)}")
+    except Exception as e:
+        log.error(f"[AlertTrigger] model_signal_handler error for {sender._meta.model_name}: {str(e)}")
 
 
 def authantication_signal_handler(sender, instance, event_name, **kwargs):

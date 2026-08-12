@@ -75,6 +75,8 @@ INSTALLED_APPS = [
     'RealEstateReports',
     'SiteVisit',
     'ProjectManagement',
+    # Phase 2 - Availability List
+    'Availability',
 ]
 
 

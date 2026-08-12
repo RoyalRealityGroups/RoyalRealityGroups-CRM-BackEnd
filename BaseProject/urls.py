@@ -61,6 +61,7 @@ if not settings.DYNAMICS_SAFE_MODE:
         path('api/re-reports/', include('RealEstateReports.urls')),
         path('api/dashboards/', include('dashboards.urls')),
         path('api/general/', include('General.urls')),
+        path('api/availability/', include('Availability.urls')),
 
     ]
 

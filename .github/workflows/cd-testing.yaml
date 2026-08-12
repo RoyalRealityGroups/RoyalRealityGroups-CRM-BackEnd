@@ -50,7 +50,10 @@ jobs:
 
             pip install -r requirements.txt
 
-            python manage.py migrate --noinput
             python manage.py collectstatic --noinput
+            python manage.py migrate --noinput
+            python manage.py UpdateContentTypeDetail
+            python manage.py UpdatePermissionDetail
+            python manage.py import_menu_data
 
             sudo systemctl start ${{ secrets.BE_TESTING_SERVICE_NAME }}.socket ${{ secrets.BE_TESTING_SERVICE_NAME }}.service

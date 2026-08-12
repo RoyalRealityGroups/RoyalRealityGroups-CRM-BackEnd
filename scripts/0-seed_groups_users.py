@@ -38,17 +38,17 @@ GROUPS = {
     'Director': {
         'description': 'Full access to all modules — highest level',
         'apps': [
-            'Lead', 'SiteVisit', 'Inventory', 'Booking', 'Masters', 'ProjectManagement',
+            'Lead', 'SiteVisit', 'Inventory', 'Booking', 'ProjectManagement',
             'Users', 'RealEstateReports', 'Documents', 'dashboards',
-            'General', 'Core_Users', 'Core_System', 'Core_Reports',
+            'General', 'Core_Users', 'Core_System', 'Core_Reports', 'Availability',
         ],
         'full_access': True,
     },
     'Team Leader': {
         'description': 'Full access except User & Permission Management',
         'apps': [
-            'Lead', 'SiteVisit', 'Inventory', 'Booking', 'Masters', 'ProjectManagement',
-            'RealEstateReports', 'Documents', 'dashboards', 'General',
+            'Lead', 'SiteVisit', 'Inventory', 'Booking', 'ProjectManagement',
+            'RealEstateReports', 'Documents', 'dashboards', 'General', 'Availability',
         ],
         'full_access': True,
     },
@@ -57,13 +57,13 @@ GROUPS = {
         'apps': [
             'Lead', 'SiteVisit', 'Booking',
         ],
-        'extra_view': ['Inventory', 'Masters', 'ProjectManagement', 'dashboards'],
+        'extra_view': ['Inventory', 'ProjectManagement', 'dashboards', 'Availability'],
     },
     'Viewer': {
         'description': 'Read-only access to all screens',
         'apps': [
-            'Lead', 'SiteVisit', 'Inventory', 'Booking', 'Masters', 'ProjectManagement',
-            'RealEstateReports', 'Documents', 'dashboards',
+            'Lead', 'SiteVisit', 'Inventory', 'Booking', 'ProjectManagement',
+            'RealEstateReports', 'Documents', 'dashboards', 'Availability',
         ],
         'view_only': True,
     },

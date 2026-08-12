@@ -121,20 +121,18 @@ def seed_sitevisits():
             )[0]
         elif days_ago > 14:
             status = random.choices(
-                ['COMPLETED', 'CONFIRMED', 'CANCELLED'], weights=[0.5, 0.3, 0.2], k=1
+                ['COMPLETED', 'SCHEDULED', 'CANCELLED'], weights=[0.5, 0.3, 0.2], k=1
             )[0]
         elif days_ago > 3:
             status = random.choices(
-                ['SCHEDULED', 'CONFIRMED', 'COMPLETED'], weights=[0.3, 0.4, 0.3], k=1
+                ['SCHEDULED', 'COMPLETED', 'CANCELLED'], weights=[0.4, 0.4, 0.2], k=1
             )[0]
         else:
-            status = random.choices(
-                ['SCHEDULED', 'CONFIRMED'], weights=[0.6, 0.4], k=1
-            )[0]
+            status = 'SCHEDULED'
 
         # Completion details only for completed visits
         feedback = random.choice(FEEDBACK_SAMPLES) if status == 'COMPLETED' else ''
-        remarks = random.choice(REMARKS_SAMPLES) if status in ['COMPLETED', 'CONFIRMED'] else ''
+        remarks = random.choice(REMARKS_SAMPLES) if status == 'COMPLETED' else ''
 
         sv = SiteVisit.objects.create(
             lead=lead,

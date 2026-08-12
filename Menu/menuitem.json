@@ -127,31 +127,17 @@
     },
     {
         "Code": "INV-001",
-        "Name": "Plot Inventory",
-        "Icon": "landscape",
-        "Link": "/inventory/plots",
+        "Name": "Projects",
+        "Icon": "folder_special",
+        "Link": "/availability/projects",
         "Sequence": "1",
         "Click": "",
         "Menu": "MENU-001",
         "Submenu": "SBM-008",
-        "Permission": "Inventory.view_plotinventory",
-        "Description": "Manage plot inventory",
+        "Permission": "Availability.view_availabilityproject",
+        "Description": "Manage availability projects — folders with blocks and unit grid",
         "Created On": "2026-07-18 00:00:00",
-        "Modified On": "2026-07-18 00:00:00"
-    },
-    {
-        "Code": "INV-002",
-        "Name": "Flat Inventory",
-        "Icon": "apartment",
-        "Link": "/inventory/flats",
-        "Sequence": "2",
-        "Click": "",
-        "Menu": "MENU-001",
-        "Submenu": "SBM-008",
-        "Permission": "Inventory.view_flatinventory",
-        "Description": "Manage flat inventory",
-        "Created On": "2026-07-18 00:00:00",
-        "Modified On": "2026-07-18 00:00:00"
+        "Modified On": "2026-08-11 00:00:00"
     },
     {
         "Code": "BKG-001",

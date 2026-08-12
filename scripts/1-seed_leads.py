@@ -201,8 +201,8 @@ def seed_followups(leads):
     today = date.today()
 
     for lead in leads:
-        # Only create follow-ups for leads past NEW_LEAD
-        if lead.status == 'NEW_LEAD':
+        # Only create follow-ups for non-dead leads
+        if lead.status == 'DEAD':
             continue
 
         # Skip if follow-ups already exist

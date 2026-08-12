@@ -43,7 +43,7 @@
     },
     {
         "Code": "MIM-024",
-        "Name": "General Settings",
+        "Name": "SMTP Configurations",
         "Icon": "settings",
         "Link": "/settings/general-settings",
         "Sequence": "6",
@@ -51,7 +51,7 @@
         "Menu": "MENU-001",
         "Submenu": "SBM-003",
         "Permission": "General.view_general_settings",
-        "Description": "Configure global application settings",
+        "Description": "Configure SMTP email server settings",
         "Created On": "2026-03-06 11:47:11",
         "Modified On": "2026-03-06 11:47:11"
     },

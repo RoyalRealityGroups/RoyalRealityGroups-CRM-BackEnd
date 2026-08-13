@@ -364,17 +364,5 @@
         "ContentType": "availabilityproject",
         "App": "Availability",
         "Hide": "0"
-    },
-    {
-        "Name": "Availabilityblock",
-        "ContentType": "availabilityblock",
-        "App": "Availability",
-        "Hide": "0"
-    },
-    {
-        "Name": "Availabilityunit",
-        "ContentType": "availabilityunit",
-        "App": "Availability",
-        "Hide": "0"
     }
 ]

@@ -3163,45 +3163,5 @@
         "Name": "Export",
         "Permission": "Availability.export_availabilityproject",
         "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Availability.view_availabilityblock",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Availability.add_availabilityblock",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Availability.change_availabilityblock",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Availability.delete_availabilityblock",
-        "Hide": "0"
-    },
-    {
-        "Name": "View",
-        "Permission": "Availability.view_availabilityunit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Add",
-        "Permission": "Availability.add_availabilityunit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Change",
-        "Permission": "Availability.change_availabilityunit",
-        "Hide": "0"
-    },
-    {
-        "Name": "Delete",
-        "Permission": "Availability.delete_availabilityunit",
-        "Hide": "0"
     }
 ]

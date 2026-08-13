@@ -109,7 +109,7 @@
     },
     {
         "Name": "Availability List",
-        "App_Label": "Inventory",
+        "App_Label": "Availability",
         "Hide": "0",
         "sequence": "71"
     },

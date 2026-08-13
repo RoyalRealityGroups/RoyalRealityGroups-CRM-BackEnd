@@ -22,7 +22,7 @@
         "Click": "",
         "Menu": "MENU-001",
         "Submenu": "SBM-003",
-        "Permission": "auth.view_group",
+        "Permission": "Users.view_user",
         "Description": "Manage user groups and permissions",
         "Created On": "2026-01-23 11:08:04",
         "Modified On": "2026-03-06 11:47:11"

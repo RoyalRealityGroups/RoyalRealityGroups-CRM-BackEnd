@@ -342,18 +342,6 @@
         "Hide": "0"
     },
     {
-        "Name": "Plotinventory",
-        "ContentType": "plotinventory",
-        "App": "Inventory",
-        "Hide": "0"
-    },
-    {
-        "Name": "Flatinventory",
-        "ContentType": "flatinventory",
-        "App": "Inventory",
-        "Hide": "0"
-    },
-    {
         "Name": "Booking",
         "ContentType": "booking",
         "App": "Booking",
@@ -369,6 +357,24 @@
         "Name": "Dashboard",
         "ContentType": "dashboard",
         "App": "dashboards",
+        "Hide": "0"
+    },
+    {
+        "Name": "Availabilityproject",
+        "ContentType": "availabilityproject",
+        "App": "Availability",
+        "Hide": "0"
+    },
+    {
+        "Name": "Availabilityblock",
+        "ContentType": "availabilityblock",
+        "App": "Availability",
+        "Hide": "0"
+    },
+    {
+        "Name": "Availabilityunit",
+        "ContentType": "availabilityunit",
+        "App": "Availability",
         "Hide": "0"
     }
 ]

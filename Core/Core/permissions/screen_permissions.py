@@ -33,6 +33,10 @@ URL_TO_PERMISSION_MODEL = {
     '/api/booking/bookings/choices/': None,  # exempt
     '/api/booking/': ('Booking', 'booking'),
 
+    # Availability List
+    '/api/availability/projects/choices/': None,  # exempt — dropdowns
+    '/api/availability/': ('Availability', 'availabilityproject'),
+
     # Documents
     '/api/documents/': ('Documents', 'document'),
 

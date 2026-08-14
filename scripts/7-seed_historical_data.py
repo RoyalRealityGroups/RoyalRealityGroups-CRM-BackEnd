@@ -123,6 +123,28 @@ def random_date_in_month(year, month):
     return date(year, month, day)
 
 
+# Realistic business-hour time distribution weights (hour: weight)
+# Peak: 10-11am, 3-5pm. Slow: early morning, lunch, late evening.
+_HOUR_WEIGHTS = {
+    8: 4,  9: 8, 10: 12, 11: 12,   # morning ramp
+    12: 5, 13: 4,                   # lunch dip
+    14: 8, 15: 12, 16: 12, 17: 10, # afternoon peak
+    18: 6, 19: 3,                   # early evening
+}
+_HOURS = list(_HOUR_WEIGHTS.keys())
+_WEIGHTS = list(_HOUR_WEIGHTS.values())
+
+
+def random_datetime_in_day(d: date):
+    """Return a timezone-aware datetime on the given date with realistic business-hour time."""
+    hour = random.choices(_HOURS, weights=_WEIGHTS, k=1)[0]
+    minute = random.randint(0, 59)
+    second = random.randint(0, 59)
+    return timezone.make_aware(
+        timezone.datetime(d.year, d.month, d.day, hour, minute, second)
+    )
+
+
 def run():
     print(f"\n{'='*60}")
     print("  SEEDING 10 YEARS OF HISTORICAL DATA (2016-2026)")
@@ -214,12 +236,9 @@ def run():
                     modified_by_identifier=str(user.id),
                 )
                 lead.save()
-                # Backdate created_on
+                # Backdate created_on with realistic minute-level timestamp
                 Lead.objects.filter(pk=lead.pk).update(
-                    created_on=timezone.make_aware(
-                        timezone.datetime(lead_date.year, lead_date.month, lead_date.day,
-                                          random.randint(8, 18), random.randint(0, 59))
-                    )
+                    created_on=random_datetime_in_day(lead_date)
                 )
                 total_leads += 1
                 year_leads += 1
@@ -258,6 +277,10 @@ def run():
                     modified_by_identifier=str(user.id),
                 )
                 sv.save()
+                # Backdate created_on with realistic minute-level timestamp
+                SiteVisit.objects.filter(pk=sv.pk).update(
+                    created_on=random_datetime_in_day(visit_date)
+                )
                 total_visits += 1
                 year_visits += 1
 
@@ -321,10 +344,153 @@ def run():
                     modified_by_identifier=str(user.id),
                 )
                 booking.save()
+                # Backdate created_on with realistic minute-level timestamp
+                Booking.objects.filter(pk=booking.pk).update(
+                    created_on=random_datetime_in_day(booking_date)
+                )
                 total_bookings += 1
                 year_bookings += 1
 
         print(f"  {year}: Leads={year_leads}, Visits={year_visits}, Bookings={year_bookings}")
+
+    # =========================================================================
+    # RECENT DATA — Today / This Week / This Month
+    # Ensures dashboards always show fresh activity in the "recent" widgets
+    # =========================================================================
+
+    print(f"\n{'='*60}")
+    print("  SEEDING RECENT DATA (Today / This Week / This Month)")
+    print(f"{'='*60}\n")
+
+    from datetime import datetime
+    week_start = today - timedelta(days=today.weekday())   # Monday of this week
+    month_start = today.replace(day=1)
+
+    # Define buckets with date ranges and record counts
+    recent_buckets = [
+        # (label,         dates_pool,                                leads, visits, bookings)
+        ('Today',         [today],                                    8,     4,      2),
+        ('This Week',     [week_start + timedelta(days=i)
+                           for i in range((today - week_start).days)
+                           if (week_start + timedelta(days=i)) != today],
+                                                                     20,    10,     4),
+        ('This Month',    [month_start + timedelta(days=i)
+                           for i in range((today - month_start).days)
+                           if (month_start + timedelta(days=i)) < week_start],
+                                                                     35,    18,     6),
+    ]
+
+    recent_leads = recent_visits = recent_bookings = 0
+
+    for label, dates_pool, n_leads, n_visits, n_bookings in recent_buckets:
+        if not dates_pool:
+            continue
+
+        # --- LEADS ---
+        for _ in range(n_leads):
+            d = random.choice(dates_pool)
+            fname = random.choice(FIRST_NAMES)
+            lname = random.choice(LAST_NAMES)
+            user = random.choice(users)
+            project = random.choice(projects)
+            lead = Lead(
+                name=f"{fname} {lname}",
+                mobile=f"9{random.randint(100000000, 999999999)}",
+                email=f"{fname.lower()}{random.randint(1, 999)}@gmail.com",
+                budget=random.choice(BUDGETS),
+                preferred_area=random.choice(AREAS),
+                property_requirement=random.choice(PROPERTY_TYPES),
+                lead_source=random.choice(SOURCES),
+                assigned_employee=user,
+                interested_project=project,
+                status=random.choices(
+                    ['ONGOING', 'LIVE', 'DEAD'], weights=[0.60, 0.30, 0.10], k=1
+                )[0],
+                remarks=f"Recent lead — {label}",
+                created_by_type='User',
+                created_by_identifier=str(user.id),
+                modified_by_type='User',
+                modified_by_identifier=str(user.id),
+            )
+            lead.save()
+            Lead.objects.filter(pk=lead.pk).update(
+                created_on=random_datetime_in_day(d)
+            )
+            recent_leads += 1
+            total_leads += 1
+
+        # --- SITE VISITS ---
+        for _ in range(n_visits):
+            d = random.choice(dates_pool)
+            fname = random.choice(FIRST_NAMES)
+            lname = random.choice(LAST_NAMES)
+            user = random.choice(users)
+            project = random.choice(projects)
+            # Today/recent visits are mostly scheduled or completed
+            status = random.choices(
+                ['SCHEDULED', 'COMPLETED', 'CANCELLED'], weights=[0.50, 0.40, 0.10], k=1
+            )[0]
+            sv = SiteVisit(
+                customer_name=f"{fname} {lname}",
+                project=project,
+                project_name=project.name,
+                visit_date=d,
+                assigned_employee=user,
+                status=status,
+                customer_feedback='Good impression.' if status == 'COMPLETED' else '',
+                remarks=f"Recent visit — {label}",
+                created_by_type='User',
+                created_by_identifier=str(user.id),
+                modified_by_type='User',
+                modified_by_identifier=str(user.id),
+            )
+            sv.save()
+            SiteVisit.objects.filter(pk=sv.pk).update(
+                created_on=random_datetime_in_day(d)
+            )
+            recent_visits += 1
+            total_visits += 1
+
+        # --- BOOKINGS ---
+        for _ in range(n_bookings):
+            d = random.choice(dates_pool)
+            fname = random.choice(FIRST_NAMES)
+            lname = random.choice(LAST_NAMES)
+            user = random.choice(users)
+            project = random.choice(projects)
+            agreed_price = Decimal(random.randint(3000000, 12000000))
+            booking_amount = agreed_price * Decimal(random.randint(10, 20)) / Decimal(100)
+            unit_type = random.choice(['PLOT', 'FLAT'])
+            booking = Booking(
+                customer_name=f"{fname} {lname}",
+                customer_mobile=f"9{random.randint(100000000, 999999999)}",
+                customer_email=f"{fname.lower()}{random.randint(1, 999)}@gmail.com",
+                project=project,
+                unit_type=unit_type,
+                unit_number=f"{'P' if unit_type == 'PLOT' else 'F'}-{random.randint(1, 200):03d}",
+                agreed_price=agreed_price,
+                booking_amount=booking_amount,
+                booking_date=d,
+                sales_executive=user,
+                status=random.choices(
+                    ['BOOKED', 'AGREEMENT'], weights=[0.70, 0.30], k=1
+                )[0],
+                remarks=f"Recent booking — {label}",
+                created_by_type='User',
+                created_by_identifier=str(user.id),
+                modified_by_type='User',
+                modified_by_identifier=str(user.id),
+            )
+            booking.save()
+            Booking.objects.filter(pk=booking.pk).update(
+                created_on=random_datetime_in_day(d)
+            )
+            recent_bookings += 1
+            total_bookings += 1
+
+        print(f"  {label}: {n_leads} leads, {n_visits} visits, {n_bookings} bookings")
+
+    print(f"\n  Recent totals: {recent_leads} leads, {recent_visits} visits, {recent_bookings} bookings")
 
     print(f"\n{'='*60}")
     print("  COMPLETE!")

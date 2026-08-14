@@ -301,17 +301,22 @@ class CallLogSerializer(serializers.ModelSerializer):
         phone = validated_data.get('phone_number', '').strip()
         called_at = validated_data.get('called_at')
 
-        # Check for exact duplicate — same phone + called_at + user
+        # Check for duplicate — same phone number + user (one record per contact per user)
         existing = CallLog.objects.filter(
             phone_number=phone,
-            called_at=called_at,
             called_by=user,
         ).first()
 
         if existing:
-            # Increment count and append timestamp to call_times
+            # Increment count and track each call timestamp in IST format
+            import pytz
+            ist = pytz.timezone('Asia/Kolkata')
             times = existing.call_times or []
-            times.append(called_at.isoformat() if hasattr(called_at, 'isoformat') else str(called_at))
+            if hasattr(called_at, 'isoformat'):
+                ist_time = called_at.astimezone(ist) if called_at.tzinfo else ist.localize(called_at)
+                times.append(ist_time.strftime('%d-%m-%Y %H:%M:%S'))
+            else:
+                times.append(str(called_at))
             existing.call_count += 1
             existing.call_times = times
             existing.save(update_fields=['call_count', 'call_times'])
@@ -320,13 +325,18 @@ class CallLogSerializer(serializers.ModelSerializer):
 
         # New call — auto-match lead by phone number
         from django.db.models import Q as DQ
+        import pytz
+        ist = pytz.timezone('Asia/Kolkata')
         lead = Lead.objects.filter(
             DQ(mobile=phone) | DQ(alternate_number=phone),
             is_deleted=False
         ).first()
 
-        # Initialize call_times with first timestamp
-        first_time = called_at.isoformat() if hasattr(called_at, 'isoformat') else str(called_at)
+        if hasattr(called_at, 'isoformat'):
+            ist_time = called_at.astimezone(ist) if called_at.tzinfo else ist.localize(called_at)
+            first_time = ist_time.strftime('%d-%m-%Y %H:%M:%S')
+        else:
+            first_time = str(called_at)
         validated_data['called_by'] = user
         validated_data['lead'] = lead
         validated_data['call_count'] = 1
@@ -374,6 +384,9 @@ class PhoneCommentSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ('id', 'lead', 'commented_by', 'created_at', 'updated_at',
                             'lead_name', 'commented_by_name', 'comment_history')
+        extra_kwargs = {
+            'comment': {'write_only': True},   # accept on input, never expose in output
+        }
 
     def get_commented_by_name(self, obj):
         if obj.commented_by:
@@ -395,10 +408,14 @@ class PhoneCommentSerializer(serializers.ModelSerializer):
         # Auto-match lead
         from django.db.models import Q as DQ
         from django.utils import timezone
+        import pytz
+        ist = pytz.timezone('Asia/Kolkata')
         lead = Lead.objects.filter(
             DQ(mobile=phone) | DQ(alternate_number=phone),
             is_deleted=False
         ).first()
+
+        now_ist = timezone.now().astimezone(ist).isoformat()
 
         # Check if comment already exists for this phone + user
         existing = PhoneComment.objects.filter(
@@ -407,11 +424,11 @@ class PhoneCommentSerializer(serializers.ModelSerializer):
         ).first()
 
         if existing:
-            # Append old comment to history before replacing
+            # Archive the old comment into history, replace with new one
             history = existing.comment_history or []
             history.append({
-                'comment': existing.comment,
-                'commented_at': existing.updated_at.isoformat() if existing.updated_at else timezone.now().isoformat(),
+                'comment': new_comment,
+                'time': now_ist,
             })
             existing.comment = new_comment
             existing.comment_history = history
@@ -425,7 +442,10 @@ class PhoneCommentSerializer(serializers.ModelSerializer):
             commented_by=user,
             lead=lead,
             comment=new_comment,
-            comment_history=[],
+            comment_history=[{
+                'comment': new_comment,
+                'time': now_ist,
+            }],
         )
         return obj
 

@@ -199,6 +199,12 @@ class PhoneComment(models.Model):
     commented_by = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='phone_comments'
     )
+    call_log = models.ForeignKey(
+        CallLog, on_delete=models.CASCADE,
+        related_name='phone_comments',
+        null=True, blank=True,
+        help_text='Linked call log — deleted automatically when call log is deleted'
+    )
     lead = models.ForeignKey(
         Lead, on_delete=models.SET_NULL, null=True, blank=True,
         related_name='phone_comments',
@@ -218,3 +224,4 @@ class PhoneComment(models.Model):
 
     def __str__(self):
         return f"{self.phone_number} — {self.commented_by} — {self.comment[:40]}"
+

@@ -207,10 +207,10 @@ def seed_users():
                 'is_active': True,
                 'must_reset_password': False,
                 'user_status': 'ACTIVE',
-                'lead_data_scope': 'ALL' if group_name == 'Director' else 'TEAM' if group_name == 'Team Leader' else 'OWN',
-                'followup_data_scope': 'ALL' if group_name == 'Director' else 'TEAM' if group_name == 'Team Leader' else 'OWN',
-                'sitevisit_data_scope': 'ALL' if group_name == 'Director' else 'TEAM' if group_name == 'Team Leader' else 'OWN',
-                'booking_data_scope': 'ALL' if group_name == 'Director' else 'TEAM' if group_name == 'Team Leader' else 'OWN',
+                'lead_data_scope': 'ALL' if group_name in ('Director', 'Team Leader', 'Sales Executive') else 'ALL',
+                'followup_data_scope': 'ALL' if group_name in ('Director', 'Team Leader', 'Sales Executive') else 'ALL',
+                'sitevisit_data_scope': 'ALL' if group_name in ('Director', 'Team Leader', 'Sales Executive') else 'ALL',
+                'booking_data_scope': 'ALL' if group_name in ('Director', 'Team Leader', 'Sales Executive') else 'ALL',
             }
         )
 

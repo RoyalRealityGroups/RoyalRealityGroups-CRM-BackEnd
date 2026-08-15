@@ -40,25 +40,25 @@ class User(CoreUser):
     lead_data_scope = models.CharField(
         max_length=10,
         choices=DataScope.choices,
-        default=DataScope.OWN,
+        default=DataScope.ALL,
         help_text='Data visibility for Leads'
     )
     followup_data_scope = models.CharField(
         max_length=10,
         choices=DataScope.choices,
-        default=DataScope.OWN,
+        default=DataScope.ALL,
         help_text='Data visibility for Follow-ups'
     )
     sitevisit_data_scope = models.CharField(
         max_length=10,
         choices=DataScope.choices,
-        default=DataScope.OWN,
+        default=DataScope.ALL,
         help_text='Data visibility for Site Visits'
     )
     booking_data_scope = models.CharField(
         max_length=10,
         choices=DataScope.choices,
-        default=DataScope.OWN,
+        default=DataScope.ALL,
         help_text='Data visibility for Bookings'
     )
     

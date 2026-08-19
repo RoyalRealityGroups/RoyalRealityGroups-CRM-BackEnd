@@ -22,7 +22,13 @@ class ProjectList(generics.ListCreateAPIView):
     ordering = ['name']
 
     def get_queryset(self):
+        user = self.request.user
         qs = Project.objects.filter(is_deleted=False).all()
+
+        # Superuser/staff sees all projects
+        if not user.is_superuser and not user.is_staff:
+            qs = qs.filter(created_by_identifier=str(user.id))
+
         from_date = self.request.query_params.get('from_date')
         to_date = self.request.query_params.get('to_date')
         if from_date:

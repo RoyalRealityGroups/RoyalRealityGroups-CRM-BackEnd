@@ -224,7 +224,27 @@ def apply_data_scope(queryset, user, screen, employee_field='assigned_employee')
         if hasattr(user, 'get_team_users'):
             for member in user.get_team_users():
                 team_ids.add(member.id)
-        return queryset.filter(**{f'{employee_field}__in': team_ids})
+        from django.db.models import Q
+        try:
+            queryset.model._meta.get_field('created_by_identifier')
+            team_id_strs = [str(uid) for uid in team_ids]
+            return queryset.filter(
+                Q(**{f'{employee_field}__in': team_ids}) |
+                Q(created_by_identifier__in=team_id_strs)
+            ).distinct()
+        except Exception:
+            return queryset.filter(**{f'{employee_field}__in': team_ids})
 
-    # OWN — default: only see records assigned to this user
-    return queryset.filter(**{employee_field: user})
+    # OWN — see records assigned to this user OR created by this user
+    from django.db.models import Q
+    created_by_field = 'created_by_identifier'
+    # Check if the model has created_by_identifier (CoreModel-based)
+    try:
+        queryset.model._meta.get_field('created_by_identifier')
+        return queryset.filter(
+            Q(**{employee_field: user}) |
+            Q(created_by_identifier=str(user.id))
+        ).distinct()
+    except Exception:
+        # Fallback: just filter by employee field
+        return queryset.filter(**{employee_field: user})

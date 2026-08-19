@@ -258,8 +258,32 @@ class LeadFollowUpViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         from utils import apply_data_scope
+        from django.db.models import Q
         qs = super().get_queryset()
-        return apply_data_scope(qs, self.request.user, 'followup', employee_field='lead__assigned_employee')
+        user = self.request.user
+
+        if user.is_superuser or user.is_staff:
+            return apply_data_scope(qs, user, 'followup', employee_field='lead__assigned_employee')
+
+        # OWN/TEAM: scoped by lead's assigned employee OR created_by (direct FK)
+        scope = getattr(user, 'followup_data_scope', 'OWN')
+        if scope == 'ALL':
+            return qs
+
+        if scope == 'TEAM':
+            from Users.models import User as UserModel
+            team_ids = {user.id}
+            if hasattr(user, 'get_team_users'):
+                for m in user.get_team_users():
+                    team_ids.add(m.id)
+            return qs.filter(
+                Q(lead__assigned_employee__in=team_ids) | Q(created_by__in=team_ids)
+            ).distinct()
+
+        # OWN
+        return qs.filter(
+            Q(lead__assigned_employee=user) | Q(created_by=user)
+        ).distinct()
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)

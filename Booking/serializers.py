@@ -61,6 +61,9 @@ class BookingSerializer(serializers.ModelSerializer):
         validated_data['created_by_identifier'] = str(user.id)
         validated_data['modified_by_type'] = 'User'
         validated_data['modified_by_identifier'] = str(user.id)
+        # Auto-assign sales_executive to creating user if not set
+        if not validated_data.get('sales_executive'):
+            validated_data['sales_executive'] = user
         booking = super().create(validated_data)
         # Block the unit
         self._update_unit_status(booking, 'BOOKED')

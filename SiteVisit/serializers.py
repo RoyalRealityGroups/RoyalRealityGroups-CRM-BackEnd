@@ -74,6 +74,9 @@ class SiteVisitSerializer(serializers.ModelSerializer):
         validated_data['created_by_identifier'] = str(user.id)
         validated_data['modified_by_type'] = 'User'
         validated_data['modified_by_identifier'] = str(user.id)
+        # Auto-assign to the creating user if not explicitly set
+        if not validated_data.get('assigned_employee'):
+            validated_data['assigned_employee'] = user
         # Auto-populate project_name from FK if not provided
         project = validated_data.get('project')
         if project and not validated_data.get('project_name'):

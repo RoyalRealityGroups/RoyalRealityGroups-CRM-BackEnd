@@ -220,6 +220,27 @@ class SiteVisitViewSet(viewsets.ModelViewSet):
             visit_date__lte=end_date,
         )
 
+        # Apply data scope — same as list view
+        user = request.user
+        if not user.is_superuser and not user.is_staff:
+            from django.db.models import Q
+            scope = getattr(user, 'sitevisit_data_scope', 'OWN')
+            if scope == 'OWN':
+                qs = qs.filter(
+                    Q(assigned_employee=user) |
+                    Q(created_by_identifier=str(user.id))
+                ).distinct()
+            elif scope == 'TEAM':
+                team_ids = {user.id}
+                if hasattr(user, 'get_team_users'):
+                    for m in user.get_team_users():
+                        team_ids.add(m.id)
+                team_id_strs = [str(uid) for uid in team_ids]
+                qs = qs.filter(
+                    Q(assigned_employee__in=team_ids) |
+                    Q(created_by_identifier__in=team_id_strs)
+                ).distinct()
+
         # Apply filters
         employee_id = request.query_params.get('assigned_employee')
         if employee_id:

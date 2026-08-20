@@ -264,11 +264,8 @@ class DashboardSummaryView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def _is_admin(self, user):
-        """Check if user should see all data (superuser, staff, or has ALL data scope)."""
-        if user.is_superuser or user.is_staff:
-            return True
-        # Check if user has 'ALL' lead_data_scope (director-level)
-        return getattr(user, 'lead_data_scope', 'OWN') == 'ALL'
+        """Check if user should see all data — superuser or staff only."""
+        return user.is_superuser or user.is_staff
 
     def _scope_leads(self, qs, user):
         if self._is_admin(user):
@@ -455,7 +452,7 @@ class TodaysInsightsDetailView(APIView):
         today = timezone.now().date()
         now = timezone.now()
         user = request.user
-        is_admin = user.is_superuser or user.is_staff or getattr(user, 'lead_data_scope', 'OWN') == 'ALL'
+        is_admin = user.is_superuser or user.is_staff
 
         # --- Scoped querysets ---
         if is_admin:

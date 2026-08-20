@@ -78,6 +78,20 @@ class ProjectSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('code', 'is_deleted', 'created_on', 'modified_on', 'images', 'preview_image')
 
+    def create(self, validated_data):
+        user = self.context['request'].user
+        validated_data['created_by_type'] = 'User'
+        validated_data['created_by_identifier'] = str(user.id)
+        validated_data['modified_by_type'] = 'User'
+        validated_data['modified_by_identifier'] = str(user.id)
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        user = self.context['request'].user
+        validated_data['modified_by_type'] = 'User'
+        validated_data['modified_by_identifier'] = str(user.id)
+        return super().update(instance, validated_data)
+
 
 class ProjectMiniSerializer(serializers.ModelSerializer):
     """Minimal serializer for Project dropdowns (used by Site Visit, Booking, etc.)."""

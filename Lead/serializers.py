@@ -67,6 +67,10 @@ class LeadSerializer(serializers.ModelSerializer):
         # Handle custom created_on (user-provided date/time)
         custom_created_on = validated_data.pop('created_on', None)
 
+        # Auto-assign to the creating user if not explicitly set
+        if not validated_data.get('assigned_employee'):
+            validated_data['assigned_employee'] = user
+
         validated_data['created_by_type'] = 'User'
         validated_data['created_by_identifier'] = str(user.id)
         validated_data['modified_by_type'] = 'User'

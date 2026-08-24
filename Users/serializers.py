@@ -136,12 +136,12 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_screen_permissions(self, obj):
         from Users.models import UserPermission
-        perms = UserPermission.objects.filter(user=obj).select_related('screen')
+        perms = UserPermission.objects.filter(user=obj).select_related('menuitem')
         return [
             {
-                'screen_id': p.screen.id,
-                'screen_code': p.screen.code,
-                'screen_name': p.screen.name,
+                'menuitem_id': p.menuitem.id,
+                'menuitem_code': p.menuitem.code,
+                'menuitem_name': p.menuitem.name,
                 'can_view': p.can_view,
                 'can_add': p.can_add,
                 'can_edit': p.can_edit,
@@ -216,18 +216,21 @@ class UserSerializer(serializers.ModelSerializer):
 
     def _save_screen_permissions(self, user, permissions_input):
         """Upsert UserPermission rows from screen_permissions_input list."""
-        from Users.models import Screen, UserPermission
+        from Users.models import UserPermission
+        from Core.System.models import Menuitem
+
+        # Clear existing permissions for this user
+        UserPermission.objects.filter(user=user).delete()
 
         for item in permissions_input:
-            screen_code = item.get('screen_code')
-            if not screen_code:
+            menuitem_id = item.get('menuitem_id')
+            if not menuitem_id:
                 continue
             
-            # Auto-create screen if it doesn't exist (using code as name if name not provided)
-            screen, _ = Screen.objects.get_or_create(
-                code=screen_code,
-                defaults={'name': item.get('screen_name', screen_code), 'order': 0}
-            )
+            try:
+                menuitem = Menuitem.objects.get(id=menuitem_id)
+            except Menuitem.DoesNotExist:
+                continue
 
             can_view   = bool(item.get('can_view', False))
             can_add    = bool(item.get('can_add', False))
@@ -238,7 +241,7 @@ class UserSerializer(serializers.ModelSerializer):
 
             UserPermission.objects.update_or_create(
                 user=user,
-                screen=screen,
+                menuitem=menuitem,
                 defaults={
                     'can_view':    can_view,
                     'can_add':     can_add,
@@ -383,23 +386,18 @@ class RegisterSerializer(serializers.ModelSerializer):
 # RRGMS Permission Serializers
 # =============================================================================
 
-from Users.models import Screen, UserPermission, PermissionTemplate, PermissionTemplateDetail, PermissionAuditLog
-
-
-class ScreenSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Screen
-        fields = ['id', 'code', 'name', 'description', 'is_active', 'order']
+from Users.models import UserPermission, PermissionTemplate, PermissionTemplateDetail, PermissionAuditLog
+from Core.System.models import Menuitem
 
 
 class UserPermissionSerializer(serializers.ModelSerializer):
-    screen_name = serializers.CharField(source='screen.name', read_only=True)
-    screen_code = serializers.CharField(source='screen.code', read_only=True)
+    menuitem_name = serializers.CharField(source='menuitem.name', read_only=True)
+    menuitem_code = serializers.CharField(source='menuitem.code', read_only=True)
 
     class Meta:
         model = UserPermission
         fields = [
-            'id', 'user', 'screen', 'screen_name', 'screen_code',
+            'id', 'user', 'menuitem', 'menuitem_name', 'menuitem_code',
             'can_view', 'can_add', 'can_edit', 'can_delete', 'can_export',
             'is_view_only', 'created_at', 'updated_at',
         ]
@@ -426,12 +424,12 @@ class UserWithPermissionsSerializer(serializers.ModelSerializer):
         ]
 
     def get_screen_permissions(self, obj):
-        perms = UserPermission.objects.filter(user=obj).select_related('screen')
+        perms = UserPermission.objects.filter(user=obj).select_related('menuitem')
         return [
             {
-                'screen_id': p.screen.id,
-                'screen_code': p.screen.code,
-                'screen_name': p.screen.name,
+                'menuitem_id': p.menuitem.id,
+                'menuitem_code': p.menuitem.code,
+                'menuitem_name': p.menuitem.name,
                 'can_view': p.can_view,
                 'can_add': p.can_add,
                 'can_edit': p.can_edit,
@@ -460,16 +458,16 @@ class PermissionTemplateSerializer(serializers.ModelSerializer):
     def get_details(self, obj):
         return [
             {
-                'screen_id': d.screen_id,
-                'screen_name': d.screen.name,
-                'screen_code': d.screen.code,
+                'menuitem_id': d.menuitem_id,
+                'menuitem_name': d.menuitem.name,
+                'menuitem_code': d.menuitem.code,
                 'can_view': d.can_view,
                 'can_add': d.can_add,
                 'can_edit': d.can_edit,
                 'can_delete': d.can_delete,
                 'can_export': d.can_export,
             }
-            for d in obj.details.select_related('screen').all()
+            for d in obj.details.select_related('menuitem').all()
         ]
 
 

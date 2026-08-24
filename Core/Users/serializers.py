@@ -571,14 +571,14 @@ class IamUserSerializer(serializers.ModelSerializer):
     screen_permissions = serializers.SerializerMethodField()
     
     def get_screen_permissions(self, obj):
-        """Return user's screen-level permissions from UserPermission table."""
+        """Return user's menu-level permissions from UserPermission table."""
         from Users.models import UserPermission
-        perms = UserPermission.objects.filter(user=obj).select_related('screen')
+        perms = UserPermission.objects.filter(user=obj).select_related('menuitem')
         return [
             {
-                'screen_id': p.screen.id,
-                'screen_code': p.screen.code,
-                'screen_name': p.screen.name,
+                'menuitem_id': p.menuitem.id,
+                'menuitem_code': p.menuitem.code,
+                'menuitem_name': p.menuitem.name,
                 'can_view': p.can_view,
                 'can_add': p.can_add,
                 'can_edit': p.can_edit,
@@ -806,13 +806,13 @@ class LoginSerializer(serializers.ModelSerializer):
         # Get user permissions (legacy Django group permissions)
         permissions = list(user.get_all_permissions())
         
-        # Get screen-based permissions (new system)
+        # Get menu-based permissions (new system)
         from Users.models import UserPermission
         screen_permissions = [
             {
-                'screen_id': p.screen.id,
-                'screen_code': p.screen.code,
-                'screen_name': p.screen.name,
+                'menuitem_id': p.menuitem.id,
+                'menuitem_code': p.menuitem.code,
+                'menuitem_name': p.menuitem.name,
                 'can_view': p.can_view,
                 'can_add': p.can_add,
                 'can_edit': p.can_edit,
@@ -820,7 +820,7 @@ class LoginSerializer(serializers.ModelSerializer):
                 'can_export': p.can_export,
                 'is_view_only': p.is_view_only,
             }
-            for p in UserPermission.objects.filter(user=user).select_related('screen')
+            for p in UserPermission.objects.filter(user=user).select_related('menuitem')
         ]
         
         # Get channel partner information

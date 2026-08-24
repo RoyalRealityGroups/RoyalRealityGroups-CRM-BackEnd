@@ -94,7 +94,7 @@ def filter_menuitems_by_permission(queryset, user):
     
     Checks both:
     1. Django group permissions (legacy)
-    2. Screen-based permissions from UserPermission table (new system)
+    2. Menu-based permissions from UserPermission table (new system)
     """
     if user.is_superuser:
         return queryset
@@ -102,22 +102,23 @@ def filter_menuitems_by_permission(queryset, user):
     # Get user's Django group permissions (legacy)
     user_permissions = set(user.get_all_permissions())
     
-    # Get user's screen permissions from UserPermission table (new system)
+    # Get user's menu permissions from UserPermission table (new system)
+    # Now directly links to Menuitem, so we get the menuitem IDs
     from Users.models import UserPermission
-    user_screen_codes = set(
+    user_menuitem_ids = set(
         UserPermission.objects.filter(user=user, can_view=True)
-        .values_list('screen__code', flat=True)
+        .values_list('menuitem_id', flat=True)
     )
     
     # If user has no permissions at all, return empty queryset
-    if not user_permissions and not user_screen_codes:
+    if not user_permissions and not user_menuitem_ids:
         return queryset.none()
     
     # Filter by permissions
     filtered_ids = []
     for item in queryset.select_related('permission', 'permission__content_type'):
-        # Check new screen-based permission first (by menu item code)
-        if item.code in user_screen_codes:
+        # Check new menu-based permission (direct match by menuitem ID)
+        if item.id in user_menuitem_ids:
             filtered_ids.append(item.id)
             continue
             

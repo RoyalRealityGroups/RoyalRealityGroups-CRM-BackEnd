@@ -93,53 +93,23 @@ class User(CoreUser):
 # Screen & Permission Models
 # =============================================================================
 
-class Screen(models.Model):
-    """A screen/module in RRGMS that can be permission-gated."""
-
-    SCREEN_CHOICES = [
-        ('LEAD', 'Lead Management'),
-        ('CROSS_LEAD', 'Cross Lead Check'),
-        ('FOLLOWUP', 'Follow-Up Management'),
-        ('SITE_VISIT', 'Site Visit Management'),
-        ('PROJECT', 'Project Management'),
-        ('INVENTORY', 'Availability List'),
-        ('BOOKING', 'Booking Management'),
-        ('DOCUMENT', 'Document Management'),
-        ('EMPLOYEE', 'Employee Management'),
-        ('REPORTS', 'Reports'),
-        ('DASHBOARD', 'Dashboards'),
-        ('USER_PERMISSION', 'User & Permission Management'),
-    ]
-
-    code = models.CharField(max_length=30, unique=True)
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
-    is_active = models.BooleanField(default=True)
-    order = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        ordering = ['order', 'name']
-
-    def __str__(self):
-        return f"{self.name} ({self.code})"
-
-    @classmethod
-    def get_default_screens(cls):
-        return [s[0] for s in cls.SCREEN_CHOICES]
-
-
 class UserPermission(models.Model):
-    """Per-user, per-screen permission matrix. Single source of truth."""
+    """Per-user, per-menuitem permission matrix. Single source of truth.
+    
+    Uses Menuitem directly instead of a separate Screen table.
+    This ensures permissions always match actual sidebar menu items.
+    """
 
     user = models.ForeignKey(
         'Users.User',
         on_delete=models.CASCADE,
-        related_name='screen_permissions',
+        related_name='menu_permissions',
     )
-    screen = models.ForeignKey(
-        Screen,
+    menuitem = models.ForeignKey(
+        'System.Menuitem',
         on_delete=models.CASCADE,
         related_name='user_permissions',
+        null=True,  # Temporary for migration
     )
 
     can_view = models.BooleanField(default=False)
@@ -153,10 +123,10 @@ class UserPermission(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ['user', 'screen']
+        unique_together = ['user', 'menuitem']
 
     def __str__(self):
-        return f"{self.user.username} — {self.screen.name}"
+        return f"{self.user.username} — {self.menuitem.name}"
 
     def has_permission(self, action):
         if self.is_view_only and action != 'view':
@@ -185,7 +155,7 @@ class PermissionTemplate(models.Model):
 
 class PermissionTemplateDetail(models.Model):
     template = models.ForeignKey(PermissionTemplate, on_delete=models.CASCADE, related_name='details')
-    screen = models.ForeignKey(Screen, on_delete=models.CASCADE)
+    menuitem = models.ForeignKey('System.Menuitem', on_delete=models.CASCADE, null=True, blank=True)
     can_view = models.BooleanField(default=False)
     can_add = models.BooleanField(default=False)
     can_edit = models.BooleanField(default=False)
@@ -193,7 +163,7 @@ class PermissionTemplateDetail(models.Model):
     can_export = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ['template', 'screen']
+        unique_together = ['template', 'menuitem']
 
 
 class PermissionAuditLog(models.Model):

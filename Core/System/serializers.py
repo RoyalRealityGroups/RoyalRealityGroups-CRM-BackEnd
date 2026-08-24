@@ -23,7 +23,7 @@ from rest_framework import serializers
 from Users.models import User
 from django.contrib.auth.models import Group
 
-from Users.serializers import  GroupMiniSerializer
+from Core.Users.serializers import GroupMiniSerializer
 from .models import AlertConfigUsers, Menu, RecentActivity, Submenu, Menuitem, Notification, NotificationUsers, Backup, Restore, Attachment,Formula, FormulaUpdate, ActivityLog, FormulaVariables, TaskScheduler, TemporaryVerification, ACTION_TYPES_CHOICES, SEEN_CHOICES, Error, Download, AlertConfig, Announcements, Template
 
 

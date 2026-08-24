@@ -32,6 +32,8 @@ def get_user_group(user, group_name):
 
 SKIP_DEPENDENCY_APPS = {'admin', 'auth', 'contenttypes', 'sessions'}
 
+TRANSACTION_APP_LABELS = {'Lead', 'SiteVisit', 'Booking', 'Availability', 'ProjectManagement'}
+
 
 def _has_field(model, field_name):
     return any(f.name == field_name for f in model._meta.fields)
@@ -354,54 +356,67 @@ class ForceLogoutView(APIView):
 # =============================================================================
 
 class ScreenListView(generics.ListAPIView):
-    """List all screens"""
-    from Users.models import Screen
-    from Users.serializers import ScreenSerializer
+    """List all screens — used by UserForm permission picker."""
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = ScreenSerializer
-    queryset = Screen.objects.filter(is_active=True).order_by('order', 'name')
+
+    def get_serializer_class(self):
+        from Users.serializers import ScreenSerializer
+        return ScreenSerializer
+
+    def get_queryset(self):
+        from Users.models import Screen
+        return Screen.objects.filter(is_active=True).order_by('order', 'name')
 
 
 class UserPermissionView(APIView):
-    """Get/Update permissions for a specific user"""
+    """Get/Update screen permissions for a specific user."""
     permission_classes = [permissions.IsAuthenticated]
-    
+
+    def _can_manage(self, request):
+        if request.user.is_superuser:
+            return True
+        from Users.models import UserPermission
+        return UserPermission.objects.filter(
+            user=request.user, screen__code='USER_PERMISSION', can_view=True
+        ).exists()
+
+    def _can_edit(self, request):
+        if request.user.is_superuser:
+            return True
+        from Users.models import UserPermission
+        return UserPermission.objects.filter(
+            user=request.user, screen__code='USER_PERMISSION', can_edit=True
+        ).exists()
+
     def get(self, request, user_id):
         from Users.models import UserPermission
         from Users.serializers import UserPermissionSerializer
-        
-        # Check if user has permission to manage users
-        user_perm = UserPermission.objects.filter(
-            user=request.user, screen__code='USER_PERMISSION', can_view=True, can_edit=True
-        ).first()
-        
-        if not request.user.is_superuser and not user_perm:
+
+        if not self._can_manage(request):
             return Response({'error': 'Permission denied'}, status=403)
-        
-        permissions = UserPermission.objects.filter(user_id=user_id)
-        serializer = UserPermissionSerializer(permissions, many=True)
+
+        perms = UserPermission.objects.filter(user_id=user_id).select_related('screen')
+        serializer = UserPermissionSerializer(perms, many=True)
         return Response(serializer.data)
-    
+
     def post(self, request, user_id):
         from Users.models import UserPermission, PermissionAuditLog
-        
-        # Check permission
-        user_perm = UserPermission.objects.filter(
-            user=request.user, screen__code='USER_PERMISSION', can_view=True, can_edit=True
-        ).first()
-        
-        if not request.user.is_superuser and not user_perm:
+
+        if not self._can_edit(request):
             return Response({'error': 'Permission denied'}, status=403)
-        
-        target_user = User.objects.get(id=user_id)
+
+        target_user = User.objects.filter(id=user_id).first()
+        if not target_user:
+            return Response({'error': 'User not found'}, status=404)
+
         permissions_data = request.data.get('permissions', [])
-        
+
         updated = 0
         for perm_data in permissions_data:
             screen_id = perm_data.get('screen')
             if not screen_id:
                 continue
-            
+
             perm, created = UserPermission.objects.update_or_create(
                 user=target_user,
                 screen_id=screen_id,

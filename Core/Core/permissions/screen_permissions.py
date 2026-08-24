@@ -1,80 +1,72 @@
 """
 Screen-level permission enforcement for RRGMS.
 
-Maps API URL prefixes to Screen codes, and uses Django's built-in
-group permissions (from import_menu_data) to check whether the user
-can perform the requested action.
+Maps API URL prefixes to Screen codes, then queries the UserPermission
+table (System B) to decide if the user can perform the requested action.
+
+Superusers bypass all checks.
+Exempt prefixes always pass through.
 """
 from rest_framework.permissions import BasePermission
 
 
-URL_TO_PERMISSION_MODEL = {
-    # Lead Management
-    '/api/lead/followups/reminders/': None,  # exempt
-    '/api/lead/leads/choices/': None,        # exempt
-    '/api/lead/call-logs/': None,            # exempt — mobile app sync
-    '/api/lead/followups/': ('Lead', 'leadfollowup'),
-    '/api/lead/leads/cross_check/': ('Lead', 'lead'),
-    '/api/lead/leads/export/': ('Lead', 'lead'),
-    '/api/lead/': ('Lead', 'lead'),
+# URL prefix → Screen.code  (longer prefix wins)
+URL_TO_SCREEN_CODE = {
+    '/api/lead/followups/reminders/':       None,           # exempt
+    '/api/lead/leads/choices/':             None,           # exempt
+    '/api/lead/call-logs/':                 None,           # exempt
+    '/api/lead/followups/':                 'FOLLOWUP',
+    '/api/lead/leads/cross_check/':         'CROSS_LEAD',
+    '/api/lead/leads/export/':              'LEAD',
+    '/api/lead/':                           'LEAD',
 
-    # Site Visit
-    '/api/sitevisit/': ('SiteVisit', 'sitevisit'),
+    '/api/sitevisit/':                      'SITE_VISIT',
+    '/api/projects/':                       'PROJECT',
 
-    # Project Management
-    '/api/projects/': ('ProjectManagement', 'project'),
+    '/api/inventory/':                      'INVENTORY',
+    '/api/availability/projects/choices/':  None,           # exempt
+    '/api/availability/':                   'INVENTORY',
 
-    # Inventory
-    '/api/inventory/plots/': ('Inventory', 'plotinventory'),
-    '/api/inventory/flats/': ('Inventory', 'flatinventory'),
-    '/api/inventory/': ('Inventory', 'plotinventory'),
+    '/api/booking/bookings/choices/':       None,           # exempt
+    '/api/booking/':                        'BOOKING',
 
-    # Booking
-    '/api/booking/bookings/choices/': None,  # exempt
-    '/api/booking/': ('Booking', 'booking'),
-
-    # Availability List
-    '/api/availability/projects/choices/': None,  # exempt — dropdowns
-    '/api/availability/': ('Availability', 'availabilityproject'),
-
-    # Documents
-    '/api/documents/': ('Documents', 'document'),
-
-    # Reports & Dashboards
-    '/api/re-reports/': None,
-    '/api/dashboards/': ('dashboards', 'dashboard'),
-
-    # User Management
-    '/api/usermanagement/': ('Users', 'user'),
+    '/api/documents/':                      'DOCUMENT',
+    '/api/re-reports/':                     'REPORTS',
+    '/api/dashboards/':                     'DASHBOARD',
+    '/api/usermanagement/':                 'USER_PERMISSION',
 }
 
-METHOD_TO_PERM_ACTION = {
-    'GET': 'view',
-    'HEAD': 'view',
+METHOD_TO_ACTION = {
+    'GET':     'view',
+    'HEAD':    'view',
     'OPTIONS': 'view',
-    'POST': 'add',
-    'PUT': 'change',
-    'PATCH': 'change',
-    'DELETE': 'delete',
+    'POST':    'add',
+    'PUT':     'edit',
+    'PATCH':   'edit',
+    'DELETE':  'delete',
 }
 
 EXEMPT_PREFIXES = (
-    '/api/users/',        # Auth (login, logout, token refresh)
-    '/api/system/',       # System config, menu
-    '/api/reports/',      # Import/export framework
-    '/api/general/',      # General settings
-    '/api/usermanagement/dropdowns/',       # Dropdowns needed by all screens
-    '/api/usermanagement/my-permissions/',  # Needed for frontend permission checks
+    '/api/users/',
+    '/api/system/',
+    '/api/reports/',
+    '/api/general/',
+    '/api/usermanagement/dropdowns/',
+    '/api/usermanagement/my-permissions/',
 )
 
 
 class ScreenPermission(BasePermission):
     """
-    Enforces Django group permissions based on URL-to-model mapping.
+    Checks the UserPermission table (System B) on every API request.
 
-    - Superusers bypass all checks.
-    - Exempt URLs pass through.
-    - For mapped URLs, checks user.has_perm('{app_label}.{action}_{model}')
+    Flow:
+    1. Superusers → always allowed.
+    2. Exempt prefix → allowed.
+    3. URL matched to Screen code → check UserPermission row.
+       - Row found and flag is True → allowed.
+       - Row missing or flag False  → denied.
+    4. No URL match → allowed (fail-open for unmapped endpoints).
     """
 
     message = 'You do not have permission to perform this action.'
@@ -90,27 +82,38 @@ class ScreenPermission(BasePermission):
 
         path = request.path
         if not path.endswith('/'):
-            path = path + '/'
+            path += '/'
 
-        # Check exempt prefixes first
         for prefix in EXEMPT_PREFIXES:
             if path.startswith(prefix):
                 return True
 
-        # Find which permission model this URL maps to (check longer prefixes first)
-        perm_model = None
-        matched_prefix = ''
-        for prefix, model_info in URL_TO_PERMISSION_MODEL.items():
-            if path.startswith(prefix) and len(prefix) > len(matched_prefix):
-                perm_model = model_info
-                matched_prefix = prefix
+        # Find longest matching prefix
+        screen_code = None
+        matched_len = 0
+        for prefix, code in URL_TO_SCREEN_CODE.items():
+            if path.startswith(prefix) and len(prefix) > matched_len:
+                screen_code = code
+                matched_len = len(prefix)
 
-        # No mapping found — allow (don't break unmapped endpoints)
-        if perm_model is None:
+        if matched_len == 0:
+            return True   # no mapping — allow
+
+        if screen_code is None:
+            return True   # explicitly exempted
+
+        action = METHOD_TO_ACTION.get(request.method, 'view')
+
+        try:
+            from Users.models import UserPermission
+            perm = UserPermission.objects.filter(
+                user=user, screen__code=screen_code
+            ).select_related('screen').first()
+
+            if perm is None:
+                return False
+
+            return perm.has_permission(action)
+        except Exception:
+            # Table not yet migrated — fail open so app doesn't break on first boot
             return True
-
-        app_label, model_name = perm_model
-        action = METHOD_TO_PERM_ACTION.get(request.method, 'view')
-        perm_codename = f"{app_label}.{action}_{model_name}"
-
-        return user.has_perm(perm_codename)

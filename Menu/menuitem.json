@@ -14,20 +14,6 @@
         "Modified On": "2026-07-11 00:00:00"
     },
     {
-        "Code": "MIM-017",
-        "Name": "Groups",
-        "Icon": "groups",
-        "Link": "/settings/groups",
-        "Sequence": "3",
-        "Click": "",
-        "Menu": "MENU-001",
-        "Submenu": "SBM-003",
-        "Permission": "Users.view_user",
-        "Description": "Manage user groups and permissions",
-        "Created On": "2026-01-23 11:08:04",
-        "Modified On": "2026-03-06 11:47:11"
-    },
-    {
         "Code": "MIM-018",
         "Name": "Users",
         "Icon": "people",

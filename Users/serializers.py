@@ -222,10 +222,12 @@ class UserSerializer(serializers.ModelSerializer):
             screen_code = item.get('screen_code')
             if not screen_code:
                 continue
-            try:
-                screen = Screen.objects.get(code=screen_code)
-            except Screen.DoesNotExist:
-                continue
+            
+            # Auto-create screen if it doesn't exist (using code as name if name not provided)
+            screen, _ = Screen.objects.get_or_create(
+                code=screen_code,
+                defaults={'name': item.get('screen_name', screen_code), 'order': 0}
+            )
 
             can_view   = bool(item.get('can_view', False))
             can_add    = bool(item.get('can_add', False))

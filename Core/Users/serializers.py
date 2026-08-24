@@ -568,6 +568,26 @@ class IamUserSerializer(serializers.ModelSerializer):
     gender_name = serializers.SerializerMethodField()
     groups = GroupMiniSerializer(many=True, read_only=True)
     group_ids = serializers.ListField(write_only=True, child=serializers.PrimaryKeyRelatedField(write_only=True, queryset=Group.objects.all()), required=False)
+    screen_permissions = serializers.SerializerMethodField()
+    
+    def get_screen_permissions(self, obj):
+        """Return user's screen-level permissions from UserPermission table."""
+        from Users.models import UserPermission
+        perms = UserPermission.objects.filter(user=obj).select_related('screen')
+        return [
+            {
+                'screen_id': p.screen.id,
+                'screen_code': p.screen.code,
+                'screen_name': p.screen.name,
+                'can_view': p.can_view,
+                'can_add': p.can_add,
+                'can_edit': p.can_edit,
+                'can_delete': p.can_delete,
+                'can_export': p.can_export,
+                'is_view_only': p.is_view_only,
+            }
+            for p in perms
+        ]
     def get_gender_name(self, obj):
         return obj.get_gender_display()
     def get_fullname(self, user):
@@ -592,6 +612,7 @@ class IamUserSerializer(serializers.ModelSerializer):
             'is_email_verified', 'is_phone_verified',
             'receive_sms', 'receive_email', 'receive_notification',
             'is_active', 'device_access', 'profilepicture',
+            'screen_permissions',
         ]
 
 

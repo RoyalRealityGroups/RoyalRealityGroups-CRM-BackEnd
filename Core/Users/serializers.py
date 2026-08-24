@@ -803,8 +803,25 @@ class LoginSerializer(serializers.ModelSerializer):
         group_name = user.groups.all()[0].name if user.groups.count() > 0 else ""
         is_default_password = password == user.id
         
-        # Get user permissions
+        # Get user permissions (legacy Django group permissions)
         permissions = list(user.get_all_permissions())
+        
+        # Get screen-based permissions (new system)
+        from Users.models import UserPermission
+        screen_permissions = [
+            {
+                'screen_id': p.screen.id,
+                'screen_code': p.screen.code,
+                'screen_name': p.screen.name,
+                'can_view': p.can_view,
+                'can_add': p.can_add,
+                'can_edit': p.can_edit,
+                'can_delete': p.can_delete,
+                'can_export': p.can_export,
+                'is_view_only': p.is_view_only,
+            }
+            for p in UserPermission.objects.filter(user=user).select_related('screen')
+        ]
         
         # Get channel partner information
         channel_partner_data = {
@@ -829,6 +846,7 @@ class LoginSerializer(serializers.ModelSerializer):
             'is_default_password': is_default_password,
             'is_superuser': user.is_superuser,
             'permissions': permissions,
+            'screen_permissions': screen_permissions,
             **channel_partner_data,
         }
 

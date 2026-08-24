@@ -90,20 +90,38 @@ class UserMenuitemSerializer(serializers.ModelSerializer):
 
 
 def filter_menuitems_by_permission(queryset, user):
-    """Filter menuitems based on user's Django group permissions."""
+    """Filter menuitems based on user's permissions.
+    
+    Checks both:
+    1. Django group permissions (legacy)
+    2. Screen-based permissions from UserPermission table (new system)
+    """
     if user.is_superuser:
         return queryset
     
-    # Get user's permissions from Django's group permissions
+    # Get user's Django group permissions (legacy)
     user_permissions = set(user.get_all_permissions())
     
-    # If user has no permissions, return empty queryset
-    if not user_permissions:
+    # Get user's screen permissions from UserPermission table (new system)
+    from Users.models import UserPermission
+    user_screen_codes = set(
+        UserPermission.objects.filter(user=user, can_view=True)
+        .values_list('screen__code', flat=True)
+    )
+    
+    # If user has no permissions at all, return empty queryset
+    if not user_permissions and not user_screen_codes:
         return queryset.none()
     
     # Filter by permissions
     filtered_ids = []
     for item in queryset.select_related('permission', 'permission__content_type'):
+        # Check new screen-based permission first (by menu item code)
+        if item.code in user_screen_codes:
+            filtered_ids.append(item.id)
+            continue
+            
+        # Check legacy Django permission
         if item.permission is None:
             # No permission required - accessible to all authenticated users
             filtered_ids.append(item.id)

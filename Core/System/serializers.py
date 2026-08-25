@@ -99,6 +99,14 @@ def filter_menuitems_by_permission(queryset, user):
     if user.is_superuser:
         return queryset
     
+    # Admin users have all permissions like superuser
+    # Check both attribute and hasattr for different user model scenarios
+    try:
+        if hasattr(user, 'is_admin') and user.is_admin:
+            return queryset
+    except Exception:
+        pass
+    
     # Get user's Django group permissions (legacy)
     user_permissions = set(user.get_all_permissions())
     

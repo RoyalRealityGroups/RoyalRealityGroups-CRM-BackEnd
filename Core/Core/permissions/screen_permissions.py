@@ -69,11 +69,12 @@ class ScreenPermission(BasePermission):
 
     Flow:
     1. Superusers → always allowed.
-    2. Exempt prefix → allowed.
-    3. URL matched to Menuitem code → check UserPermission row.
+    2. Admin users (is_admin=True) → always allowed.
+    3. Exempt prefix → allowed.
+    4. URL matched to Menuitem code → check UserPermission row.
        - Row found and flag is True → allowed.
        - Row missing or flag False  → denied.
-    4. No URL match → allowed (fail-open for unmapped endpoints).
+    5. No URL match → allowed (fail-open for unmapped endpoints).
     """
 
     message = 'You do not have permission to perform this action.'
@@ -86,6 +87,13 @@ class ScreenPermission(BasePermission):
 
         if user.is_superuser:
             return True
+
+        # Admin users have all permissions like superuser
+        try:
+            if hasattr(user, 'is_admin') and user.is_admin:
+                return True
+        except Exception:
+            pass
 
         path = request.path
         if not path.endswith('/'):

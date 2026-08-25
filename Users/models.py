@@ -36,6 +36,12 @@ class User(CoreUser):
         default=UserStatus.ACTIVE,
     )
 
+    # Admin flag - has all permissions like superuser but is not a superuser
+    is_admin = models.BooleanField(
+        default=False,
+        help_text="Admin users have all permissions without being superuser"
+    )
+
     # Data scope — controls record-level visibility per module
     lead_data_scope = models.CharField(max_length=10, choices=DataScope.choices, default=DataScope.OWN)
     followup_data_scope = models.CharField(max_length=10, choices=DataScope.choices, default=DataScope.OWN)

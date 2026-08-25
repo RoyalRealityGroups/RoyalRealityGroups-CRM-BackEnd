@@ -845,6 +845,7 @@ class LoginSerializer(serializers.ModelSerializer):
             'tokens': tokens,
             'is_default_password': is_default_password,
             'is_superuser': user.is_superuser,
+            'is_admin': getattr(user, 'is_admin', False),
             'permissions': permissions,
             'screen_permissions': screen_permissions,
             **channel_partner_data,

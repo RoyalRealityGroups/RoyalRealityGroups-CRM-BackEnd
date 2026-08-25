@@ -20,6 +20,10 @@ from .views import (
     EmployeeListView,
     EmployeeDetailView,
     EmployeePerformanceView,
+    PermissionTemplateListCreateView,
+    PermissionTemplateDetailView,
+    PermissionTemplateMiniListView,
+    ApplyTemplateToUserView,
 )
 
 urlpatterns = [
@@ -37,6 +41,12 @@ urlpatterns = [
     # Channel Partner endpoints (removed - FMCG only)
 
     path('dropdowns/reporting-managers/', views.ReportingManagerDropdownView.as_view(), name='reporting_managers_dropdown'),
+
+    # Permission Templates
+    path('permission-templates/', PermissionTemplateListCreateView.as_view(), name='permission_template_list'),
+    path('permission-templates/mini/', PermissionTemplateMiniListView.as_view(), name='permission_template_mini'),
+    path('permission-templates/<int:pk>/', PermissionTemplateDetailView.as_view(), name='permission_template_detail'),
+    path('permission-templates/<int:template_id>/apply/<uuid:user_id>/', ApplyTemplateToUserView.as_view(), name='apply_template'),
 
     path('screens/', views.ScreenListView.as_view(), name='screen_list'),
     path('permissions/my/', views.MyPermissionsView.as_view(), name='my_permissions'),

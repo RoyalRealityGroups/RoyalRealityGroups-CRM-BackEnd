@@ -355,6 +355,125 @@ class ForceLogoutView(APIView):
 # RRGMS Permission API Views
 # =============================================================================
 
+from Users.models import PermissionTemplate, PermissionTemplateDetail, PermissionAuditLog
+from Users.serializers import PermissionTemplateSerializer, PermissionTemplateMiniSerializer
+
+
+class PermissionTemplateListCreateView(generics.ListCreateAPIView):
+    """
+    List all permission templates or create a new one.
+    GET  /api/usermanagement/permission-templates/
+    POST /api/usermanagement/permission-templates/
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = PermissionTemplateSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'description']
+    ordering_fields = ['name', 'created_at']
+    ordering = ['name']
+
+    def get_queryset(self):
+        queryset = PermissionTemplate.objects.all()
+        # Filter by is_active if provided
+        is_active = self.request.query_params.get('is_active')
+        if is_active is not None:
+            queryset = queryset.filter(is_active=is_active.lower() == 'true')
+        return queryset
+
+
+class PermissionTemplateDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update or delete a permission template.
+    GET/PUT/PATCH/DELETE /api/usermanagement/permission-templates/<pk>/
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = PermissionTemplateSerializer
+    queryset = PermissionTemplate.objects.all()
+
+
+class PermissionTemplateMiniListView(generics.ListAPIView):
+    """
+    Minimal list for dropdown selections.
+    GET /api/usermanagement/permission-templates/mini/
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = PermissionTemplateMiniSerializer
+
+    def get_queryset(self):
+        return PermissionTemplate.objects.filter(is_active=True).order_by('name')
+
+
+class ApplyTemplateToUserView(APIView):
+    """
+    Apply a permission template to a user.
+    POST /api/usermanagement/permission-templates/<template_id>/apply/<user_id>/
+    
+    This copies all permissions from the template to the user.
+    If merge=true in request body, it merges with existing permissions.
+    If merge=false (default), it replaces all user permissions.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, template_id, user_id):
+        from Users.models import UserPermission, PermissionAuditLog
+
+        # Check permission to manage users
+        if not request.user.is_superuser:
+            has_perm = UserPermission.objects.filter(
+                user=request.user, menuitem__code='USER_PERMISSION', can_edit=True
+            ).exists()
+            if not has_perm:
+                return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            template = PermissionTemplate.objects.get(id=template_id)
+        except PermissionTemplate.DoesNotExist:
+            return Response({'error': 'Template not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            target_user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        merge = request.data.get('merge', False)
+
+        if not merge:
+            # Delete existing permissions
+            UserPermission.objects.filter(user=target_user).delete()
+
+        # Apply template permissions
+        applied_count = 0
+        for detail in template.details.all():
+            UserPermission.objects.update_or_create(
+                user=target_user,
+                menuitem=detail.menuitem,
+                defaults={
+                    'can_view': detail.can_view,
+                    'can_add': detail.can_add,
+                    'can_edit': detail.can_edit,
+                    'can_delete': detail.can_delete,
+                    'can_export': detail.can_export,
+                }
+            )
+            applied_count += 1
+
+        # Audit log
+        PermissionAuditLog.objects.create(
+            changed_by=request.user,
+            target_user=target_user,
+            action='APPLY_TEMPLATE',
+            field_changed='permissions',
+            old_value='',
+            new_value=f'Applied template: {template.name} (merge={merge})',
+            ip_address=request.META.get('REMOTE_ADDR')
+        )
+
+        return Response({
+            'message': f'Applied template "{template.name}" to user "{target_user.username}" ({applied_count} permissions)',
+            'applied_count': applied_count,
+        })
+
+
 class ScreenListView(generics.ListAPIView):
     """List all screens — used by UserForm permission picker."""
     permission_classes = [permissions.IsAuthenticated]

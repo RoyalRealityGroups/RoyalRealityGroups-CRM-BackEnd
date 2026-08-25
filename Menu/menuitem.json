@@ -138,5 +138,19 @@
         "Description": "Manage bookings",
         "Created On": "2026-07-22 00:00:00",
         "Modified On": "2026-07-22 00:00:00"
+    },
+    {
+        "Code": "MIM-PERMTPL",
+        "Name": "Permission Templates",
+        "Icon": "security",
+        "Link": "/settings/permission-templates",
+        "Sequence": "5",
+        "Click": "",
+        "Menu": "MENU-001",
+        "Submenu": "SBM-003",
+        "Permission": "Users.view_permissiontemplate",
+        "Description": "Create reusable permission presets for users",
+        "Created On": "2026-08-25 00:00:00",
+        "Modified On": "2026-08-25 00:00:00"
     }
 ]

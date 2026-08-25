@@ -448,19 +448,31 @@ class UserWithPermissionsSerializer(serializers.ModelSerializer):
         return obj.team_members.count()
 
 
+class PermissionTemplateDetailInputSerializer(serializers.Serializer):
+    """Serializer for template detail input (create/update)."""
+    menuitem_id = serializers.UUIDField()
+    can_view = serializers.BooleanField(default=False)
+    can_add = serializers.BooleanField(default=False)
+    can_edit = serializers.BooleanField(default=False)
+    can_delete = serializers.BooleanField(default=False)
+    can_export = serializers.BooleanField(default=False)
+
+
 class PermissionTemplateSerializer(serializers.ModelSerializer):
     details = serializers.SerializerMethodField()
+    details_input = PermissionTemplateDetailInputSerializer(many=True, write_only=True, required=False)
 
     class Meta:
         model = PermissionTemplate
-        fields = ['id', 'name', 'description', 'is_active', 'created_at', 'details']
+        fields = ['id', 'name', 'description', 'is_active', 'created_at', 'updated_at', 'details', 'details_input']
+        read_only_fields = ['created_at', 'updated_at']
 
     def get_details(self, obj):
         return [
             {
-                'menuitem_id': d.menuitem_id,
-                'menuitem_name': d.menuitem.name,
-                'menuitem_code': d.menuitem.code,
+                'menuitem_id': str(d.menuitem_id),
+                'menuitem_name': d.menuitem.name if d.menuitem else '',
+                'menuitem_code': d.menuitem.code if d.menuitem else '',
                 'can_view': d.can_view,
                 'can_add': d.can_add,
                 'can_edit': d.can_edit,
@@ -469,6 +481,53 @@ class PermissionTemplateSerializer(serializers.ModelSerializer):
             }
             for d in obj.details.select_related('menuitem').all()
         ]
+
+    def create(self, validated_data):
+        details_data = validated_data.pop('details_input', [])
+        template = PermissionTemplate.objects.create(**validated_data)
+        
+        for detail in details_data:
+            PermissionTemplateDetail.objects.create(
+                template=template,
+                menuitem_id=detail['menuitem_id'],
+                can_view=detail.get('can_view', False),
+                can_add=detail.get('can_add', False),
+                can_edit=detail.get('can_edit', False),
+                can_delete=detail.get('can_delete', False),
+                can_export=detail.get('can_export', False),
+            )
+        return template
+
+    def update(self, instance, validated_data):
+        details_data = validated_data.pop('details_input', None)
+        
+        # Update template fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        
+        # Update details if provided
+        if details_data is not None:
+            # Delete existing details and recreate
+            instance.details.all().delete()
+            for detail in details_data:
+                PermissionTemplateDetail.objects.create(
+                    template=instance,
+                    menuitem_id=detail['menuitem_id'],
+                    can_view=detail.get('can_view', False),
+                    can_add=detail.get('can_add', False),
+                    can_edit=detail.get('can_edit', False),
+                    can_delete=detail.get('can_delete', False),
+                    can_export=detail.get('can_export', False),
+                )
+        return instance
+
+
+class PermissionTemplateMiniSerializer(serializers.ModelSerializer):
+    """Minimal serializer for dropdown lists."""
+    class Meta:
+        model = PermissionTemplate
+        fields = ['id', 'name', 'description', 'is_active']
 
 
 class PermissionAuditLogSerializer(serializers.ModelSerializer):

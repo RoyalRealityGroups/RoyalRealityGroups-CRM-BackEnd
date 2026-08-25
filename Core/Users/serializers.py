@@ -604,14 +604,14 @@ class IamUserSerializer(serializers.ModelSerializer):
         return value
     class Meta:
         model = User
-        read_only_fields = ['otp']
+        read_only_fields = ['otp', 'is_superuser', 'is_admin']
         fields = [
             'id', 'username', 'fullname', 'email', 'phone',
             'groups', 'group_ids', 'password',
             'first_name', 'last_name', 'otp', 'gender', 'gender_name',
             'is_email_verified', 'is_phone_verified',
             'receive_sms', 'receive_email', 'receive_notification',
-            'is_active', 'device_access', 'profilepicture',
+            'is_active', 'is_superuser', 'is_admin', 'device_access', 'profilepicture',
             'screen_permissions',
         ]
 

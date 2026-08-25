@@ -1,129 +1,171 @@
 import string
-from django.contrib.auth.models import Group
-from django.contrib.sites.shortcuts import get_current_site
+
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
 from django.contrib.auth.password_validation import validate_password as django_validate_password
 from django.utils.crypto import get_random_string
 from rest_framework import serializers, status
-from Core.Users.models import DEVICE_ACCESS_CHOICES, GENDER_CHOICES, Groupdetails
-from Core.Users.serializers import GroupMiniSerializer
 
+from Core.Users.models import DEVICE_ACCESS_CHOICES, GENDER_CHOICES
+
+User = get_user_model()
+
+
+# =============================================================================
+# Helpers
+# =============================================================================
 
 def validate_contact_email(value):
-    """Validate email format."""
     if value:
         import re
         value = value.strip().lower()
         if not re.match(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$', value):
-            raise ValueError(f'Enter a valid email address.')
+            raise ValueError('Enter a valid email address.')
     return value
 
 
 def validate_contact_phone(value):
-    """Validate phone number — digits only, 7–15 chars."""
     if value:
         import re
         digits = re.sub(r'[\s\-\+\(\)]', '', value)
         if not digits.isdigit() or not (7 <= len(digits) <= 15):
             raise ValueError('Enter a valid phone number (7–15 digits).')
     return value
-from Core.System.models import TemporaryVerification
-
-User = get_user_model()
 
 
-class UserMini3Serializer(serializers.ModelSerializer):
-    fullname = serializers.SerializerMethodField()
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        return x_forwarded_for.split(',')[0]
+    return request.META.get('REMOTE_ADDR')
 
-    def get_fullname(self, user):
 
-        return  '{} {}'.format(user.first_name, user.last_name )
-    
-    class Meta:
-        model = User
-        fields = ('id','fullname', 'first_name',)
+# =============================================================================
+# User Serializers
+# =============================================================================
 
-          
-      
 class UserSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(required=False, allow_blank=True)  # Allow blank for username
+    """
+    Full user serializer for create / update / list.
+
+    screen_permissions_input (write-only):
+        List of { screen_code, can_view, can_add, can_edit, can_delete, can_export }
+        Saved to UserPermission table on create/update.
+    """
+
     fullname = serializers.SerializerMethodField()
-    password = serializers.CharField(write_only=True, max_length=30, required=False)
-    is_email_verified = serializers.CharField(read_only=True)
-    is_phone_verified = serializers.CharField(read_only=True)
-    # location = LocationMiniSerializer(many=True, read_only=True)
-    # location_ids = serializers.ListField(write_only=True, child=serializers.PrimaryKeyRelatedField(write_only=True, queryset=Location.objects.filter(is_deleted=False)), required=False)
+    gender_name = serializers.SerializerMethodField()
+    device_access_name = serializers.SerializerMethodField()
+    reporting_manager_name = serializers.SerializerMethodField()
+    team_count = serializers.SerializerMethodField()
+    screen_permissions = serializers.SerializerMethodField()
+
+    username = serializers.CharField(required=False, allow_blank=True)
+    password = serializers.CharField(write_only=True, max_length=128, required=False)
+    remove_profilepicture = serializers.BooleanField(required=False, write_only=True, default=False)
+    profilepicture = serializers.ImageField(required=False, allow_null=True)
 
     gender = serializers.ChoiceField(choices=GENDER_CHOICES, required=False, allow_null=True)
-    gender_name = serializers.SerializerMethodField()
-
-    device_access = serializers.ChoiceField(choices=DEVICE_ACCESS_CHOICES)
-    device_access_name = serializers.SerializerMethodField()
-
-    groups = GroupMiniSerializer(many=True, read_only=True)
-    group_ids = serializers.ListField(
-        write_only=True, 
-        child=serializers.IntegerField(), 
-        required=True,
-        allow_empty=False,
-        error_messages={
-            'required': 'At least one group must be selected',
-            'empty': 'At least one group must be selected'
-        }
-    )
-    
-
-    
-    profilepicture = serializers.ImageField(required=False, allow_null=True)
-    remove_profilepicture = serializers.BooleanField(required=False, write_only=True, default=False)
+    device_access = serializers.ChoiceField(choices=DEVICE_ACCESS_CHOICES, required=False)
 
     designation = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     joining_date = serializers.DateField(required=False, allow_null=True)
     reporting_manager = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(),
-        required=False,
-        allow_null=True
+        queryset=User.objects.all(), required=False, allow_null=True
     )
-    reporting_manager_name = serializers.SerializerMethodField()
     user_status = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     must_reset_password = serializers.BooleanField(required=False)
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
-    
+    is_email_verified = serializers.BooleanField(read_only=True)
+    is_phone_verified = serializers.BooleanField(read_only=True)
+
+    # Write-only — list of { screen_code, can_view, can_add, can_edit, can_delete, can_export }
+    screen_permissions_input = serializers.ListField(
+        child=serializers.DictField(),
+        write_only=True,
+        required=False,
+        default=list,
+    )
+
+    class Meta:
+        model = User
+        read_only_fields = ['otp', 'username', 'is_email_verified', 'is_phone_verified']
+        fields = [
+            'id', 'username', 'fullname', 'first_name', 'last_name',
+            'email', 'phone',
+            'gender', 'gender_name',
+            'device_access', 'device_access_name',
+            'profilepicture', 'remove_profilepicture',
+            'password',
+            'designation', 'joining_date',
+            'reporting_manager', 'reporting_manager_name',
+            'team_count',
+            'user_status', 'is_active', 'is_admin',
+            'must_reset_password',
+            'receive_sms', 'receive_email', 'receive_notification',
+            'is_email_verified', 'is_phone_verified',
+            'otp',
+            'lead_data_scope', 'followup_data_scope',
+            'sitevisit_data_scope', 'booking_data_scope',
+            'leads_assigned', 'site_visits', 'bookings', 'registrations',
+            'screen_permissions', 'screen_permissions_input',
+        ]
+
+    # ------------------------------------------------------------------
+    # Computed fields
+    # ------------------------------------------------------------------
+
+    def get_fullname(self, obj):
+        return f"{obj.first_name} {obj.last_name}".strip() or obj.username
+
     def get_gender_name(self, obj):
-        return obj.get_gender_display()
-    
+        return obj.get_gender_display() if hasattr(obj, 'get_gender_display') else None
 
     def get_device_access_name(self, obj):
-        return obj.get_device_access_display()
-    
-    def get_fullname(self, user):
-        return '{} {}'.format(user.first_name, user.last_name)
-    
+        return obj.get_device_access_display() if hasattr(obj, 'get_device_access_display') else None
+
     def get_reporting_manager_name(self, obj):
         if obj.reporting_manager:
-            return '{} {}'.format(obj.reporting_manager.first_name, obj.reporting_manager.last_name).strip() or obj.reporting_manager.username
+            return (
+                f"{obj.reporting_manager.first_name} {obj.reporting_manager.last_name}".strip()
+                or obj.reporting_manager.username
+            )
         return None
 
-    team_count = serializers.SerializerMethodField()
     def get_team_count(self, obj):
         return obj.team_members.count()
 
+    def get_screen_permissions(self, obj):
+        from Users.models import UserPermission
+        perms = UserPermission.objects.filter(user=obj).select_related('menuitem')
+        return [
+            {
+                'menuitem_id': p.menuitem.id,
+                'menuitem_code': p.menuitem.code,
+                'menuitem_name': p.menuitem.name,
+                'can_view': p.can_view,
+                'can_add': p.can_add,
+                'can_edit': p.can_edit,
+                'can_delete': p.can_delete,
+                'can_export': p.can_export,
+                'is_view_only': p.is_view_only,
+            }
+            for p in perms
+        ]
+
+    # ------------------------------------------------------------------
+    # Validation
+    # ------------------------------------------------------------------
+
     def validate_username(self, value):
-        if value and not value.isalnum():
-            raise serializers.ValidationError('The username should only contain alphanumeric characters')
-        
-        # If value is provided (which can be blank), validate uniqueness
-        if value:
-            q = User.objects.all()
-            if self.instance:
-                q = q.exclude(pk=self.instance.pk)
-            if q.filter(username=value, is_active=True).exists():
-                raise serializers.ValidationError("This username is already in use.")
-        
+        if not value:
+            return value
+        if not value.isalnum():
+            raise serializers.ValidationError('Username must contain only alphanumeric characters.')
+        q = User.objects.filter(is_active=True)
+        if self.instance:
+            q = q.exclude(pk=self.instance.pk)
+        if q.filter(username=value).exists():
+            raise serializers.ValidationError('This username is already in use.')
         return value
 
     def validate_email(self, value):
@@ -131,25 +173,15 @@ class UserSerializer(serializers.ModelSerializer):
             value = validate_contact_email(value)
         except Exception as exc:
             raise serializers.ValidationError(str(exc))
-        
-        # Validate email domain for internal users
         if value:
-            allowed_domain = 'royalrealitygroup.com'
-            email_domain = value.split('@')[-1].lower()
-            if email_domain != allowed_domain:
-                raise serializers.ValidationError(
-                    f'Email must be from @{allowed_domain} domain.'
-                )
-        
+            q = User.objects.all()
+            if self.instance:
+                q = q.exclude(pk=self.instance.pk)
+            if q.filter(email=value).exists():
+                raise serializers.ValidationError('This email is already in use.')
         return value
 
     def validate_phone(self, value):
-        try:
-            return validate_contact_phone(value)
-        except Exception as exc:
-            raise serializers.ValidationError(str(exc))
-
-    def validate_alternate_phone(self, value):
         try:
             return validate_contact_phone(value)
         except Exception as exc:
@@ -162,112 +194,143 @@ class UserSerializer(serializers.ModelSerializer):
             except Exception as exc:
                 raise serializers.ValidationError(list(exc.messages))
         return value
-    
-    def generate_username(self):
-        last_user = User.objects.filter(username__startswith='EMP').order_by('-username').first()
-        
-        if last_user:
-            last_number = int(last_user.username.replace('EMP', ''))
-            new_number = last_number + 1
+
+    # ------------------------------------------------------------------
+    # Username auto-generation
+    # ------------------------------------------------------------------
+
+    def _generate_username(self):
+        last = User.objects.filter(username__startswith='EMP').order_by('-username').first()
+        if last:
+            try:
+                num = int(last.username.replace('EMP', '')) + 1
+            except ValueError:
+                num = User.objects.filter(username__startswith='EMP').count() + 1
         else:
-            new_number = 1
-        return 'EMP{:04d}'.format(new_number)
+            num = 1
+        return f'EMP{num:04d}'
 
-    class Meta:
-        model = User
-        read_only_fields = ['otp', 'username']
-        fields = ['id', 'username', 'fullname', 'email', 'phone', 'groups', 'group_ids', 'password', 'first_name', 'last_name', 'otp', 'gender', 'gender_name', 'is_email_verified', 'is_phone_verified','receive_sms','receive_email','receive_notification', 'is_active', 'device_access', 'device_access_name', 'profilepicture', 'remove_profilepicture', 'designation', 'joining_date', 'reporting_manager', 'reporting_manager_name', 'team_count', 'user_status', 'must_reset_password', 'leads_assigned', 'site_visits', 'bookings', 'registrations']
+    # ------------------------------------------------------------------
+    # Save screen permissions
+    # ------------------------------------------------------------------
 
+    def _save_screen_permissions(self, user, permissions_input):
+        """Upsert UserPermission rows from screen_permissions_input list."""
+        from Users.models import UserPermission
+        from Core.System.models import Menuitem
+
+        # Clear existing permissions for this user
+        UserPermission.objects.filter(user=user).delete()
+
+        for item in permissions_input:
+            menuitem_id = item.get('menuitem_id')
+            if not menuitem_id:
+                continue
+            
+            try:
+                menuitem = Menuitem.objects.get(id=menuitem_id)
+            except Menuitem.DoesNotExist:
+                continue
+
+            can_view   = bool(item.get('can_view', False))
+            can_add    = bool(item.get('can_add', False))
+            can_edit   = bool(item.get('can_edit', False))
+            can_delete = bool(item.get('can_delete', False))
+            can_export = bool(item.get('can_export', False))
+            is_view_only = can_view and not any([can_add, can_edit, can_delete, can_export])
+
+            UserPermission.objects.update_or_create(
+                user=user,
+                menuitem=menuitem,
+                defaults={
+                    'can_view':    can_view,
+                    'can_add':     can_add,
+                    'can_edit':    can_edit,
+                    'can_delete':  can_delete,
+                    'can_export':  can_export,
+                    'is_view_only': is_view_only,
+                },
+            )
+
+    # ------------------------------------------------------------------
+    # Create / Update
+    # ------------------------------------------------------------------
 
     def create(self, validated_data):
-        group_ids = validated_data.pop('group_ids', [])
-
-        # Generate username if not provided or blank
-        if not validated_data.get('username'):
-            validated_data['username'] = self.generate_username()
-
-        # Pop custom fields that are not model fields
-        password = validated_data.pop('password', None)
+        permissions_input = validated_data.pop('screen_permissions_input', [])
         validated_data.pop('remove_profilepicture', None)
-        
+
+        if not validated_data.get('username'):
+            validated_data['username'] = self._generate_username()
+
+        password = validated_data.pop('password', None)
         user = super().create(validated_data)
+        user.set_password(password if password else user.username)
+        user.save(update_fields=['password'])
 
-        # If no password provided, set username as the password
-        if password:
-            user.set_password(password)
-        else:
-            user.set_password(user.username)
-        
-        user.save()
-
-        if group_ids:
-            user.groups.set(group_ids)
+        if permissions_input:
+            self._save_screen_permissions(user, permissions_input)
 
         return user
 
     def update(self, instance, validated_data):
+        permissions_input = validated_data.pop('screen_permissions_input', [])
+
         if 'email' in validated_data:
             validated_data['is_email_verified'] = False
         if 'phone' in validated_data:
             validated_data['is_phone_verified'] = False
 
-        if 'group_ids' in validated_data:
-            group_ids = validated_data.pop('group_ids')
-            instance.groups.set(group_ids)
-
-        # Handle profile picture removal
         if validated_data.pop('remove_profilepicture', False):
             instance.profilepicture = None
             instance.save(update_fields=['profilepicture'])
-        validated_data.pop('profilepicture', None) if 'profilepicture' not in validated_data else None
 
         password = validated_data.pop('password', None)
         user = super().update(instance, validated_data)
 
         if password:
             user.set_password(password)
-            user.save()
+            user.save(update_fields=['password'])
+
+        if permissions_input:
+            self._save_screen_permissions(user, permissions_input)
 
         return user
 
-class RegisterSerializer(serializers.ModelSerializer):
 
-    username = serializers.CharField( allow_blank=False )
+# =============================================================================
+# Register Serializer (OTP-gated public sign-up — not used in CRM admin flow)
+# =============================================================================
+
+class RegisterSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(allow_blank=False)
     fullname = serializers.SerializerMethodField()
     password = serializers.CharField(write_only=True, max_length=30)
     is_email_verified = serializers.CharField(read_only=True)
     is_phone_verified = serializers.CharField(read_only=True)
-    gender = serializers.ChoiceField(choices=GENDER_CHOICES, )
+    gender = serializers.ChoiceField(choices=GENDER_CHOICES)
     gender_name = serializers.SerializerMethodField()
-    
-    gender = serializers.ChoiceField(choices=GENDER_CHOICES, )
-    email = serializers.CharField(required= True,)
-    phone = serializers.CharField(required= True,)
-    phoneotp = serializers.CharField(required= False, allow_blank=True, allow_null=True)
-    emailotp = serializers.CharField(required= False, allow_blank=True, allow_null=True)
-    
+    email = serializers.CharField(required=True)
+    phone = serializers.CharField(required=True)
+    phoneotp = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    emailotp = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+
     def get_gender_name(self, obj):
-        return obj.get_gender_display()  
+        return obj.get_gender_display()
 
-  
-    def get_fullname(self, user):
-
-        return  '{} {}'.format(user.first_name, user.last_name )
-
-
+    def get_fullname(self, obj):
+        return f"{obj.first_name} {obj.last_name}".strip()
 
     def validate_email(self, value):
         try:
             value = validate_contact_email(value)
         except Exception as exc:
             raise serializers.ValidationError(str(exc))
-
         q = User.objects.all()
         if self.instance:
-            object_id = self.instance.id
-            q = q.exclude(pk=object_id)
+            q = q.exclude(pk=self.instance.pk)
         if q.filter(email=value).exists():
-            raise serializers.ValidationError({"email": "This email is already in use."})
+            raise serializers.ValidationError('This email is already in use.')
         return value
 
     def validate_phone(self, value):
@@ -276,175 +339,206 @@ class RegisterSerializer(serializers.ModelSerializer):
         except Exception as exc:
             raise serializers.ValidationError(str(exc))
 
-
     def validate_username(self, value):
-    
         if not value.isalnum():
-            raise serializers.ValidationError({ 'username': 'The username should only contain alphanumeric characters'})
-
+            raise serializers.ValidationError('Username must contain only alphanumeric characters.')
         q = User.objects.all()
         if self.instance:
-            object_id = self.instance.id
-            q = q.exclude(pk=object_id)
-        if q.filter(username=value,is_active=True).exists():
-            raise serializers.ValidationError({"username": "This username is already in use."})
+            q = q.exclude(pk=self.instance.pk)
+        if q.filter(username=value, is_active=True).exists():
+            raise serializers.ValidationError('This username is already in use.')
         return value
 
-
-    # def get_group(self, group):
-        
-    #     group, grc = Group.objects.get_or_create(name='customers', defaults={'name': 'customers'})
-    #     if group is not None:
-    #         self.groups.add(group)
-    #         self.save()
-        
-
     def validate(self, attrs):
-
-        phone =  attrs.get('phone', '')
-        email =  attrs.get('email', '')
-        phoneotp =  attrs.pop('phoneotp', '')
-        emailotp =  attrs.pop('emailotp', '')
+        from Core.System.models import TemporaryVerification
+        phone    = attrs.get('phone', '')
+        email    = attrs.get('email', '')
+        phoneotp = attrs.pop('phoneotp', '')
+        emailotp = attrs.pop('emailotp', '')
 
         if not (phoneotp or emailotp):
             raise serializers.ValidationError({'message': 'OTP is mandatory'})
-
         if phoneotp:
-            tempver_obj = TemporaryVerification.objects.filter(mobile=phone, otp=phoneotp, is_phone_verified=True, type=1).last()
-            if not tempver_obj:
-                raise serializers.ValidationError({'message': 'Phone verification failed'}, code=status.HTTP_400_BAD_REQUEST)
-
+            if not TemporaryVerification.objects.filter(mobile=phone, otp=phoneotp, is_phone_verified=True, type=1).last():
+                raise serializers.ValidationError({'message': 'Phone verification failed'})
         if emailotp:
-            tempver_obj = TemporaryVerification.objects.filter(email=email, otp=emailotp, is_email_verified=True, type=2).last()
-            if not tempver_obj:
-                raise serializers.ValidationError({'message': 'Email verification failed'}, code=status.HTTP_400_BAD_REQUEST)
-       
-        return super().validate(attrs) 
+            if not TemporaryVerification.objects.filter(email=email, otp=emailotp, is_email_verified=True, type=2).last():
+                raise serializers.ValidationError({'message': 'Email verification failed'})
+        return super().validate(attrs)
 
     class Meta:
         model = User
         read_only_fields = ['otp']
-        fields = ['username', 'fullname', 'email', 'phone', 'emailotp', 'phoneotp','password', 'first_name', 'last_name','otp', 'gender', 'is_email_verified', 'is_phone_verified', 'is_active','gender_name',]
-
+        fields = [
+            'username', 'fullname', 'email', 'phone',
+            'emailotp', 'phoneotp', 'password',
+            'first_name', 'last_name', 'otp',
+            'gender', 'gender_name',
+            'is_email_verified', 'is_phone_verified', 'is_active',
+        ]
 
     def create(self, validated_data):
-        
-        group, grc = Group.objects.get_or_create(name='users', defaults={'name': 'users'})
-        if grc is True:
-            groupdetails = Groupdetails.objects.create(group_id=group.id)
-        else:
-            pass
-
-        #data, is_created = User.objects.update_or_create( phone= phone, defaults= validated_data)
-        validated_data['otp'] =  get_random_string(4, allowed_chars= string.digits)
-        object = User.objects.create_user(**validated_data)
-        # token = RefreshToken.for_user(object).access_token
-        
-        object.groups.add(group)
-        
-        current_site = get_current_site(self.context['request']).domain
-        # relativeLink = reverse('email-verify')
-        # absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
-        # email_body = 'Hi '+object.username + \
-            # ' Use the OTP below to verify your email \n' + validated_data['otp']
-        # edata = {'email_body': email_body, 'to_email': object.email,
-        #         'email_subject': 'Verify your email'}
-        email = validated_data.pop('email', None)
-        # ewords ={'username':object.username , 'otp':validated_data['otp']}
-        # edata = {'to_email':email,'email_body':  Email.email_body.format(**ewords),'email_subject': 'Verify your email' }
-
-        # Util.send_email(edata)
-
-  
-        
-        phone = validated_data.pop('phone', None)
-        # swords = {'to_phone':phone,'otp':validated_data['otp']  }
-        # sdata = {'to_phone':phone,'message':  SMS.loginotp.format(**swords) }
-        
-        # Util.send_sms(sdata)    
-        
-        return object 
-
-
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
+        validated_data['otp'] = get_random_string(4, allowed_chars=string.digits)
+        return User.objects.create_user(**validated_data)
 
 
 # =============================================================================
 # RRGMS Permission Serializers
 # =============================================================================
 
-from Users.models import Screen, UserPermission, PermissionTemplate, PermissionTemplateDetail, PermissionAuditLog
-
-
-class ScreenSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Screen
-        fields = ['id', 'code', 'name', 'description', 'is_active', 'order']
+from Users.models import UserPermission, PermissionTemplate, PermissionTemplateDetail, PermissionAuditLog
+from Core.System.models import Menuitem
 
 
 class UserPermissionSerializer(serializers.ModelSerializer):
-    screen_name = serializers.CharField(source='screen.name', read_only=True)
-    screen_code = serializers.CharField(source='screen.code', read_only=True)
-    
+    menuitem_name = serializers.CharField(source='menuitem.name', read_only=True)
+    menuitem_code = serializers.CharField(source='menuitem.code', read_only=True)
+
     class Meta:
         model = UserPermission
-        fields = ['id', 'user', 'screen', 'screen_name', 'screen_code', 'can_view', 'can_add', 'can_edit', 'can_delete', 'can_export', 'is_view_only', 'created_at', 'updated_at']
+        fields = [
+            'id', 'user', 'menuitem', 'menuitem_name', 'menuitem_code',
+            'can_view', 'can_add', 'can_edit', 'can_delete', 'can_export',
+            'is_view_only', 'created_at', 'updated_at',
+        ]
         read_only_fields = ['created_at', 'updated_at']
 
 
-class UserPermissionBulkSerializer(serializers.Serializer):
-    """Bulk update permissions for a user"""
-    permissions = UserPermissionSerializer(many=True)
-
-
 class UserWithPermissionsSerializer(serializers.ModelSerializer):
-    """User serializer with permissions included"""
-    permissions = UserPermissionSerializer(many=True, read_only=True)
+    screen_permissions = serializers.SerializerMethodField()
     reporting_manager_name = serializers.SerializerMethodField()
-    reporting_manager_fullname = serializers.SerializerMethodField()
     team_count = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'phone', 'designation', 'joining_date', 'reporting_manager', 'reporting_manager_name', 'reporting_manager_fullname', 'user_status', 'lead_data_scope', 'followup_data_scope', 'sitevisit_data_scope', 'booking_data_scope', 'must_reset_password', 'is_active', 'leads_assigned', 'site_visits', 'bookings', 'registrations', 'permissions', 'team_count', 'created_at']
-    
+        fields = [
+            'id', 'username', 'first_name', 'last_name', 'email', 'phone',
+            'designation', 'joining_date',
+            'reporting_manager', 'reporting_manager_name',
+            'user_status', 'is_active', 'is_admin',
+            'lead_data_scope', 'followup_data_scope',
+            'sitevisit_data_scope', 'booking_data_scope',
+            'must_reset_password',
+            'leads_assigned', 'site_visits', 'bookings', 'registrations',
+            'screen_permissions', 'team_count', 'created_at',
+        ]
+
+    def get_screen_permissions(self, obj):
+        perms = UserPermission.objects.filter(user=obj).select_related('menuitem')
+        return [
+            {
+                'menuitem_id': p.menuitem.id,
+                'menuitem_code': p.menuitem.code,
+                'menuitem_name': p.menuitem.name,
+                'can_view': p.can_view,
+                'can_add': p.can_add,
+                'can_edit': p.can_edit,
+                'can_delete': p.can_delete,
+                'can_export': p.can_export,
+            }
+            for p in perms
+        ]
+
     def get_reporting_manager_name(self, obj):
-        return obj.reporting_manager.username if obj.reporting_manager else None
-    
-    def get_reporting_manager_fullname(self, obj):
         if obj.reporting_manager:
-            return '{} {}'.format(obj.reporting_manager.first_name, obj.reporting_manager.last_name).strip() or obj.reporting_manager.username
+            return f"{obj.reporting_manager.first_name} {obj.reporting_manager.last_name}".strip() or obj.reporting_manager.username
         return None
-    
+
     def get_team_count(self, obj):
         return obj.team_members.count()
 
 
+class PermissionTemplateDetailInputSerializer(serializers.Serializer):
+    """Serializer for template detail input (create/update)."""
+    menuitem_id = serializers.UUIDField()
+    can_view = serializers.BooleanField(default=False)
+    can_add = serializers.BooleanField(default=False)
+    can_edit = serializers.BooleanField(default=False)
+    can_delete = serializers.BooleanField(default=False)
+    can_export = serializers.BooleanField(default=False)
+
+
 class PermissionTemplateSerializer(serializers.ModelSerializer):
-    screens = serializers.SerializerMethodField()
-    
+    details = serializers.SerializerMethodField()
+    details_input = PermissionTemplateDetailInputSerializer(many=True, write_only=True, required=False)
+
     class Meta:
         model = PermissionTemplate
-        fields = ['id', 'name', 'description', 'screens', 'is_active', 'created_at']
-    
-    def get_screens(self, obj):
-        details = obj.permissiontemplatedetail_set.all()
-        return [{'screen_id': d.screen_id, 'screen_name': d.screen.name, 'can_view': d.can_view, 'can_add': d.can_add, 'can_edit': d.can_edit, 'can_delete': d.can_delete, 'can_export': d.can_export} for d in details]
+        fields = ['id', 'name', 'description', 'is_active', 'created_at', 'updated_at', 'details', 'details_input']
+        read_only_fields = ['created_at', 'updated_at']
+
+    def get_details(self, obj):
+        return [
+            {
+                'menuitem_id': str(d.menuitem_id),
+                'menuitem_name': d.menuitem.name if d.menuitem else '',
+                'menuitem_code': d.menuitem.code if d.menuitem else '',
+                'can_view': d.can_view,
+                'can_add': d.can_add,
+                'can_edit': d.can_edit,
+                'can_delete': d.can_delete,
+                'can_export': d.can_export,
+            }
+            for d in obj.details.select_related('menuitem').all()
+        ]
+
+    def create(self, validated_data):
+        details_data = validated_data.pop('details_input', [])
+        template = PermissionTemplate.objects.create(**validated_data)
+        
+        for detail in details_data:
+            PermissionTemplateDetail.objects.create(
+                template=template,
+                menuitem_id=detail['menuitem_id'],
+                can_view=detail.get('can_view', False),
+                can_add=detail.get('can_add', False),
+                can_edit=detail.get('can_edit', False),
+                can_delete=detail.get('can_delete', False),
+                can_export=detail.get('can_export', False),
+            )
+        return template
+
+    def update(self, instance, validated_data):
+        details_data = validated_data.pop('details_input', None)
+        
+        # Update template fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        
+        # Update details if provided
+        if details_data is not None:
+            # Delete existing details and recreate
+            instance.details.all().delete()
+            for detail in details_data:
+                PermissionTemplateDetail.objects.create(
+                    template=instance,
+                    menuitem_id=detail['menuitem_id'],
+                    can_view=detail.get('can_view', False),
+                    can_add=detail.get('can_add', False),
+                    can_edit=detail.get('can_edit', False),
+                    can_delete=detail.get('can_delete', False),
+                    can_export=detail.get('can_export', False),
+                )
+        return instance
+
+
+class PermissionTemplateMiniSerializer(serializers.ModelSerializer):
+    """Minimal serializer for dropdown lists."""
+    class Meta:
+        model = PermissionTemplate
+        fields = ['id', 'name', 'description', 'is_active']
 
 
 class PermissionAuditLogSerializer(serializers.ModelSerializer):
     changed_by_username = serializers.CharField(source='changed_by.username', read_only=True)
     target_user_username = serializers.CharField(source='target_user.username', read_only=True)
-    
+
     class Meta:
         model = PermissionAuditLog
-        fields = ['id', 'changed_by', 'changed_by_username', 'target_user', 'target_user_username', 'action', 'field_changed', 'old_value', 'new_value', 'timestamp', 'ip_address'] 
-
-
-
+        fields = [
+            'id', 'changed_by', 'changed_by_username',
+            'target_user', 'target_user_username',
+            'action', 'field_changed', 'old_value', 'new_value',
+            'timestamp', 'ip_address',
+        ]

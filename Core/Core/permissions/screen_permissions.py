@@ -1,80 +1,80 @@
 """
 Screen-level permission enforcement for RRGMS.
 
-Maps API URL prefixes to Screen codes, and uses Django's built-in
-group permissions (from import_menu_data) to check whether the user
-can perform the requested action.
+Maps API URL prefixes to Menuitem codes, then queries the UserPermission
+table to decide if the user can perform the requested action.
+
+Superusers bypass all checks.
+Exempt prefixes always pass through.
 """
 from rest_framework.permissions import BasePermission
 
 
-URL_TO_PERMISSION_MODEL = {
-    # Lead Management
-    '/api/lead/followups/reminders/': None,  # exempt
-    '/api/lead/leads/choices/': None,        # exempt
-    '/api/lead/call-logs/': None,            # exempt — mobile app sync
-    '/api/lead/followups/': ('Lead', 'leadfollowup'),
-    '/api/lead/leads/cross_check/': ('Lead', 'lead'),
-    '/api/lead/leads/export/': ('Lead', 'lead'),
-    '/api/lead/': ('Lead', 'lead'),
+# URL prefix → Menuitem.code  (longer prefix wins)
+# These codes should match the 'code' field in System.Menuitem table
+URL_TO_MENUITEM_CODE = {
+    '/api/lead/followups/reminders/':       None,           # exempt
+    '/api/lead/leads/choices/':             None,           # exempt
+    '/api/lead/call-logs/':                 None,           # exempt
+    '/api/lead/phone-comments/':            None,           # exempt
+    '/api/lead/followups/':                 'LM-003',       # Follow-ups
+    '/api/lead/leads/cross_check/':         'LM-001',       # Cross Lead uses Lead permission
+    '/api/lead/leads/export/':              'LM-001',       # Lead export
+    '/api/lead/':                           'LM-001',       # Leads
 
-    # Site Visit
-    '/api/sitevisit/': ('SiteVisit', 'sitevisit'),
+    '/api/sitevisit/':                      'LM-002',       # Site Visits
+    
+    '/api/projects/choices/':               None,           # exempt - dropdown choices
+    '/api/projects/':                       'PROJ-001',     # Projects
 
-    # Project Management
-    '/api/projects/': ('ProjectManagement', 'project'),
+    '/api/inventory/':                      'INV-001',      # Inventory
+    '/api/availability/projects/choices/':  None,           # exempt
+    '/api/availability/':                   'INV-001',      # Availability/Inventory
 
-    # Inventory
-    '/api/inventory/plots/': ('Inventory', 'plotinventory'),
-    '/api/inventory/flats/': ('Inventory', 'flatinventory'),
-    '/api/inventory/': ('Inventory', 'plotinventory'),
+    '/api/booking/bookings/choices/':       None,           # exempt
+    '/api/booking/':                        'BKG-001',      # Bookings
 
-    # Booking
-    '/api/booking/bookings/choices/': None,  # exempt
-    '/api/booking/': ('Booking', 'booking'),
-
-    # Availability List
-    '/api/availability/projects/choices/': None,  # exempt — dropdowns
-    '/api/availability/': ('Availability', 'availabilityproject'),
-
-    # Documents
-    '/api/documents/': ('Documents', 'document'),
-
-    # Reports & Dashboards
-    '/api/re-reports/': None,
-    '/api/dashboards/': ('dashboards', 'dashboard'),
-
-    # User Management
-    '/api/usermanagement/': ('Users', 'user'),
+    '/api/documents/':                      None,           # exempt for now
+    '/api/re-reports/':                     None,           # exempt for now
+    '/api/dashboards/':                     'DSH-001',      # Dashboard
+    
+    '/api/usermanagement/permission-templates/': 'MIM-PERMTPL',  # Permission Templates
+    '/api/usermanagement/users/':           'MIM-018',      # Users
+    '/api/usermanagement/':                 'MIM-018',      # User Management
 }
 
-METHOD_TO_PERM_ACTION = {
-    'GET': 'view',
-    'HEAD': 'view',
+METHOD_TO_ACTION = {
+    'GET':     'view',
+    'HEAD':    'view',
     'OPTIONS': 'view',
-    'POST': 'add',
-    'PUT': 'change',
-    'PATCH': 'change',
-    'DELETE': 'delete',
+    'POST':    'add',
+    'PUT':     'edit',
+    'PATCH':   'edit',
+    'DELETE':  'delete',
 }
 
 EXEMPT_PREFIXES = (
-    '/api/users/',        # Auth (login, logout, token refresh)
-    '/api/system/',       # System config, menu
-    '/api/reports/',      # Import/export framework
-    '/api/general/',      # General settings
-    '/api/usermanagement/dropdowns/',       # Dropdowns needed by all screens
-    '/api/usermanagement/my-permissions/',  # Needed for frontend permission checks
+    '/api/users/',
+    '/api/system/',
+    '/api/reports/',
+    '/api/general/',
+    '/api/usermanagement/dropdowns/',
+    '/api/usermanagement/my-permissions/',
 )
 
 
 class ScreenPermission(BasePermission):
     """
-    Enforces Django group permissions based on URL-to-model mapping.
+    Checks the UserPermission table on every API request.
 
-    - Superusers bypass all checks.
-    - Exempt URLs pass through.
-    - For mapped URLs, checks user.has_perm('{app_label}.{action}_{model}')
+    Flow:
+    1. Superusers → always allowed.
+    2. Admin users (is_admin=True) → always allowed.
+    3. Exempt prefix → allowed.
+    4. URL matched to Menuitem code → check UserPermission row.
+       - Row found and flag is True → allowed.
+       - Row missing or flag False  → denied.
+    5. No URL match → allowed (fail-open for unmapped endpoints).
     """
 
     message = 'You do not have permission to perform this action.'
@@ -88,29 +88,56 @@ class ScreenPermission(BasePermission):
         if user.is_superuser:
             return True
 
+        # Admin users have all permissions like superuser
+        try:
+            if hasattr(user, 'is_admin') and user.is_admin:
+                return True
+        except Exception:
+            pass
+
         path = request.path
         if not path.endswith('/'):
-            path = path + '/'
+            path += '/'
 
-        # Check exempt prefixes first
         for prefix in EXEMPT_PREFIXES:
             if path.startswith(prefix):
                 return True
 
-        # Find which permission model this URL maps to (check longer prefixes first)
-        perm_model = None
-        matched_prefix = ''
-        for prefix, model_info in URL_TO_PERMISSION_MODEL.items():
-            if path.startswith(prefix) and len(prefix) > len(matched_prefix):
-                perm_model = model_info
-                matched_prefix = prefix
+        # Find longest matching prefix
+        menuitem_code = None
+        matched_len = 0
+        for prefix, code in URL_TO_MENUITEM_CODE.items():
+            if path.startswith(prefix) and len(prefix) > matched_len:
+                menuitem_code = code
+                matched_len = len(prefix)
 
-        # No mapping found — allow (don't break unmapped endpoints)
-        if perm_model is None:
+        if matched_len == 0:
+            return True   # no mapping — allow
+
+        if menuitem_code is None:
+            return True   # explicitly exempted
+
+        action = METHOD_TO_ACTION.get(request.method, 'view')
+
+        try:
+            from Users.models import UserPermission
+            # Check permission via Menuitem code
+            perm = UserPermission.objects.filter(
+                user=user, 
+                menuitem__code=menuitem_code
+            ).select_related('menuitem').first()
+
+            if perm is None:
+                self.message = f'You do not have permission to access this screen ({menuitem_code}).'
+                return False
+
+            if not perm.has_permission(action):
+                self.message = f'You do not have {action} permission for this screen ({menuitem_code}).'
+                return False
+                
             return True
-
-        app_label, model_name = perm_model
-        action = METHOD_TO_PERM_ACTION.get(request.method, 'view')
-        perm_codename = f"{app_label}.{action}_{model_name}"
-
-        return user.has_perm(perm_codename)
+        except Exception as e:
+            # Log the error but fail open so app doesn't break
+            import logging
+            logging.getLogger(__name__).error(f"ScreenPermission check failed: {e}")
+            return True

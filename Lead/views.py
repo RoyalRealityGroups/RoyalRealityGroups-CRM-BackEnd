@@ -329,7 +329,7 @@ class LeadFollowUpViewSet(viewsets.ModelViewSet):
             lead__status__in=['DEAD']
         )
 
-        if not user.is_superuser and not user.is_staff:
+        if not user.is_superuser and not user.is_staff and not getattr(user, 'is_admin', False):
             qs = qs.filter(
                 Q(lead__assigned_employee=user) | Q(created_by=user)
             )
@@ -426,7 +426,7 @@ class CallLogViewSet(viewsets.ModelViewSet):
         user = self.request.user
         qs = CallLog.objects.select_related('lead', 'called_by')
 
-        if not user.is_superuser and not user.is_staff:
+        if not user.is_superuser and not user.is_staff and not getattr(user, 'is_admin', False):
             qs = qs.filter(called_by=user)
 
         # Filter by phone number
@@ -465,7 +465,7 @@ class CallLogViewSet(viewsets.ModelViewSet):
         from django.db.models import Count, Max
         user = request.user
         qs = CallLog.objects.all()
-        if not user.is_superuser and not user.is_staff:
+        if not user.is_superuser and not user.is_staff and not getattr(user, 'is_admin', False):
             qs = qs.filter(called_by=user)
 
         phone = request.query_params.get('phone_number')
@@ -524,7 +524,7 @@ class PhoneCommentViewSet(viewsets.ModelViewSet):
         user = self.request.user
         qs = PhoneComment.objects.select_related('lead', 'commented_by')
 
-        if not user.is_superuser and not user.is_staff:
+        if not user.is_superuser and not user.is_staff and not getattr(user, 'is_admin', False):
             qs = qs.filter(commented_by=user)
 
         phone = self.request.query_params.get('phone_number')

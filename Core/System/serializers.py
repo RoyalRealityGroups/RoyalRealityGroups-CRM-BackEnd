@@ -23,7 +23,7 @@ from rest_framework import serializers
 from Users.models import User
 from django.contrib.auth.models import Group
 
-from Users.serializers import  GroupMiniSerializer
+from Core.Users.serializers import GroupMiniSerializer
 from .models import AlertConfigUsers, Menu, RecentActivity, Submenu, Menuitem, Notification, NotificationUsers, Backup, Restore, Attachment,Formula, FormulaUpdate, ActivityLog, FormulaVariables, TaskScheduler, TemporaryVerification, ACTION_TYPES_CHOICES, SEEN_CHOICES, Error, Download, AlertConfig, Announcements, Template
 
 
@@ -90,20 +90,47 @@ class UserMenuitemSerializer(serializers.ModelSerializer):
 
 
 def filter_menuitems_by_permission(queryset, user):
-    """Filter menuitems based on user's Django group permissions."""
+    """Filter menuitems based on user's permissions.
+    
+    Checks both:
+    1. Django group permissions (legacy)
+    2. Menu-based permissions from UserPermission table (new system)
+    """
     if user.is_superuser:
         return queryset
     
-    # Get user's permissions from Django's group permissions
+    # Admin users have all permissions like superuser
+    # Check both attribute and hasattr for different user model scenarios
+    try:
+        if hasattr(user, 'is_admin') and user.is_admin:
+            return queryset
+    except Exception:
+        pass
+    
+    # Get user's Django group permissions (legacy)
     user_permissions = set(user.get_all_permissions())
     
-    # If user has no permissions, return empty queryset
-    if not user_permissions:
+    # Get user's menu permissions from UserPermission table (new system)
+    # Now directly links to Menuitem, so we get the menuitem IDs
+    from Users.models import UserPermission
+    user_menuitem_ids = set(
+        UserPermission.objects.filter(user=user, can_view=True)
+        .values_list('menuitem_id', flat=True)
+    )
+    
+    # If user has no permissions at all, return empty queryset
+    if not user_permissions and not user_menuitem_ids:
         return queryset.none()
     
     # Filter by permissions
     filtered_ids = []
     for item in queryset.select_related('permission', 'permission__content_type'):
+        # Check new menu-based permission (direct match by menuitem ID)
+        if item.id in user_menuitem_ids:
+            filtered_ids.append(item.id)
+            continue
+            
+        # Check legacy Django permission
         if item.permission is None:
             # No permission required - accessible to all authenticated users
             filtered_ids.append(item.id)

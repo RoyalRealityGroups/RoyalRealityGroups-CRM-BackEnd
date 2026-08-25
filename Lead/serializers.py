@@ -9,6 +9,7 @@ from .models import (
 
 class LeadSerializer(serializers.ModelSerializer):
     assigned_employee_name = serializers.SerializerMethodField(read_only=True)
+    created_by_name = serializers.SerializerMethodField(read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     bucket_display = serializers.CharField(source='get_bucket_display', read_only=True)
     lead_source_display = serializers.CharField(source='get_lead_source_display', read_only=True)
@@ -25,6 +26,7 @@ class LeadSerializer(serializers.ModelSerializer):
             'status', 'status_display', 'bucket', 'bucket_display', 'remarks',
             'cross_lead_override', 'cross_lead_override_reason',
             'created_on', 'modified_on', 'created_by_type', 'created_by_identifier',
+            'created_by_name',
             'modified_by_type', 'modified_by_identifier'
         ]
         read_only_fields = ('code', 'modified_on')
@@ -35,6 +37,24 @@ class LeadSerializer(serializers.ModelSerializer):
                 f"{obj.assigned_employee.first_name} {obj.assigned_employee.last_name}".strip()
                 or obj.assigned_employee.username
             )
+        return None
+
+    def get_created_by_name(self, obj):
+        """Get the name of the user who created this lead."""
+        if not obj.created_by_identifier:
+            return None
+        
+        try:
+            from Users.models import User
+            # Direct import and query - no permission restrictions on model level
+            user = User.objects.only('id', 'first_name', 'last_name', 'username').filter(id=obj.created_by_identifier).first()
+            if user:
+                name = f"{user.first_name} {user.last_name}".strip()
+                return name if name else user.username
+        except Exception as e:
+            # Log error for debugging but don't break the response
+            import logging
+            logging.getLogger(__name__).warning(f"Error fetching created_by_name for lead {obj.id}: {e}")
         return None
 
     def to_representation(self, instance):

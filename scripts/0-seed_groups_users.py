@@ -10,6 +10,7 @@ Or from Django shell:
 Creates:
     Groups: Director, Team Leader, Sales Executive, Viewer
     Users:  One user per group with default password 'Pass@123'
+    UserPermissions: Menu-based permissions for each user
 """
 import django
 import os
@@ -31,7 +32,7 @@ DEFAULT_PASSWORD = 'Pass@123'
 
 
 # ============================================================================
-# GROUP DEFINITIONS
+# GROUP DEFINITIONS (Legacy Django permissions)
 # ============================================================================
 
 GROUPS = {
@@ -66,6 +67,39 @@ GROUPS = {
             'RealEstateReports', 'Documents', 'dashboards', 'Availability',
         ],
         'view_only': True,
+    },
+}
+
+
+# ============================================================================
+# MENUITEM-BASED PERMISSIONS (New system)
+# Maps group name to list of menuitem codes with their permissions
+# ============================================================================
+
+MENUITEM_PERMISSIONS = {
+    'Director': {
+        # Full access to all menuitems
+        '_all_': {'can_view': True, 'can_add': True, 'can_edit': True, 'can_delete': True, 'can_export': True},
+    },
+    'Team Leader': {
+        # Full access except user management
+        '_all_except_': ['USER_PERMISSION'],
+        '_default_': {'can_view': True, 'can_add': True, 'can_edit': True, 'can_delete': True, 'can_export': True},
+    },
+    'Sales Executive': {
+        # Specific screens with full access
+        'LEAD': {'can_view': True, 'can_add': True, 'can_edit': True, 'can_delete': False, 'can_export': False},
+        'FOLLOWUP': {'can_view': True, 'can_add': True, 'can_edit': True, 'can_delete': False, 'can_export': False},
+        'SITE_VISIT': {'can_view': True, 'can_add': True, 'can_edit': True, 'can_delete': False, 'can_export': False},
+        'BOOKING': {'can_view': True, 'can_add': True, 'can_edit': True, 'can_delete': False, 'can_export': False},
+        # View only
+        'INVENTORY': {'can_view': True, 'can_add': False, 'can_edit': False, 'can_delete': False, 'can_export': False},
+        'PROJECT': {'can_view': True, 'can_add': False, 'can_edit': False, 'can_delete': False, 'can_export': False},
+        'DASHBOARD': {'can_view': True, 'can_add': False, 'can_edit': False, 'can_delete': False, 'can_export': False},
+    },
+    'Viewer': {
+        # View-only access to all
+        '_all_': {'can_view': True, 'can_add': False, 'can_edit': False, 'can_delete': False, 'can_export': False, 'is_view_only': True},
     },
 }
 
@@ -181,6 +215,82 @@ def seed_groups():
     print()
 
 
+def seed_user_menu_permissions(user, group_name):
+    """Create UserPermission records based on menuitem-based permission config."""
+    from Users.models import UserPermission
+    from Core.System.models import Menuitem
+    
+    config = MENUITEM_PERMISSIONS.get(group_name, {})
+    if not config:
+        return 0
+    
+    all_menuitems = Menuitem.objects.filter(is_deleted=False)
+    count = 0
+    
+    # Handle '_all_' - full access to all menuitems
+    if '_all_' in config:
+        perms = config['_all_']
+        for menuitem in all_menuitems:
+            UserPermission.objects.update_or_create(
+                user=user,
+                menuitem=menuitem,
+                defaults={
+                    'can_view': perms.get('can_view', False),
+                    'can_add': perms.get('can_add', False),
+                    'can_edit': perms.get('can_edit', False),
+                    'can_delete': perms.get('can_delete', False),
+                    'can_export': perms.get('can_export', False),
+                    'is_view_only': perms.get('is_view_only', False),
+                }
+            )
+            count += 1
+    
+    # Handle '_all_except_' - full access except certain codes
+    elif '_all_except_' in config:
+        exclude_codes = config['_all_except_']
+        default_perms = config.get('_default_', {})
+        for menuitem in all_menuitems:
+            if menuitem.code not in exclude_codes:
+                UserPermission.objects.update_or_create(
+                    user=user,
+                    menuitem=menuitem,
+                    defaults={
+                        'can_view': default_perms.get('can_view', False),
+                        'can_add': default_perms.get('can_add', False),
+                        'can_edit': default_perms.get('can_edit', False),
+                        'can_delete': default_perms.get('can_delete', False),
+                        'can_export': default_perms.get('can_export', False),
+                        'is_view_only': default_perms.get('is_view_only', False),
+                    }
+                )
+                count += 1
+    
+    # Handle specific menuitem codes
+    else:
+        for code, perms in config.items():
+            if code.startswith('_'):
+                continue
+            menuitem = all_menuitems.filter(code=code).first()
+            if menuitem:
+                UserPermission.objects.update_or_create(
+                    user=user,
+                    menuitem=menuitem,
+                    defaults={
+                        'can_view': perms.get('can_view', False),
+                        'can_add': perms.get('can_add', False),
+                        'can_edit': perms.get('can_edit', False),
+                        'can_delete': perms.get('can_delete', False),
+                        'can_export': perms.get('can_export', False),
+                        'is_view_only': perms.get('is_view_only', False),
+                    }
+                )
+                count += 1
+            else:
+                print(f"    Warning: Menuitem code '{code}' not found")
+    
+    return count
+
+
 def seed_users():
     """Create sample users and assign to groups."""
     print(f"{'='*50}")
@@ -218,14 +328,17 @@ def seed_users():
             user.set_password(DEFAULT_PASSWORD)
             user.save()
 
-        # Assign group
+        # Assign group (legacy)
         group = Group.objects.get(name=group_name)
         user.groups.clear()
         user.groups.add(group)
+        
+        # Assign menuitem-based permissions (new system)
+        perm_count = seed_user_menu_permissions(user, group_name)
 
         created_users[username] = user
         action = 'Created' if created else 'Exists'
-        print(f"  {action}: {username} ({user.first_name} {user.last_name}) -> Group: {group_name}")
+        print(f"  {action}: {username} ({user.first_name} {user.last_name}) -> Group: {group_name}, MenuPerms: {perm_count}")
 
     # Set reporting managers (second pass)
     print("\n  Setting reporting hierarchy...")
@@ -251,6 +364,11 @@ def run():
     print(f"{'='*50}\n")
     print(f"  Groups: {Group.objects.count()}")
     print(f"  Users:  {User.objects.filter(is_superuser=False).count()}")
+    
+    # Count menu permissions
+    from Users.models import UserPermission
+    print(f"  UserPermissions: {UserPermission.objects.count()}")
+    
     print(f"\n  Login with any user using password: {DEFAULT_PASSWORD}")
     print(f"  Usernames: {', '.join(u['username'] for u in USERS)}")
     print()

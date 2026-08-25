@@ -568,6 +568,26 @@ class IamUserSerializer(serializers.ModelSerializer):
     gender_name = serializers.SerializerMethodField()
     groups = GroupMiniSerializer(many=True, read_only=True)
     group_ids = serializers.ListField(write_only=True, child=serializers.PrimaryKeyRelatedField(write_only=True, queryset=Group.objects.all()), required=False)
+    screen_permissions = serializers.SerializerMethodField()
+    
+    def get_screen_permissions(self, obj):
+        """Return user's menu-level permissions from UserPermission table."""
+        from Users.models import UserPermission
+        perms = UserPermission.objects.filter(user=obj).select_related('menuitem')
+        return [
+            {
+                'menuitem_id': p.menuitem.id,
+                'menuitem_code': p.menuitem.code,
+                'menuitem_name': p.menuitem.name,
+                'can_view': p.can_view,
+                'can_add': p.can_add,
+                'can_edit': p.can_edit,
+                'can_delete': p.can_delete,
+                'can_export': p.can_export,
+                'is_view_only': p.is_view_only,
+            }
+            for p in perms
+        ]
     def get_gender_name(self, obj):
         return obj.get_gender_display()
     def get_fullname(self, user):
@@ -584,14 +604,15 @@ class IamUserSerializer(serializers.ModelSerializer):
         return value
     class Meta:
         model = User
-        read_only_fields = ['otp']
+        read_only_fields = ['otp', 'is_superuser', 'is_admin']
         fields = [
             'id', 'username', 'fullname', 'email', 'phone',
             'groups', 'group_ids', 'password',
             'first_name', 'last_name', 'otp', 'gender', 'gender_name',
             'is_email_verified', 'is_phone_verified',
             'receive_sms', 'receive_email', 'receive_notification',
-            'is_active', 'device_access', 'profilepicture',
+            'is_active', 'is_superuser', 'is_admin', 'device_access', 'profilepicture',
+            'screen_permissions',
         ]
 
 
@@ -782,8 +803,25 @@ class LoginSerializer(serializers.ModelSerializer):
         group_name = user.groups.all()[0].name if user.groups.count() > 0 else ""
         is_default_password = password == user.id
         
-        # Get user permissions
+        # Get user permissions (legacy Django group permissions)
         permissions = list(user.get_all_permissions())
+        
+        # Get menu-based permissions (new system)
+        from Users.models import UserPermission
+        screen_permissions = [
+            {
+                'menuitem_id': p.menuitem.id,
+                'menuitem_code': p.menuitem.code,
+                'menuitem_name': p.menuitem.name,
+                'can_view': p.can_view,
+                'can_add': p.can_add,
+                'can_edit': p.can_edit,
+                'can_delete': p.can_delete,
+                'can_export': p.can_export,
+                'is_view_only': p.is_view_only,
+            }
+            for p in UserPermission.objects.filter(user=user).select_related('menuitem')
+        ]
         
         # Get channel partner information
         channel_partner_data = {
@@ -807,7 +845,9 @@ class LoginSerializer(serializers.ModelSerializer):
             'tokens': tokens,
             'is_default_password': is_default_password,
             'is_superuser': user.is_superuser,
+            'is_admin': getattr(user, 'is_admin', False),
             'permissions': permissions,
+            'screen_permissions': screen_permissions,
             **channel_partner_data,
         }
 

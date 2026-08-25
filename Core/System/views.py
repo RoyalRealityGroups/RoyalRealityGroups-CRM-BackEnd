@@ -153,7 +153,7 @@ class MenuitemList2(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         queryset = Menuitem.objects.filter(is_deleted = False)
-        if not user.is_superuser:
+        if not user.is_superuser and not getattr(user, 'is_admin', False):
             queryset = queryset.filter(
                 Q(permission__user=user) |
                 Q(permission__group__user=user)
@@ -622,7 +622,7 @@ class ActivityLogByUserListView(generics.ListAPIView):
         user = self.request.user
         view_all = self.request.query_params.get("view_all")
         queryset = ActivityLog.objects.filter(is_deleted=False)
-        if not user.is_superuser:
+        if not user.is_superuser and not getattr(user, 'is_admin', False):
             queryset = queryset.filter(user_identifier=user.id)
 
         queryset = queryset.order_by('-created_on')

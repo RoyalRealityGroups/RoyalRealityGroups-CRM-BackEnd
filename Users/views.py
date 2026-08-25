@@ -32,6 +32,8 @@ def get_user_group(user, group_name):
 
 SKIP_DEPENDENCY_APPS = {'admin', 'auth', 'contenttypes', 'sessions'}
 
+TRANSACTION_APP_LABELS = {'Lead', 'SiteVisit', 'Booking', 'Availability', 'ProjectManagement'}
+
 
 def _has_field(model, field_name):
     return any(f.name == field_name for f in model._meta.fields)
@@ -140,8 +142,8 @@ class UserList(generics.ListAPIView):
         user = self.request.user
         queryset = User.objects.filter(is_superuser=False)
 
-        if not user.is_superuser:
-            # Exclude self — non-superusers cannot manage their own account from this screen
+        if not user.is_superuser and not getattr(user, 'is_admin', False):
+            # Exclude self — non-superusers/non-admins cannot manage their own account from this screen
             queryset = queryset.exclude(id=user.id)
             queryset = apply_company_location_filter_for_users(queryset, user)
 
@@ -161,7 +163,7 @@ class UserCreate(generics.CreateAPIView):
         # Handle location field safely - may not exist on all user models
         try:
             user_locations = user.location.all() if hasattr(user, 'location') else []
-            if not user.is_superuser and user_locations:
+            if not user.is_superuser and not getattr(user, 'is_admin', False) and user_locations:
                 queryset = queryset.filter(Q(id=user.id) | Q(location__in=user_locations))
         except Exception:
             pass
@@ -353,55 +355,187 @@ class ForceLogoutView(APIView):
 # RRGMS Permission API Views
 # =============================================================================
 
-class ScreenListView(generics.ListAPIView):
-    """List all screens"""
-    from Users.models import Screen
-    from Users.serializers import ScreenSerializer
+from Users.models import PermissionTemplate, PermissionTemplateDetail, PermissionAuditLog
+from Users.serializers import PermissionTemplateSerializer, PermissionTemplateMiniSerializer
+
+
+class PermissionTemplateListCreateView(generics.ListCreateAPIView):
+    """
+    List all permission templates or create a new one.
+    GET  /api/usermanagement/permission-templates/
+    POST /api/usermanagement/permission-templates/
+    """
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = ScreenSerializer
-    queryset = Screen.objects.filter(is_active=True).order_by('order', 'name')
+    serializer_class = PermissionTemplateSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'description']
+    ordering_fields = ['name', 'created_at']
+    ordering = ['name']
+
+    def get_queryset(self):
+        queryset = PermissionTemplate.objects.all()
+        # Filter by is_active if provided
+        is_active = self.request.query_params.get('is_active')
+        if is_active is not None:
+            queryset = queryset.filter(is_active=is_active.lower() == 'true')
+        return queryset
+
+
+class PermissionTemplateDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update or delete a permission template.
+    GET/PUT/PATCH/DELETE /api/usermanagement/permission-templates/<pk>/
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = PermissionTemplateSerializer
+    queryset = PermissionTemplate.objects.all()
+
+
+class PermissionTemplateMiniListView(generics.ListAPIView):
+    """
+    Minimal list for dropdown selections.
+    GET /api/usermanagement/permission-templates/mini/
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = PermissionTemplateMiniSerializer
+
+    def get_queryset(self):
+        return PermissionTemplate.objects.filter(is_active=True).order_by('name')
+
+
+class ApplyTemplateToUserView(APIView):
+    """
+    Apply a permission template to a user.
+    POST /api/usermanagement/permission-templates/<template_id>/apply/<user_id>/
+    
+    This copies all permissions from the template to the user.
+    If merge=true in request body, it merges with existing permissions.
+    If merge=false (default), it replaces all user permissions.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, template_id, user_id):
+        from Users.models import UserPermission, PermissionAuditLog
+
+        # Check permission to manage users
+        if not request.user.is_superuser:
+            has_perm = UserPermission.objects.filter(
+                user=request.user, menuitem__code='USER_PERMISSION', can_edit=True
+            ).exists()
+            if not has_perm:
+                return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            template = PermissionTemplate.objects.get(id=template_id)
+        except PermissionTemplate.DoesNotExist:
+            return Response({'error': 'Template not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            target_user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        merge = request.data.get('merge', False)
+
+        if not merge:
+            # Delete existing permissions
+            UserPermission.objects.filter(user=target_user).delete()
+
+        # Apply template permissions
+        applied_count = 0
+        for detail in template.details.all():
+            UserPermission.objects.update_or_create(
+                user=target_user,
+                menuitem=detail.menuitem,
+                defaults={
+                    'can_view': detail.can_view,
+                    'can_add': detail.can_add,
+                    'can_edit': detail.can_edit,
+                    'can_delete': detail.can_delete,
+                    'can_export': detail.can_export,
+                }
+            )
+            applied_count += 1
+
+        # Audit log
+        PermissionAuditLog.objects.create(
+            changed_by=request.user,
+            target_user=target_user,
+            action='APPLY_TEMPLATE',
+            field_changed='permissions',
+            old_value='',
+            new_value=f'Applied template: {template.name} (merge={merge})',
+            ip_address=request.META.get('REMOTE_ADDR')
+        )
+
+        return Response({
+            'message': f'Applied template "{template.name}" to user "{target_user.username}" ({applied_count} permissions)',
+            'applied_count': applied_count,
+        })
+
+
+class ScreenListView(generics.ListAPIView):
+    """List all screens — used by UserForm permission picker."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_serializer_class(self):
+        from Users.serializers import ScreenSerializer
+        return ScreenSerializer
+
+    def get_queryset(self):
+        from Users.models import Screen
+        return Screen.objects.filter(is_active=True).order_by('order', 'name')
 
 
 class UserPermissionView(APIView):
-    """Get/Update permissions for a specific user"""
+    """Get/Update screen permissions for a specific user."""
     permission_classes = [permissions.IsAuthenticated]
-    
+
+    def _can_manage(self, request):
+        if request.user.is_superuser:
+            return True
+        from Users.models import UserPermission
+        return UserPermission.objects.filter(
+            user=request.user, screen__code='USER_PERMISSION', can_view=True
+        ).exists()
+
+    def _can_edit(self, request):
+        if request.user.is_superuser:
+            return True
+        from Users.models import UserPermission
+        return UserPermission.objects.filter(
+            user=request.user, screen__code='USER_PERMISSION', can_edit=True
+        ).exists()
+
     def get(self, request, user_id):
         from Users.models import UserPermission
         from Users.serializers import UserPermissionSerializer
-        
-        # Check if user has permission to manage users
-        user_perm = UserPermission.objects.filter(
-            user=request.user, screen__code='USER_PERMISSION', can_view=True, can_edit=True
-        ).first()
-        
-        if not request.user.is_superuser and not user_perm:
+
+        if not self._can_manage(request):
             return Response({'error': 'Permission denied'}, status=403)
-        
-        permissions = UserPermission.objects.filter(user_id=user_id)
-        serializer = UserPermissionSerializer(permissions, many=True)
+
+        perms = UserPermission.objects.filter(user_id=user_id).select_related('screen')
+        serializer = UserPermissionSerializer(perms, many=True)
         return Response(serializer.data)
-    
+
     def post(self, request, user_id):
         from Users.models import UserPermission, PermissionAuditLog
-        
-        # Check permission
-        user_perm = UserPermission.objects.filter(
-            user=request.user, screen__code='USER_PERMISSION', can_view=True, can_edit=True
-        ).first()
-        
-        if not request.user.is_superuser and not user_perm:
+
+        if not self._can_edit(request):
             return Response({'error': 'Permission denied'}, status=403)
-        
-        target_user = User.objects.get(id=user_id)
+
+        target_user = User.objects.filter(id=user_id).first()
+        if not target_user:
+            return Response({'error': 'User not found'}, status=404)
+
         permissions_data = request.data.get('permissions', [])
-        
+
         updated = 0
         for perm_data in permissions_data:
             screen_id = perm_data.get('screen')
             if not screen_id:
                 continue
-            
+
             perm, created = UserPermission.objects.update_or_create(
                 user=target_user,
                 screen_id=screen_id,

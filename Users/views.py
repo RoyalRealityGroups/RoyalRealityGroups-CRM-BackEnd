@@ -142,8 +142,8 @@ class UserList(generics.ListAPIView):
         user = self.request.user
         queryset = User.objects.filter(is_superuser=False)
 
-        if not user.is_superuser:
-            # Exclude self — non-superusers cannot manage their own account from this screen
+        if not user.is_superuser and not getattr(user, 'is_admin', False):
+            # Exclude self — non-superusers/non-admins cannot manage their own account from this screen
             queryset = queryset.exclude(id=user.id)
             queryset = apply_company_location_filter_for_users(queryset, user)
 
@@ -163,7 +163,7 @@ class UserCreate(generics.CreateAPIView):
         # Handle location field safely - may not exist on all user models
         try:
             user_locations = user.location.all() if hasattr(user, 'location') else []
-            if not user.is_superuser and user_locations:
+            if not user.is_superuser and not getattr(user, 'is_admin', False) and user_locations:
                 queryset = queryset.filter(Q(id=user.id) | Q(location__in=user_locations))
         except Exception:
             pass

@@ -222,7 +222,7 @@ class SiteVisitViewSet(viewsets.ModelViewSet):
 
         # Apply data scope — same as list view
         user = request.user
-        if not user.is_superuser and not user.is_staff:
+        if not user.is_superuser and not user.is_staff and not getattr(user, 'is_admin', False):
             from django.db.models import Q
             scope = getattr(user, 'sitevisit_data_scope', 'OWN')
             if scope == 'OWN':

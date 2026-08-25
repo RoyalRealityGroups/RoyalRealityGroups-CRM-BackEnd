@@ -206,8 +206,8 @@ def apply_data_scope(queryset, user, screen, employee_field='assigned_employee')
     if not getattr(user, 'is_authenticated', False):
         return queryset.none()
 
-    # Superusers and staff always see everything
-    if user.is_superuser or user.is_staff:
+    # Superusers, staff, and admin users always see everything
+    if user.is_superuser or user.is_staff or getattr(user, 'is_admin', False):
         return queryset
 
     # Get the data scope for this screen

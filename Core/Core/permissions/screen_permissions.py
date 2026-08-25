@@ -17,25 +17,30 @@ URL_TO_MENUITEM_CODE = {
     '/api/lead/leads/choices/':             None,           # exempt
     '/api/lead/call-logs/':                 None,           # exempt
     '/api/lead/phone-comments/':            None,           # exempt
-    '/api/lead/followups/':                 'FOLLOWUP',
-    '/api/lead/leads/cross_check/':         'CROSS_LEAD',
-    '/api/lead/leads/export/':              'LEAD',
-    '/api/lead/':                           'LEAD',
+    '/api/lead/followups/':                 'LM-003',       # Follow-ups
+    '/api/lead/leads/cross_check/':         'LM-001',       # Cross Lead uses Lead permission
+    '/api/lead/leads/export/':              'LM-001',       # Lead export
+    '/api/lead/':                           'LM-001',       # Leads
 
-    '/api/sitevisit/':                      'SITE_VISIT',
-    '/api/projects/':                       'PROJECT',
+    '/api/sitevisit/':                      'LM-002',       # Site Visits
+    
+    '/api/projects/choices/':               None,           # exempt - dropdown choices
+    '/api/projects/':                       'PROJ-001',     # Projects
 
-    '/api/inventory/':                      'INVENTORY',
+    '/api/inventory/':                      'INV-001',      # Inventory
     '/api/availability/projects/choices/':  None,           # exempt
-    '/api/availability/':                   'INVENTORY',
+    '/api/availability/':                   'INV-001',      # Availability/Inventory
 
     '/api/booking/bookings/choices/':       None,           # exempt
-    '/api/booking/':                        'BOOKING',
+    '/api/booking/':                        'BKG-001',      # Bookings
 
-    '/api/documents/':                      'DOCUMENT',
-    '/api/re-reports/':                     'REPORTS',
-    '/api/dashboards/':                     'DASHBOARD',
-    '/api/usermanagement/':                 'USER_PERMISSION',
+    '/api/documents/':                      None,           # exempt for now
+    '/api/re-reports/':                     None,           # exempt for now
+    '/api/dashboards/':                     'DSH-001',      # Dashboard
+    
+    '/api/usermanagement/permission-templates/': 'MIM-PERMTPL',  # Permission Templates
+    '/api/usermanagement/users/':           'MIM-018',      # Users
+    '/api/usermanagement/':                 'MIM-018',      # User Management
 }
 
 METHOD_TO_ACTION = {

@@ -21,8 +21,8 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     # Legacy fields - optional, kept for backward compatibility
     project_type = serializers.CharField(allow_blank=True, required=False, default='PLOT')
-    approval_type = serializers.CharField(allow_blank=True, required=False, default='PENDING')
-    status = serializers.CharField(allow_blank=True, required=False, default='UPCOMING')
+    approval_type = serializers.CharField(allow_blank=True, required=False, default='GVMC')
+    status = serializers.CharField(allow_blank=True, required=False, default='UNDER_CONSTRUCTION')
     sub = serializers.ImageField(allow_null=True, required=False)
     elevation_image = serializers.ImageField(allow_null=True, required=False)
     thumbnail = serializers.ImageField(allow_null=True, required=False)

@@ -264,8 +264,13 @@ class DashboardSummaryView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def _is_admin(self, user):
-        """Check if user should see all data — superuser or staff only."""
-        return user.is_superuser or user.is_staff
+        """Check if user should see all data — superuser, staff, or admin-flagged user.
+
+        Mirrors the canonical admin check in utils.apply_data_scope so the
+        dashboard/reports scope matches every other screen. Users created with
+        the "Admin User" toggle (Users.User.is_admin) must see all data.
+        """
+        return user.is_superuser or user.is_staff or getattr(user, 'is_admin', False)
 
     def _scope_leads(self, qs, user):
         if self._is_admin(user):
@@ -452,7 +457,9 @@ class TodaysInsightsDetailView(APIView):
         today = timezone.now().date()
         now = timezone.now()
         user = request.user
-        is_admin = user.is_superuser or user.is_staff
+        # Include the custom is_admin flag so toggle-admin users see all data,
+        # consistent with utils.apply_data_scope used across every other screen.
+        is_admin = user.is_superuser or user.is_staff or getattr(user, 'is_admin', False)
 
         # --- Scoped querysets ---
         if is_admin:

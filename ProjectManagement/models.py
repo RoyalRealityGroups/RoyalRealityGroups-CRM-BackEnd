@@ -11,10 +11,8 @@ class Project(CoreModel):
     CODE_PREFIX = 'PROJ'
 
     PROJECT_STATUS_CHOICES = [
-        ('UPCOMING', 'Upcoming'),
-        ('ACTIVE', 'Active'),
-        ('COMPLETED', 'Completed'),
-        ('SOLD_OUT', 'Sold Out'),
+        ('UNDER_CONSTRUCTION', 'Under Construction'),
+        ('READY_TO_OCCUPY', 'Ready to Occupy'),
     ]
 
     PROJECT_TYPE_CHOICES = [
@@ -27,11 +25,7 @@ class Project(CoreModel):
     APPROVAL_TYPE_CHOICES = [
         ('GVMC', 'GVMC'),
         ('VMRDA', 'VMRDA'),
-        ('DTCP', 'DTCP'),
-        ('HMDA', 'HMDA'),
-        ('PANCHAYAT', 'Panchayat'),
-        ('PENDING', 'Pending'),
-        ('NA', 'N/A'),
+        ('RERA', 'RERA'),
     ]
 
     name = models.CharField(max_length=200, db_index=True)
@@ -44,11 +38,11 @@ class Project(CoreModel):
         help_text='Project location (free text)',
     )
     approval_type = models.CharField(
-        max_length=20, choices=APPROVAL_TYPE_CHOICES, default='PENDING',
+        max_length=20, choices=APPROVAL_TYPE_CHOICES, default='GVMC',
     )
 
     status = models.CharField(
-        max_length=20, choices=PROJECT_STATUS_CHOICES, default='UPCOMING', db_index=True,
+        max_length=20, choices=PROJECT_STATUS_CHOICES, default='UNDER_CONSTRUCTION', db_index=True,
     )
     sub = models.ImageField(upload_to='projects/', null=True, blank=True)
 

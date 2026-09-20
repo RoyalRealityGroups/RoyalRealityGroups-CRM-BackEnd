@@ -24,6 +24,57 @@ from .services import (
 )
 
 
+def _count_calls_on_date(call_qs, target_date):
+    """
+    Count the ACTUAL number of calls made on ``target_date``.
+
+    CallLog collapses repeated calls to the same number by the same user into a
+    single row (``call_count`` incremented, each timestamp appended to the
+    ``call_times`` JSON list as 'DD-MM-YYYY HH:MM:SS' in IST). A plain row count
+    (``.count()``) therefore undercounts: the 2nd, 3rd ... call to a number on the
+    same day never creates a new row, so the card stops increasing.
+
+    This counts every individual call by inspecting ``call_times``:
+      - For each row, count how many of its ``call_times`` entries fall on
+        ``target_date``.
+      - Rows with an empty ``call_times`` (legacy data created before the field
+        existed) fall back to their ``called_at`` date.
+    """
+    date_prefix = target_date.strftime('%d-%m-%Y')
+    total = 0
+    for times, called_at in call_qs.values_list('call_times', 'called_at'):
+        if times:
+            total += sum(1 for t in times if isinstance(t, str) and t.startswith(date_prefix))
+        elif called_at and called_at.date() == target_date:
+            # Legacy row without recorded call_times — count the single call.
+            total += 1
+    return total
+
+
+def _hourly_calls_on_date(call_qs, target_date):
+    """
+    Build a 24-slot hourly distribution of ACTUAL calls on ``target_date``,
+    counting every entry in ``call_times`` (not just one per row). Mirrors the
+    logic in :func:`_count_calls_on_date`.
+    """
+    date_prefix = target_date.strftime('%d-%m-%Y')
+    hourly_map = {h: 0 for h in range(24)}
+    for times, called_at in call_qs.values_list('call_times', 'called_at'):
+        if times:
+            for t in times:
+                if isinstance(t, str) and t.startswith(date_prefix):
+                    # Format: 'DD-MM-YYYY HH:MM:SS'
+                    try:
+                        hour = int(t[11:13])
+                        if 0 <= hour <= 23:
+                            hourly_map[hour] += 1
+                    except (ValueError, IndexError):
+                        continue
+        elif called_at and called_at.date() == target_date:
+            hourly_map[called_at.hour] += 1
+    return hourly_map
+
+
 def _period(request):
     return request.query_params.get('period', None)
 
@@ -314,7 +365,9 @@ class DashboardSummaryView(APIView):
         call_qs = self._scope_call_logs(CallLog.objects.all(), user)
 
         # ---- TODAY'S INSIGHTS (summary for the card) ----
-        today_calls = call_qs.filter(called_at__date=today).count()
+        # Count every actual call today (repeat calls to the same number are
+        # collapsed into one CallLog row via call_count/call_times), not rows.
+        today_calls = _count_calls_on_date(call_qs, today)
         today_leads = lead_qs.filter(created_on__date=today).count()
         today_followups_done = 0
         try:
@@ -334,16 +387,8 @@ class DashboardSummaryView(APIView):
         }
 
         # ---- CALLING TREND (hourly for today, 0-23) ----
-        today_calls_qs = call_qs.filter(called_at__date=today)
-        hourly_data = list(
-            today_calls_qs
-            .annotate(hour=TruncHour('called_at'))
-            .values('hour')
-            .annotate(count=Count('id'))
-            .order_by('hour')
-        )
-        # Build full 24-hour array
-        hourly_map = {row['hour'].hour: row['count'] for row in hourly_data}
+        # Count every actual call (each call_times entry), not one per row.
+        hourly_map = _hourly_calls_on_date(call_qs, today)
         calling_trend = [
             {'hour': h, 'label': f"{h:02d}:00", 'calls': hourly_map.get(h, 0)}
             for h in range(24)
@@ -367,8 +412,11 @@ class DashboardSummaryView(APIView):
             visits = all_sv.filter(assigned_employee=emp).count()
             bookings = all_bkg.exclude(status='CANCELLED').filter(sales_executive=emp).count()
             registrations = all_bkg.filter(sales_executive=emp, status='REGISTERED').count()
-            calls = all_calls.filter(called_by=emp).count()
-            today_emp_calls = all_calls.filter(called_by=emp, called_at__date=today).count()
+            emp_calls_qs = all_calls.filter(called_by=emp)
+            # Lifetime total = sum of every synced call (call_count), not rows.
+            calls = emp_calls_qs.aggregate(total=Sum('call_count'))['total'] or 0
+            # Today's total = every actual call made today across the emp's rows.
+            today_emp_calls = _count_calls_on_date(emp_calls_qs, today)
             if leads > 0 or visits > 0 or bookings > 0 or calls > 0:
                 employee_performance.append({
                     'employee_id': str(emp.id),
@@ -462,14 +510,19 @@ class TodaysInsightsDetailView(APIView):
         is_admin = user.is_superuser or user.is_staff or getattr(user, 'is_admin', False)
 
         # --- Scoped querysets ---
+        # NOTE: call_qs is scoped by user only (NOT by called_at date). Repeat
+        # calls to the same number are merged into one CallLog row whose
+        # called_at may be from an earlier day, so filtering by called_at__date
+        # would drop today's repeat calls. Today-filtering is applied via the
+        # call_times-aware helpers below.
         if is_admin:
-            call_qs = CallLog.objects.filter(called_at__date=today)
+            call_qs = CallLog.objects.all()
             lead_qs = Lead.objects.filter(is_deleted=False, created_on__date=today)
             fu_qs = LeadFollowUp.objects.filter(lead__is_deleted=False, follow_up_date=today)
             sv_qs = SiteVisit.objects.filter(is_deleted=False, visit_date=today)
             bkg_qs = Booking.objects.filter(is_deleted=False, booking_date=today)
         else:
-            call_qs = CallLog.objects.filter(called_at__date=today, called_by=user)
+            call_qs = CallLog.objects.filter(called_by=user)
             lead_qs = Lead.objects.filter(is_deleted=False, created_on__date=today, assigned_employee=user)
             fu_qs = LeadFollowUp.objects.filter(
                 lead__is_deleted=False, follow_up_date=today
@@ -477,22 +530,33 @@ class TodaysInsightsDetailView(APIView):
             sv_qs = SiteVisit.objects.filter(is_deleted=False, visit_date=today, assigned_employee=user)
             bkg_qs = Booking.objects.filter(is_deleted=False, booking_date=today, sales_executive=user)
 
-        # --- Call summary ---
-        calls_by_type = list(
-            call_qs.values('call_type').annotate(count=Count('id')).order_by('-count')
-        )
-        total_calls = call_qs.count()
-        total_duration = call_qs.aggregate(total=Sum('duration_secs'))['total'] or 0
-        avg_duration = call_qs.aggregate(avg=Avg('duration_secs'))['avg'] or 0
+        # Rows that have at least one call today (used for by-type/duration/recent).
+        today_prefix = today.strftime('%d-%m-%Y')
+        today_row_ids = [
+            row_id for row_id, times, called_at in call_qs.values_list('id', 'call_times', 'called_at')
+            if (times and any(isinstance(t, str) and t.startswith(today_prefix) for t in times))
+            or (not times and called_at and called_at.date() == today)
+        ]
+        today_call_rows = call_qs.filter(id__in=today_row_ids)
 
-        # --- Hourly distribution ---
-        hourly_data = list(
-            call_qs.annotate(hour=TruncHour('called_at'))
-            .values('hour')
-            .annotate(count=Count('id'))
-            .order_by('hour')
+        # --- Call summary ---
+        # total_calls counts every actual call today (via call_times), not rows.
+        total_calls = _count_calls_on_date(call_qs, today)
+        calls_by_type = list(
+            today_call_rows.values('call_type').annotate(count=Count('id')).order_by('-count')
         )
-        hourly_map = {row['hour'].hour: row['count'] for row in hourly_data}
+        total_duration = today_call_rows.aggregate(total=Sum('duration_secs'))['total'] or 0
+        avg_duration = today_call_rows.aggregate(avg=Avg('duration_secs'))['avg'] or 0
+
+        # --- Connected vs Dialed ---
+        # Connected = client answered (duration_secs > 0).
+        # Dialed    = called but no answer / not connected (duration_secs == 0,
+        #             e.g. missed/rejected calls).
+        connected_calls = today_call_rows.filter(duration_secs__gt=0).count()
+        dialed_calls = today_call_rows.filter(duration_secs=0).count()
+
+        # --- Hourly distribution (every actual call today, not one per row) ---
+        hourly_map = _hourly_calls_on_date(call_qs, today)
         hourly_distribution = [
             {'hour': h, 'label': f"{h:02d}:00", 'calls': hourly_map.get(h, 0)}
             for h in range(24)
@@ -520,9 +584,9 @@ class TodaysInsightsDetailView(APIView):
         # --- Bookings today ---
         bookings_today = bkg_qs.exclude(status='CANCELLED').count()
 
-        # --- Recent calls (last 20) ---
+        # --- Recent calls (last 20) — only rows with a call today ---
         recent_calls = list(
-            call_qs.order_by('-called_at')[:20].values(
+            today_call_rows.order_by('-called_at')[:20].values(
                 'id', 'phone_number', 'call_type', 'duration_secs', 'called_at',
                 'lead__name', 'lead__id', 'called_by__first_name', 'called_by__last_name',
                 'called_by__username',
@@ -543,6 +607,8 @@ class TodaysInsightsDetailView(APIView):
                 'total_calls': total_calls,
                 'total_duration_secs': total_duration,
                 'avg_duration_secs': round(avg_duration, 1),
+                'connected_calls': connected_calls,
+                'dialed_calls': dialed_calls,
                 'leads_entered': leads_entered,
                 'follow_ups_done': followups_done,
                 'site_visits': site_visits_today,

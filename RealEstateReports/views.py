@@ -622,3 +622,407 @@ class TodaysInsightsDetailView(APIView):
             'hourly_distribution': hourly_distribution,
             'recent_calls': recent_calls,
         })
+
+
+class TodaysCallsView(APIView):
+    """
+    Paginated + filterable list of TODAY's calls for the Recent Calls card.
+
+    Why this is separate from TodaysInsightsDetailView:
+      That view returns a fixed "last 20" preview. This endpoint returns EVERY
+      call made today, with server-side filtering and pagination, so the UI can
+      show all records (10/20/50 per page) and filter by time/employee/type.
+
+    Important — call expansion:
+      CallLog collapses repeat calls to the same number by the same user into one
+      row (call_count incremented, each timestamp appended to the call_times JSON
+      list formatted 'DD-MM-YYYY HH:MM:SS' in IST). "One call" is therefore ONE
+      entry in call_times, not one row. To paginate/filter individual calls (and
+      keep totals consistent with _count_calls_on_date), we EXPAND each row into
+      one record per today call_times entry before filtering, sorting and paging.
+
+    Query params:
+      - from_time  : 'HH:MM' lower bound (inclusive) of the call time window (optional)
+      - to_time    : 'HH:MM' upper bound (inclusive) of the call time window (optional)
+                     from_time/to_time can be used alone (open-ended) or together.
+      - hour       : 0-23, keep only calls in that clock hour. Legacy/back-compat;
+                     ignored when from_time or to_time is supplied (optional)
+      - call_type  : outgoing|incoming|missed|rejected|unknown (optional)
+      - employee   : User id, keep only calls made by that user (admin only; a
+                     non-admin is already scoped to their own calls) (optional)
+      - page       : 1-based page number (default 1)
+      - page_size  : 10 | 20 | 50 (default 10, capped at 100)
+
+    Response:
+      {
+        "count": <total matching calls>,
+        "page": <int>, "page_size": <int>, "num_pages": <int>,
+        "is_admin_view": <bool>,
+        "employees": [ {"id","name"} ... ],   # for the Called-By filter dropdown
+        "results": [ {id, phone_number, call_type, duration_secs, called_at,
+                      lead_name, lead_id, called_by_name, called_by_id} ... ]
+      }
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        from django.utils import timezone
+        from Lead.models import CallLog
+
+        today = timezone.localdate()
+        today_prefix = today.strftime('%d-%m-%Y')
+        user = request.user
+        is_admin = user.is_superuser or user.is_staff or getattr(user, 'is_admin', False)
+
+        # --- Scope (same rule as the insights view) ---
+        if is_admin:
+            call_qs = CallLog.objects.all()
+        else:
+            call_qs = CallLog.objects.filter(called_by=user)
+
+        # --- Parse filters ---
+        def _parse_minutes(value):
+            """'HH:MM' (or 'HH:MM:SS') -> minutes-since-midnight, else None."""
+            if not value:
+                return None
+            parts = str(value).split(':')
+            try:
+                h = int(parts[0])
+                m = int(parts[1]) if len(parts) > 1 else 0
+            except (ValueError, IndexError):
+                return None
+            if not (0 <= h <= 23 and 0 <= m <= 59):
+                return None
+            return h * 60 + m
+
+        from_min = _parse_minutes(request.query_params.get('from_time'))
+        to_min = _parse_minutes(request.query_params.get('to_time'))
+
+        # Legacy single-hour filter — only honoured when no range is supplied.
+        hour_param = request.query_params.get('hour')
+        try:
+            hour_filter = int(hour_param) if hour_param not in (None, '') else None
+            if hour_filter is not None and not (0 <= hour_filter <= 23):
+                hour_filter = None
+        except (TypeError, ValueError):
+            hour_filter = None
+        if from_min is not None or to_min is not None:
+            # If a range is given, convert the legacy hour into the range too so
+            # only one time rule is active; the range always wins.
+            hour_filter = None
+
+        def _time_ok(dt):
+            """True if dt's clock time passes the active time filter(s)."""
+            if from_min is not None or to_min is not None:
+                mins = dt.hour * 60 + dt.minute
+                if from_min is not None and mins < from_min:
+                    return False
+                if to_min is not None and mins > to_min:
+                    return False
+                return True
+            if hour_filter is not None:
+                return dt.hour == hour_filter
+            return True
+
+        call_type_filter = request.query_params.get('call_type') or None
+        employee_filter = request.query_params.get('employee') or None
+        # A non-admin can only ever see their own calls; ignore any employee param.
+        if not is_admin:
+            employee_filter = None
+
+        try:
+            page = max(1, int(request.query_params.get('page', 1)))
+        except (TypeError, ValueError):
+            page = 1
+        try:
+            page_size = int(request.query_params.get('page_size', 10))
+        except (TypeError, ValueError):
+            page_size = 10
+        if page_size not in (10, 20, 50):
+            page_size = min(max(page_size, 1), 100)
+
+        # Pre-filter rows by DB-level fields to avoid expanding irrelevant rows.
+        if call_type_filter:
+            call_qs = call_qs.filter(call_type=call_type_filter)
+        if employee_filter:
+            call_qs = call_qs.filter(called_by__id=employee_filter)
+
+        rows = call_qs.values(
+            'id', 'phone_number', 'call_type', 'duration_secs', 'called_at',
+            'call_times', 'lead__name', 'lead__id',
+            'called_by__first_name', 'called_by__last_name', 'called_by__username',
+            'called_by__id',
+        )
+
+        # --- Expand each row into one record per today's call_times entry ---
+        expanded = []
+        for r in rows:
+            name = f"{r.get('called_by__first_name') or ''} {r.get('called_by__last_name') or ''}".strip()
+            called_by_name = name or r.get('called_by__username') or 'Unknown'
+            called_by_id = str(r.get('called_by__id')) if r.get('called_by__id') else None
+            lead_name = r.get('lead__name')
+            lead_id = str(r.get('lead__id')) if r.get('lead__id') else None
+
+            base = {
+                'id': str(r['id']),
+                'phone_number': r['phone_number'],
+                'call_type': r['call_type'],
+                'duration_secs': r['duration_secs'],
+                'lead_name': lead_name,
+                'lead_id': lead_id,
+                'called_by_name': called_by_name,
+                'called_by_id': called_by_id,
+            }
+
+            times = r.get('call_times') or []
+            today_times = [t for t in times if isinstance(t, str) and t.startswith(today_prefix)]
+
+            if today_times:
+                for idx, t in enumerate(today_times):
+                    try:
+                        dt = timezone.datetime.strptime(t, '%d-%m-%Y %H:%M:%S')
+                    except (ValueError, TypeError):
+                        continue
+                    if not _time_ok(dt):
+                        continue
+                    rec = dict(base)
+                    # Keep a stable unique key per expanded call.
+                    rec['id'] = f"{base['id']}-{idx}"
+                    rec['called_at'] = dt.isoformat()
+                    rec['_sort'] = dt
+                    expanded.append(rec)
+            else:
+                # Legacy row without call_times: fall back to called_at if it's today.
+                called_at = r.get('called_at')
+                if called_at and timezone.localtime(called_at).date() == today:
+                    local_dt = timezone.localtime(called_at)
+                    if _time_ok(local_dt):
+                        rec = dict(base)
+                        rec['called_at'] = local_dt.isoformat()
+                        rec['_sort'] = local_dt.replace(tzinfo=None)
+                        expanded.append(rec)
+
+        # --- Sort newest-first and paginate ---
+        expanded.sort(key=lambda x: x['_sort'], reverse=True)
+        for rec in expanded:
+            rec.pop('_sort', None)
+
+        count = len(expanded)
+        num_pages = (count + page_size - 1) // page_size if count else 0
+        if num_pages and page > num_pages:
+            page = num_pages
+        start = (page - 1) * page_size
+        results = expanded[start:start + page_size]
+
+        # --- Employee dropdown options (admin only) ---
+        employees = []
+        if is_admin:
+            seen = {}
+            for r in rows:
+                uid = r.get('called_by__id')
+                if uid and uid not in seen:
+                    nm = f"{r.get('called_by__first_name') or ''} {r.get('called_by__last_name') or ''}".strip()
+                    seen[uid] = nm or r.get('called_by__username') or 'Unknown'
+            employees = [{'id': str(k), 'name': v} for k, v in sorted(seen.items(), key=lambda kv: kv[1].lower())]
+
+        return Response({
+            'count': count,
+            'page': page,
+            'page_size': page_size,
+            'num_pages': num_pages,
+            'is_admin_view': is_admin,
+            'employees': employees,
+            'results': results,
+        })
+
+
+class EmployeePerformanceDetailView(APIView):
+    """
+    All-round performance drill-down for a single employee, filterable by period.
+
+    Opened from the dashboard Employee Performance table when an employee row is
+    clicked. Returns:
+      - profile  : identity + HR fields (designation, joining date, tenure,
+                   reporting manager, contact, status)
+      - period   : the applied period + its resolved [start, end] date range
+      - summary  : period-scoped counters (leads, site visits, calls, bookings,
+                   registrations) and money (booking value, revenue, incentive)
+      - bookings : full list of the employee's bookings/registrations in the
+                   period (newest first) with project / unit / customer / amounts
+
+    Query params:
+      - period : today | this_week | this_month | last_month | this_year | all
+                 (default: this_month)
+
+    Access: superuser / staff / is_admin can view anyone; a regular user may only
+    view their OWN detail (returns 403 otherwise).
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def _resolve_period(self, period, today):
+        """Return (start_date, end_date) inclusive, or (None, None) for 'all'."""
+        import datetime as _dt
+        if period == 'today':
+            return today, today
+        if period == 'this_week':
+            start = today - _dt.timedelta(days=today.weekday())  # Monday
+            return start, today
+        if period == 'this_month':
+            return today.replace(day=1), today
+        if period == 'last_month':
+            first_this = today.replace(day=1)
+            last_prev = first_this - _dt.timedelta(days=1)
+            return last_prev.replace(day=1), last_prev
+        if period == 'this_year':
+            return today.replace(month=1, day=1), today
+        return None, None  # 'all'
+
+    def get(self, request, employee_id):
+        from django.utils import timezone
+        from django.contrib.auth import get_user_model
+        from django.db.models import Count, Sum, Q as models_Q
+        from Lead.models import Lead, CallLog
+        from SiteVisit.models import SiteVisit
+        from Booking.models import Booking
+
+        User = get_user_model()
+        today = timezone.localdate()
+        user = request.user
+        is_admin = user.is_superuser or user.is_staff or getattr(user, 'is_admin', False)
+
+        # --- Access control ---
+        if not is_admin and str(user.id) != str(employee_id):
+            return Response(
+                {'detail': 'You do not have permission to view this employee.'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        try:
+            emp = User.objects.filter(id=employee_id).first()
+        except (ValueError, TypeError, Exception):
+            # Invalid UUID / lookup error -> treat as not found.
+            emp = None
+        if emp is None:
+            return Response({'detail': 'Employee not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        period = (request.query_params.get('period') or 'this_month').lower()
+        valid_periods = {'today', 'this_week', 'this_month', 'last_month', 'this_year', 'all'}
+        if period not in valid_periods:
+            period = 'this_month'
+        start_date, end_date = self._resolve_period(period, today)
+
+        # --- Profile ---
+        full_name = f"{emp.first_name} {emp.last_name}".strip() or emp.username
+        manager = getattr(emp, 'reporting_manager', None)
+        manager_name = None
+        if manager:
+            manager_name = f"{manager.first_name} {manager.last_name}".strip() or manager.username
+
+        joining_date = getattr(emp, 'joining_date', None)
+        tenure_days = (today - joining_date).days if joining_date else None
+
+        profile = {
+            'id': str(emp.id),
+            'name': full_name,
+            'username': emp.username,
+            'designation': getattr(emp, 'designation', None),
+            'email': emp.email or None,
+            'phone': getattr(emp, 'phone', None) or getattr(emp, 'mobile', None),
+            'joining_date': joining_date.isoformat() if joining_date else None,
+            'tenure_days': tenure_days,
+            'reporting_manager': manager_name,
+            'status': getattr(emp, 'user_status', None),
+            'is_active': emp.is_active,
+        }
+
+        # --- Period-scoped querysets (by date field relevant to each model) ---
+        leads_qs = Lead.objects.filter(is_deleted=False, assigned_employee=emp)
+        sv_qs = SiteVisit.objects.filter(is_deleted=False, assigned_employee=emp)
+        bkg_qs = Booking.objects.filter(is_deleted=False, sales_executive=emp)
+        call_qs = CallLog.objects.filter(called_by=emp)
+
+        if start_date is not None:
+            leads_qs = leads_qs.filter(created_on__date__range=(start_date, end_date))
+            sv_qs = sv_qs.filter(visit_date__range=(start_date, end_date))
+            bkg_qs = bkg_qs.filter(booking_date__range=(start_date, end_date))
+
+        active_bkg = bkg_qs.exclude(status='CANCELLED')
+        reg_bkg = bkg_qs.filter(status='REGISTERED')
+
+        # --- Calls in the period (expand call_times; honours the dedup model) ---
+        if start_date is None:
+            calls_count = call_qs.aggregate(total=Sum('call_count'))['total'] or 0
+        else:
+            calls_count = 0
+            for times, called_at in call_qs.values_list('call_times', 'called_at'):
+                if times:
+                    for t in times:
+                        if not isinstance(t, str):
+                            continue
+                        try:
+                            d = timezone.datetime.strptime(t[:10], '%d-%m-%Y').date()
+                        except (ValueError, TypeError):
+                            continue
+                        if start_date <= d <= end_date:
+                            calls_count += 1
+                elif called_at:
+                    d = timezone.localtime(called_at).date()
+                    if start_date <= d <= end_date:
+                        calls_count += 1
+
+        money = active_bkg.aggregate(
+            booking_value=Sum('agreed_price'),
+            revenue=Sum('revenue'),
+            incentive=Sum('incentive'),
+        )
+
+        summary = {
+            'leads': leads_qs.count(),
+            'site_visits': sv_qs.count(),
+            'site_visits_completed': sv_qs.filter(status='COMPLETED').count(),
+            'calls': calls_count,
+            'bookings': active_bkg.count(),
+            'registrations': reg_bkg.count(),
+            'booking_value': float(money['booking_value'] or 0),
+            'revenue': float(money['revenue'] or 0),
+            'incentive': float(money['incentive'] or 0),
+        }
+
+        # --- Booking / registration detail list (newest first) ---
+        status_labels = dict(getattr(Booking, 'BOOKING_STATUS_CHOICES', []) or [])
+        try:
+            from Booking.models import BOOKING_STATUS_CHOICES
+            status_labels = dict(BOOKING_STATUS_CHOICES)
+        except Exception:
+            pass
+
+        bookings = []
+        for b in bkg_qs.select_related('project').order_by('-booking_date', '-created_on')[:200]:
+            bookings.append({
+                'id': str(b.id),
+                'code': getattr(b, 'code', None),
+                'customer_name': b.customer_name,
+                'customer_mobile': b.customer_mobile,
+                'project_name': b.project.name if b.project_id else None,
+                'unit_type': b.unit_type,
+                'unit_number': b.unit_number,
+                'agreed_price': float(b.agreed_price) if b.agreed_price is not None else None,
+                'booking_amount': float(b.booking_amount) if b.booking_amount is not None else None,
+                'revenue': float(b.revenue) if b.revenue is not None else None,
+                'incentive': float(b.incentive) if b.incentive is not None else None,
+                'status': b.status,
+                'status_label': status_labels.get(b.status, b.status),
+                'booking_date': b.booking_date.isoformat() if b.booking_date else None,
+            })
+
+        return Response({
+            'profile': profile,
+            'period': period,
+            'period_range': {
+                'start': start_date.isoformat() if start_date else None,
+                'end': end_date.isoformat() if end_date else None,
+            },
+            'summary': summary,
+            'bookings': bookings,
+            'is_admin_view': is_admin,
+        })

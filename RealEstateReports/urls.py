@@ -11,6 +11,8 @@ from .views import (
     EmployeePerformanceReportView,
     DashboardSummaryView,
     TodaysInsightsDetailView,
+    TodaysCallsView,
+    EmployeePerformanceDetailView,
 )
 
 urlpatterns = [
@@ -30,10 +32,14 @@ urlpatterns = [
 
     # Employee Performance
     path('employee-performance/', EmployeePerformanceReportView.as_view(), name='report-employee-performance'),
+    path('employee-performance/<str:employee_id>/detail/', EmployeePerformanceDetailView.as_view(), name='report-employee-performance-detail'),
 
     # Combined dashboard summary
     path('dashboard-summary/', DashboardSummaryView.as_view(), name='report-dashboard-summary'),
 
     # Today's Insights detailed view
     path('todays-insights/', TodaysInsightsDetailView.as_view(), name='todays-insights-detail'),
+
+    # Today's calls — paginated + filterable (Recent Calls card)
+    path('todays-insights/calls/', TodaysCallsView.as_view(), name='todays-insights-calls'),
 ]

@@ -17,6 +17,12 @@ class DataScope(models.TextChoices):
 class User(CoreUser):
     """Extended User model for RRGMS."""
 
+    # Override the inherited CoreUser.username to drop the DB-level unique=True.
+    # Username uniqueness is now enforced only among non-deleted users in the
+    # serializer / validation layer, so a soft-deleted user's username can be
+    # reused by a new user. (db_index is kept for lookup performance.)
+    username = models.CharField(max_length=255, db_index=True)
+
     designation = models.CharField(
         max_length=100, blank=True, null=True,
         help_text="Display-only designation (Director, Team Leader, etc.)"
@@ -40,6 +46,16 @@ class User(CoreUser):
     is_admin = models.BooleanField(
         default=False,
         help_text="Admin users have all permissions without being superuser"
+    )
+
+    # Soft-delete marker — a TERMINAL, permanent removal from the application.
+    # Distinct from is_active (a temporary, reversible login pause). A deleted
+    # user's historical data / FK references stay intact; the row is never
+    # hard-deleted. Deleted users are excluded from every user-facing queryset.
+    is_deleted = models.BooleanField(
+        default=False,
+        db_index=True,
+        help_text="Soft-deleted users are permanently removed from the application but retained in the DB"
     )
 
     # Data scope — controls record-level visibility per module

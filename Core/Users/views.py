@@ -257,7 +257,8 @@ class ForgotPasswordAPIView(generics.GenericAPIView):
         # Find user by email
         user = User.objects.filter(
             email__iexact=username_or_email,
-            is_active=True
+            is_active=True,
+            is_deleted=False,
         ).first()
 
         if not user:
@@ -346,7 +347,7 @@ class ResetPasswordConfirmView(APIView):
 
         # OTP is valid — reset password
         try:
-            user = User.objects.get(id=user_id, is_active=True)
+            user = User.objects.get(id=user_id, is_active=True, is_deleted=False)
         except User.DoesNotExist:
             return Response(
                 {"error": "User not found"},
@@ -373,13 +374,17 @@ class UserActive(APIView):
         id = kwargs['id']
         try:
             user = User.objects.get(id=id)
+            # A deleted user is terminal — activate/deactivate must refuse to
+            # operate on it and treat it as non-existent.
+            if user.is_deleted:
+                return Response({"user": 'user does not exists'}, status=status.HTTP_404_NOT_FOUND)
             if request.user.id == user.id:
                 return Response({"Message": "You Cant Perform This Action"}, status=status.HTTP_200_OK)
-            if User.objects.filter(username=user.username, is_active=True).count() > 0:
+            if User.objects.filter(username=user.username, is_active=True, is_deleted=False).exclude(id=user.id).count() > 0:
                 return Response({"username": 'UserName Already exists in Active Users'}, status=status.HTTP_400_BAD_REQUEST)
-            if User.objects.filter(phone=user.phone, is_active=True).count() > 0:
+            if User.objects.filter(phone=user.phone, is_active=True, is_deleted=False).exclude(id=user.id).count() > 0:
                 return Response({"phone": 'Phone Number Already exists in Active Users'}, status=status.HTTP_400_BAD_REQUEST)
-            if User.objects.filter(email=user.email, is_active=True).count() > 0:
+            if User.objects.filter(email=user.email, is_active=True, is_deleted=False).exclude(id=user.id).count() > 0:
                 return Response({"phone": 'Email Already exists in Active Users'}, status=status.HTTP_400_BAD_REQUEST)
             user.is_active = True
             user.save()
@@ -394,6 +399,9 @@ class UserInActive(APIView):
         id = kwargs['id']
         try:
             user = User.objects.get(id=id)
+            # A deleted user is terminal — refuse and treat as non-existent.
+            if user.is_deleted:
+                return Response({"user": 'user does not exists'}, status=status.HTTP_404_NOT_FOUND)
             if request.user.id == user.id:
                 return Response({"Message": "You Cant Perform This Action"}, status=status.HTTP_200_OK)
             JwtToken.objects.filter(user_type='User', user_identifier=user.id).delete()

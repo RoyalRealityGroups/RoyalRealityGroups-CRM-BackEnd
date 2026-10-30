@@ -91,6 +91,12 @@ USER_MODELS = [
 
 AUTH_USER_MODEL = 'Users.User'
 
+# Username uniqueness is enforced among non-deleted users in the serializer /
+# validation layer (so a soft-deleted user's username can be reused), hence the
+# USERNAME_FIELD is intentionally not DB-unique. The custom auth backends resolve
+# users among non-deleted rows, so auth.W004 does not apply here.
+SILENCED_SYSTEM_CHECKS = ['auth.W004']
+
 
 
 REST_FRAMEWORK = {

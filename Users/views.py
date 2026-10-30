@@ -140,7 +140,7 @@ class UserList(generics.ListAPIView):
     
     def get_queryset(self):
         user = self.request.user
-        queryset = User.objects.filter(is_superuser=False)
+        queryset = User.objects.filter(is_superuser=False, is_deleted=False)
 
         if not user.is_superuser and not getattr(user, 'is_admin', False):
             # Exclude self — non-superusers/non-admins cannot manage their own account from this screen
@@ -158,7 +158,7 @@ class UserCreate(generics.CreateAPIView):
     
     def get_queryset(self):
         user = self.request.user
-        queryset = User.objects.filter(is_active=True)
+        queryset = User.objects.filter(is_active=True, is_deleted=False)
 
         # Handle location field safely - may not exist on all user models
         try:
@@ -182,7 +182,7 @@ class UserDetails(generics.RetrieveUpdateDestroyAPIView):
         # Allow superusers to view their own profile
         if user.is_superuser and self.kwargs.get('pk') == str(user.id):
             return User.objects.filter(id=user.id)
-        queryset = User.objects.filter(is_superuser=False)
+        queryset = User.objects.filter(is_superuser=False, is_deleted=False)
         return apply_company_location_filter_for_users(queryset, user)
 
     def perform_update(self, serializer):
@@ -197,45 +197,29 @@ class UserDetails(generics.RetrieveUpdateDestroyAPIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        transaction_refs, tagged_refs = _collect_user_delete_references(user)
-
-        if transaction_refs or tagged_refs:
-            if user.is_active:
-                user.is_active = False
-                user.save(update_fields=['is_active', 'updated_at'])
-
-            JwtToken.objects.filter(user_type='User', user_identifier=user.id).delete()
-            Device.objects.filter(user_type='User', user_identifier=user.id).update(
-                accesstoken='',
-                fcmtoken='',
-                apntoken='',
-                socket='',
-            )
-
-            message_parts = []
-            if transaction_refs:
-                message_parts.append("existing transactions")
-            if tagged_refs:
-                message_parts.append("other references")
-            reason = " and ".join(message_parts)
-
-            return Response(
-                {
-                    "message": (
-                        f'User "{user.username}" cannot be deleted because it is linked with {reason}. '
-                        "The user has been marked as inactive."
-                    ),
-                    "status": "inactive",
-                    "transaction_references": transaction_refs[:10],
-                    "tagged_references": tagged_refs[:10],
-                },
-                status=status.HTTP_200_OK
-            )
-
+        # Deletion is ALWAYS a permanent soft-delete — the row and all of the
+        # user's historical data / FK references are retained, never hard-deleted
+        # or reassigned. We also set is_active=False so the user cannot log in,
+        # and purge the user's JWT / device tokens to drop live sessions.
         username = user.username
-        user.delete()
+
+        user.is_deleted = True
+        user.is_active = False
+        user.save(update_fields=['is_deleted', 'is_active', 'updated_at'])
+
+        JwtToken.objects.filter(user_type='User', user_identifier=user.id).delete()
+        Device.objects.filter(user_type='User', user_identifier=user.id).update(
+            accesstoken='',
+            fcmtoken='',
+            apntoken='',
+            socket='',
+        )
+
         return Response(
-            {"message": f'User "{username}" deleted successfully.'},
+            {
+                "message": f'User "{username}" has been permanently removed from the application.',
+                "status": "deleted",
+            },
             status=status.HTTP_200_OK
         )
 
@@ -273,6 +257,8 @@ class UserMini(generics.ListAPIView):
         model = apps.get_model(model_path)
 
         queryset = model.objects.filter(is_active=True, is_superuser=False).order_by('first_name', 'last_name')
+        if _has_field(model, 'is_deleted'):
+            queryset = queryset.filter(is_deleted=False)
         queryset = apply_company_location_filter_for_users(queryset, self.request.user)
 
         return queryset.distinct()
@@ -298,6 +284,8 @@ class UserMiniByUserType(generics.ListAPIView):
         model = apps.get_model(model_path)
 
         queryset = model.objects.filter(is_active=True, is_superuser=False).order_by('first_name', 'last_name')
+        if _has_field(model, 'is_deleted'):
+            queryset = queryset.filter(is_deleted=False)
         queryset = apply_company_location_filter_for_users(queryset, self.request.user)
 
         return queryset.distinct()
@@ -311,7 +299,7 @@ class ReportingManagerDropdownView(generics.ListAPIView):
     search_fields = ['username', 'email', 'phone', 'first_name', 'last_name']
 
     def get_queryset(self):
-        return User.objects.filter(is_active=True).order_by('first_name', 'last_name')
+        return User.objects.filter(is_active=True, is_deleted=False).order_by('first_name', 'last_name')
 
 
 class ForceLogoutView(APIView):
@@ -332,7 +320,7 @@ class ForceLogoutView(APIView):
         if str(request.user.id) == str(user_id):
             return Response({'error': 'You cannot force-logout yourself'}, status=status.HTTP_400_BAD_REQUEST)
 
-        target_user = User.objects.filter(id=user_id).first()
+        target_user = User.objects.filter(id=user_id, is_deleted=False).first()
         if not target_user:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -431,7 +419,7 @@ class ApplyTemplateToUserView(APIView):
             return Response({'error': 'Template not found'}, status=status.HTTP_404_NOT_FOUND)
 
         try:
-            target_user = User.objects.get(id=user_id)
+            target_user = User.objects.get(id=user_id, is_deleted=False)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -524,7 +512,7 @@ class UserPermissionView(APIView):
         if not self._can_edit(request):
             return Response({'error': 'Permission denied'}, status=403)
 
-        target_user = User.objects.filter(id=user_id).first()
+        target_user = User.objects.filter(id=user_id, is_deleted=False).first()
         if not target_user:
             return Response({'error': 'User not found'}, status=404)
 
@@ -607,7 +595,7 @@ class EmployeeListView(generics.ListCreateAPIView):
     ordering = ['first_name', 'last_name']
 
     def get_queryset(self):
-        qs = User.objects.filter(is_active=True, is_superuser=False).select_related('reporting_manager')
+        qs = User.objects.filter(is_active=True, is_superuser=False, is_deleted=False).select_related('reporting_manager')
         reporting_manager = self.request.query_params.get('reporting_manager')
         user_status = self.request.query_params.get('user_status')
         designation = self.request.query_params.get('designation')
@@ -628,7 +616,7 @@ class EmployeeDetailView(generics.RetrieveUpdateDestroyAPIView):
     from Users.serializers import UserSerializer
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserSerializer
-    queryset = User.objects.filter(is_active=True, is_superuser=False)
+    queryset = User.objects.filter(is_active=True, is_superuser=False, is_deleted=False)
 
 
 class EmployeePerformanceView(APIView):
@@ -643,7 +631,7 @@ class EmployeePerformanceView(APIView):
         from django.db.models import Count
 
         try:
-            employee = User.objects.get(pk=pk)
+            employee = User.objects.get(pk=pk, is_deleted=False)
         except User.DoesNotExist:
             return Response({'error': 'Employee not found'}, status=status.HTTP_404_NOT_FOUND)
 

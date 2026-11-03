@@ -44,7 +44,12 @@ class CustomAuthenticationBackend(ModelBackend):
                         
             user_model = django_apps.get_model(model_path, require_ready=False)
 
-            user = user_model.objects.get(
+            lookup_qs = user_model.objects.all()
+            # Never resolve credentials to a soft-deleted user.
+            if any(f.name == 'is_deleted' for f in user_model._meta.fields):
+                lookup_qs = lookup_qs.filter(is_deleted=False)
+
+            user = lookup_qs.get(
                 Q(
                     Q(email=username, is_email_verified=True) |
                     Q(phone=username) |
@@ -157,9 +162,21 @@ class JWTAuthentication(authentication.BaseAuthentication):
         if user is None:
             logger.error('User not found.')
             raise AuthenticationFailed('User not found')
-        else:
-            # request_cfg.user = user
-            set_user(user)
+
+        # Reject soft-deleted users on every request — a deleted user is treated
+        # as if it no longer exists, regardless of any still-valid token.
+        if getattr(user, 'is_deleted', False):
+            logger.error('User has been deleted.')
+            raise AuthenticationFailed('User not found')
+
+        # Also reject deactivated (is_active=False) users so a retained token
+        # cannot keep an inactive account logged in.
+        if not getattr(user, 'is_active', True):
+            logger.error('User is inactive.')
+            raise AuthenticationFailed('Account is inactive. Please contact admin')
+
+        # request_cfg.user = user
+        set_user(user)
 
         # request_cfg.mydb = request_cfg.session_data.get('selected_db', None)   
 

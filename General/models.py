@@ -157,3 +157,86 @@ class GeneralSettings(models.Model):
     @classmethod
     def is_allow_multiple_schemes_enabled(cls) -> bool:
         return bool(cls.get_solo().allow_multiple_schemes)
+
+
+class ThemeSettings(models.Model):
+    """
+    App-wide appearance / branding theme. Singleton (single row via get_solo()).
+    Controls colors + fonts applied across the whole frontend (MUI theme).
+    Read endpoint is public so the theme loads before login.
+    """
+
+    FONT_CHOICES = [
+        ('Plus Jakarta Sans', 'Plus Jakarta Sans'),
+        ('Outfit', 'Outfit'),
+        ('Inter', 'Inter'),
+        ('Poppins', 'Poppins'),
+        ('Roboto', 'Roboto'),
+        ('Montserrat', 'Montserrat'),
+        ('Open Sans', 'Open Sans'),
+        ('Lato', 'Lato'),
+        ('Nunito', 'Nunito'),
+        ('Work Sans', 'Work Sans'),
+        ('DM Sans', 'DM Sans'),
+        ('Manrope', 'Manrope'),
+    ]
+
+    # --- Core colors (hex strings) ---
+    primary_color = models.CharField(
+        max_length=9, default='#4F46E5',
+        help_text='Main brand color (buttons, links, active states)',
+    )
+    secondary_color = models.CharField(
+        max_length=9, default='#10B981',
+        help_text='Accent / secondary color',
+    )
+    background_color = models.CharField(
+        max_length=9, default='#F8FAFC',
+        help_text='App background color',
+    )
+    paper_color = models.CharField(
+        max_length=9, default='#FFFFFF',
+        help_text='Surface / card background color',
+    )
+    text_primary_color = models.CharField(
+        max_length=9, default='#0F172A',
+        help_text='Primary text color',
+    )
+    text_secondary_color = models.CharField(
+        max_length=9, default='#475569',
+        help_text='Secondary / muted text color',
+    )
+
+    # --- Semantic colors ---
+    success_color = models.CharField(max_length=9, default='#10B981')
+    error_color = models.CharField(max_length=9, default='#EF4444')
+    warning_color = models.CharField(max_length=9, default='#F59E0B')
+    info_color = models.CharField(max_length=9, default='#06B6D4')
+
+    # --- Typography ---
+    heading_font = models.CharField(
+        max_length=100, choices=FONT_CHOICES, default='Outfit',
+        help_text='Font family for headings',
+    )
+    body_font = models.CharField(
+        max_length=100, choices=FONT_CHOICES, default='Plus Jakarta Sans',
+        help_text='Font family for body text',
+    )
+
+    # --- Shape ---
+    border_radius = models.PositiveIntegerField(
+        default=10,
+        help_text='Global corner radius in pixels (0-24)',
+    )
+
+    class Meta:
+        verbose_name = 'Theme Settings'
+        verbose_name_plural = 'Theme Settings'
+
+    def __str__(self):
+        return 'Theme Settings'
+
+    @classmethod
+    def get_solo(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj

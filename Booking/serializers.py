@@ -18,11 +18,13 @@ class BookingStatusHistorySerializer(serializers.ModelSerializer):
 
 
 class BookingSerializer(serializers.ModelSerializer):
-    project_name = serializers.CharField(source='project.name', read_only=True)
+    project_name = serializers.SerializerMethodField(read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     sales_executive_name = serializers.SerializerMethodField(read_only=True)
     plot_number_display = serializers.CharField(source='plot.plot_number', read_only=True)
     flat_unit_display = serializers.CharField(source='flat.unit_number', read_only=True)
+    availability_project_name = serializers.CharField(source='availability_project.name', read_only=True)
+    availability_unit_display = serializers.CharField(source='availability_unit.unit_number', read_only=True)
 
     class Meta:
         model = Booking
@@ -30,6 +32,8 @@ class BookingSerializer(serializers.ModelSerializer):
             'id', 'code',
             'lead', 'customer_name', 'customer_mobile', 'customer_email',
             'project', 'project_name',
+            'availability_project', 'availability_project_name',
+            'availability_unit', 'availability_unit_display',
             'unit_type', 'plot', 'plot_number_display', 'flat', 'flat_unit_display', 'unit_number',
             'agreed_price', 'booking_amount', 'booking_date',
             'property_cost', 'revenue', 'incentive',
@@ -40,15 +44,42 @@ class BookingSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ('code', 'unit_number', 'created_on', 'modified_on')
 
+    def get_project_name(self, obj):
+        if obj.availability_project:
+            return obj.availability_project.name
+        if obj.project:
+            return obj.project.name
+        return None
+
     def get_sales_executive_name(self, obj):
         if obj.sales_executive:
             return f"{obj.sales_executive.first_name} {obj.sales_executive.last_name}".strip() or obj.sales_executive.username
         return None
 
     def validate(self, data):
+        avail_project = data.get('availability_project', getattr(self.instance, 'availability_project', None))
+        avail_unit = data.get('availability_unit', getattr(self.instance, 'availability_unit', None))
+
+        # New flow: Availability List. Require a unit when an availability project is chosen.
+        if avail_project:
+            if not avail_unit:
+                raise serializers.ValidationError(
+                    {'availability_unit': 'Please select a unit from the Availability List.'}
+                )
+            # Ensure the unit belongs to the selected project
+            if avail_unit and avail_unit.block.project_id != avail_project.id:
+                raise serializers.ValidationError(
+                    {'availability_unit': 'Selected unit does not belong to the selected project.'}
+                )
+            return data
+
+        # Legacy flow: ProjectManagement + Inventory
         unit_type = data.get('unit_type', getattr(self.instance, 'unit_type', None))
         plot = data.get('plot', getattr(self.instance, 'plot', None))
         flat = data.get('flat', getattr(self.instance, 'flat', None))
+        project = data.get('project', getattr(self.instance, 'project', None))
+        if not project:
+            raise serializers.ValidationError({'project': 'Project is required.'})
         if unit_type == 'PLOT' and not plot:
             raise serializers.ValidationError({'plot': 'Plot is required for PLOT bookings.'})
         if unit_type == 'FLAT' and not flat:
@@ -80,9 +111,12 @@ class BookingSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
     def _update_unit_status(self, booking, inv_status):
-        """Sync inventory status when booking is created/cancelled."""
+        """Sync unit status when booking is created/cancelled."""
         try:
-            if booking.plot:
+            if booking.availability_unit:
+                booking.availability_unit.status = inv_status
+                booking.availability_unit.save(update_fields=['status'])
+            elif booking.plot:
                 booking.plot.status = inv_status
                 booking.plot.save(update_fields=['status'])
             elif booking.flat:

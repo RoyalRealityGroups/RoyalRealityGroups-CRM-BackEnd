@@ -242,7 +242,7 @@ class GroupSerializer(serializers.ModelSerializer):
     users = serializers.SerializerMethodField()
  
     def get_users(self, obj):
-        users = obj.user_set.filter(is_active=True)
+        users = obj.user_set.filter(is_active=True, is_deleted=False)
         return CoreUserMiniSerializer(users, many=True).data
  
     class Meta:
@@ -595,11 +595,11 @@ class IamUserSerializer(serializers.ModelSerializer):
     def validate_username(self, value):
         if not value.isalnum():
             raise serializers.ValidationError({'username': 'The username should only contain alphanumeric characters'})
-        q = User.objects.all()
+        q = User.objects.filter(is_deleted=False)
         if self.instance:
             object_id = self.instance.id
             q = q.exclude(pk=object_id)
-        if q.filter(username=value, is_active=True).exists():
+        if q.filter(username=value).exists():
             raise serializers.ValidationError({"username": "This username is already in use."})
         return value
     class Meta:
@@ -625,7 +625,8 @@ class UserUserNameValidateSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         id = attrs.get('id', '')
         username = attrs.get('username', '')
-        qset = User.objects.filter(username__exact=username)
+        # Uniqueness is checked only among non-deleted users.
+        qset = User.objects.filter(username__exact=username, is_deleted=False)
         if id != "":
             qset = qset.exclude(id=id)
         if username != '' and qset.exists():
@@ -640,7 +641,7 @@ class UserEmailValidateSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         id = attrs.get('id', '')
         email = attrs.get('email', '')
-        qset = User.objects.filter(email__exact=email)
+        qset = User.objects.filter(email__exact=email, is_deleted=False)
         if id != "":
             qset = qset.exclude(id=id)
         if email != '' and qset.exists():
@@ -655,7 +656,7 @@ class UserPhoneValidateSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         id = attrs.get('id', '')
         phone = attrs.get('phone', '')
-        qset = User.objects.filter(phone__exact=phone)
+        qset = User.objects.filter(phone__exact=phone, is_deleted=False)
         if id != "":
             qset = qset.exclude(id=id)
         if phone != '' and qset.exists():
@@ -707,12 +708,13 @@ class LoginSerializer(serializers.ModelSerializer):
         if not CustomAuthenticationBackend.check_user_type(user_type):
             raise serializers.ValidationError("Invalid User Type")
         
-        # Check if username exists first
-        try:
-            user_obj = User.objects.get(username=username)
-        except User.DoesNotExist:
+        # Check if username exists first — only among non-deleted users. A
+        # soft-deleted user is treated as if it does not exist, and its username
+        # may have been reused by another (non-deleted) user.
+        user_obj = User.objects.filter(username=username, is_deleted=False).first()
+        if user_obj is None:
             raise serializers.ValidationError({'username': 'Username not found'})
-        
+
         # Check if user is active
         if not user_obj.is_active:
             raise AuthenticationFailed('Account is inactive. Please contact admin')
@@ -967,11 +969,10 @@ class ValidateUsernameSerializer(serializers.Serializer):
     username = serializers.CharField(required=True, max_length=255)
 
     def validate_username(self, value):
-        try:
-            user = User.objects.get(username=value, is_active=True)
+        # Resolve only among non-deleted users.
+        if User.objects.filter(username=value, is_active=True, is_deleted=False).exists():
             return value
-        except User.DoesNotExist:
-            raise serializers.ValidationError("Username not found")
+        raise serializers.ValidationError("Username not found")
 
 class ChangePasswordSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, max_length=68, min_length=8, required=True)

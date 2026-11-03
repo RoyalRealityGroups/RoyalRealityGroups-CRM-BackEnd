@@ -202,6 +202,9 @@ class AvailabilityProjectSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         self._set_audit(validated_data, self.context['request'].user, create=True)
+        # New availability projects are active by default unless explicitly
+        # set otherwise. Guards against multipart requests that omit the field.
+        validated_data.setdefault('is_active', True)
         return super().create(validated_data)
 
     def update(self, instance, validated_data):

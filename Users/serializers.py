@@ -70,7 +70,7 @@ class UserSerializer(serializers.ModelSerializer):
     designation = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     joining_date = serializers.DateField(required=False, allow_null=True)
     reporting_manager = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), required=False, allow_null=True
+        queryset=User.objects.filter(is_deleted=False), required=False, allow_null=True
     )
     user_status = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     must_reset_password = serializers.BooleanField(required=False)
@@ -88,7 +88,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        read_only_fields = ['otp', 'username', 'is_email_verified', 'is_phone_verified']
+        read_only_fields = ['otp', 'username', 'is_email_verified', 'is_phone_verified', 'is_deleted']
         fields = [
             'id', 'username', 'fullname', 'first_name', 'last_name',
             'email', 'phone',
@@ -99,7 +99,7 @@ class UserSerializer(serializers.ModelSerializer):
             'designation', 'joining_date',
             'reporting_manager', 'reporting_manager_name',
             'team_count',
-            'user_status', 'is_active', 'is_admin',
+            'user_status', 'is_active', 'is_admin', 'is_deleted',
             'must_reset_password',
             'receive_sms', 'receive_email', 'receive_notification',
             'is_email_verified', 'is_phone_verified',
@@ -161,7 +161,9 @@ class UserSerializer(serializers.ModelSerializer):
             return value
         if not value.isalnum():
             raise serializers.ValidationError('Username must contain only alphanumeric characters.')
-        q = User.objects.filter(is_active=True)
+        # Uniqueness applies only among non-deleted users, so a soft-deleted
+        # user's username can be reused by a new/other user.
+        q = User.objects.filter(is_deleted=False)
         if self.instance:
             q = q.exclude(pk=self.instance.pk)
         if q.filter(username=value).exists():
@@ -174,7 +176,8 @@ class UserSerializer(serializers.ModelSerializer):
         except Exception as exc:
             raise serializers.ValidationError(str(exc))
         if value:
-            q = User.objects.all()
+            # Uniqueness applies only among non-deleted users.
+            q = User.objects.filter(is_deleted=False)
             if self.instance:
                 q = q.exclude(pk=self.instance.pk)
             if q.filter(email=value).exists():
@@ -200,12 +203,15 @@ class UserSerializer(serializers.ModelSerializer):
     # ------------------------------------------------------------------
 
     def _generate_username(self):
-        last = User.objects.filter(username__startswith='EMP').order_by('-username').first()
+        # Only consider non-deleted users for the EMP#### collision check, so a
+        # deleted user's auto-generated username can be reused.
+        base_qs = User.objects.filter(username__startswith='EMP', is_deleted=False)
+        last = base_qs.order_by('-username').first()
         if last:
             try:
                 num = int(last.username.replace('EMP', '')) + 1
             except ValueError:
-                num = User.objects.filter(username__startswith='EMP').count() + 1
+                num = base_qs.count() + 1
         else:
             num = 1
         return f'EMP{num:04d}'
@@ -326,7 +332,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             value = validate_contact_email(value)
         except Exception as exc:
             raise serializers.ValidationError(str(exc))
-        q = User.objects.all()
+        q = User.objects.filter(is_deleted=False)
         if self.instance:
             q = q.exclude(pk=self.instance.pk)
         if q.filter(email=value).exists():
@@ -342,10 +348,10 @@ class RegisterSerializer(serializers.ModelSerializer):
     def validate_username(self, value):
         if not value.isalnum():
             raise serializers.ValidationError('Username must contain only alphanumeric characters.')
-        q = User.objects.all()
+        q = User.objects.filter(is_deleted=False)
         if self.instance:
             q = q.exclude(pk=self.instance.pk)
-        if q.filter(username=value, is_active=True).exists():
+        if q.filter(username=value).exists():
             raise serializers.ValidationError('This username is already in use.')
         return value
 

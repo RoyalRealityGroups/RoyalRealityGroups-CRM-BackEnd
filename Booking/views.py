@@ -13,7 +13,8 @@ from .serializers import BookingSerializer, BookingStatusHistorySerializer, BOOK
 class BookingViewSet(viewsets.ModelViewSet):
     """Module 8 - Booking Management"""
     queryset = Booking.objects.select_related(
-        'lead', 'project', 'plot', 'flat', 'sales_executive'
+        'lead', 'project', 'plot', 'flat', 'sales_executive',
+        'availability_project', 'availability_unit',
     ).filter(is_deleted=False)
     serializer_class = BookingSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -53,9 +54,12 @@ class BookingViewSet(viewsets.ModelViewSet):
         if new_status == 'CANCELLED':
             booking.cancellation_reason = request.data.get('cancellation_reason', '')
             booking.cancelled_date = timezone.now().date()
-            # Free up inventory
+            # Free up the unit
             try:
-                if booking.plot:
+                if booking.availability_unit:
+                    booking.availability_unit.status = 'AVAILABLE'
+                    booking.availability_unit.save(update_fields=['status'])
+                elif booking.plot:
                     booking.plot.status = 'AVAILABLE'
                     booking.plot.save(update_fields=['status'])
                 elif booking.flat:
@@ -64,9 +68,12 @@ class BookingViewSet(viewsets.ModelViewSet):
             except Exception:
                 pass
         elif new_status == 'REGISTERED':
-            # Mark inventory as Registered
+            # Mark unit as Registered
             try:
-                if booking.plot:
+                if booking.availability_unit:
+                    booking.availability_unit.status = 'REGISTERED'
+                    booking.availability_unit.save(update_fields=['status'])
+                elif booking.plot:
                     booking.plot.status = 'REGISTERED'
                     booking.plot.save(update_fields=['status'])
                 elif booking.flat:

@@ -1,6 +1,21 @@
 from rest_framework import serializers
 
-from ProjectManagement.models import Project, ProjectImage, ProjectStatusHistory
+from ProjectManagement.models import Project, ProjectImage, ProjectStatusHistory, ProjectFloorPlan
+
+
+class ProjectFloorPlanSerializer(serializers.ModelSerializer):
+    file_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProjectFloorPlan
+        fields = ('id', 'project', 'file', 'file_url', 'title', 'order', 'created_on')
+        read_only_fields = ('created_on',)
+
+    def get_file_url(self, obj):
+        request = self.context.get('request')
+        if obj.file and request:
+            return request.build_absolute_uri(obj.file.url)
+        return obj.file.url if obj.file else None
 
 
 class ProjectImageSerializer(serializers.ModelSerializer):
@@ -39,9 +54,13 @@ class ProjectSerializer(serializers.ModelSerializer):
     specifications = serializers.CharField(allow_blank=True, allow_null=True, required=False)
     floor_plans_text = serializers.CharField(allow_blank=True, allow_null=True, required=False)
     brochure = serializers.FileField(allow_null=True, required=False)
+    floor_plan_file = serializers.FileField(allow_null=True, required=False)
 
     # Related images (elevation images uploaded separately via ProjectImage)
     images = serializers.SerializerMethodField()
+
+    # Floor plan files (multiple PDFs/images uploaded via ProjectFloorPlan)
+    floor_plan_files = serializers.SerializerMethodField()
 
     # Preview image - first elevation image for list/card views
     preview_image = serializers.SerializerMethodField()
@@ -49,6 +68,10 @@ class ProjectSerializer(serializers.ModelSerializer):
     def get_images(self, obj):
         images = obj.images.all()
         return ProjectImageSerializer(images, many=True, context=self.context).data
+
+    def get_floor_plan_files(self, obj):
+        files = obj.floor_plans_files.filter(is_deleted=False).order_by('order', 'created_on')
+        return ProjectFloorPlanSerializer(files, many=True, context=self.context).data
 
     def get_preview_image(self, obj):
         """Return the URL of the first elevation image for preview"""
@@ -73,10 +96,10 @@ class ProjectSerializer(serializers.ModelSerializer):
             'floor_plans', 'gallery',
             # Current form fields
             'overview', 'description', 'amenities', 'specifications', 'floor_plans_text',
-            'brochure', 'images', 'preview_image',
+            'brochure', 'floor_plan_file', 'floor_plan_files', 'images', 'preview_image',
             'created_on', 'modified_on',
         )
-        read_only_fields = ('code', 'is_deleted', 'created_on', 'modified_on', 'images', 'preview_image')
+        read_only_fields = ('code', 'is_deleted', 'created_on', 'modified_on', 'images', 'preview_image', 'floor_plan_files')
 
     def create(self, validated_data):
         user = self.context['request'].user

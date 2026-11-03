@@ -101,6 +101,12 @@ class Project(CoreModel):
         help_text='Project brochure PDF',
     )
 
+    # Floor plan document (PDF / image). Separate from floor_plans_text.
+    floor_plan_file = models.FileField(
+        upload_to='projects/floor_plans/', null=True, blank=True,
+        help_text='Floor plan document — PDF or image',
+    )
+
     is_active = models.BooleanField(default=True)
 
     class Meta:
@@ -159,6 +165,28 @@ class ProjectStatusHistory(BaseModel):
 
     def __str__(self):
         return f"{self.project.code}: {self.from_status or 'NEW'} → {self.to_status}"
+
+
+class ProjectFloorPlan(BaseModel):
+    """
+    Floor plan documents for a project — supports MULTIPLE files per project.
+    Unlike ProjectImage (ImageField), this uses a FileField so it accepts
+    both PDFs and images.
+    """
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, related_name='floor_plans_files',
+    )
+    file = models.FileField(upload_to='projects/floor_plans/')
+    title = models.CharField(max_length=200, blank=True, null=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'created_on']
+        verbose_name = 'Project Floor Plan'
+        verbose_name_plural = 'Project Floor Plans'
+
+    def __str__(self):
+        return f"{self.project.code} - Floor Plan - {self.title or self.id}"
 
 
 class ProjectImage(BaseModel):

@@ -57,6 +57,20 @@ class AvailabilityProjectViewSet(viewsets.ModelViewSet):
             .prefetch_related('blocks', 'images')
         )
 
+    def filter_backends_for_action(self):
+        # Only apply the project-level filters (status/project_type/is_active)
+        # on the list endpoint. On detail / custom actions the query params
+        # like ?status= are meant for the action itself (e.g. unit status),
+        # not for filtering the Project queryset — so skip the filter backends.
+        if self.action == 'list':
+            return [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+        return []
+
+    def filter_queryset(self, queryset):
+        for backend in self.filter_backends_for_action():
+            queryset = backend().filter_queryset(self.request, queryset, self)
+        return queryset
+
     def get_serializer_class(self):
         # List action → lightweight serializer (no nested units)
         if self.action == 'list':
@@ -68,6 +82,30 @@ class AvailabilityProjectViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], url_path='choices')
     def choices(self, request):
         return Response(build_choices())
+
+    # ── available units for a project (used by Booking form) ───────────────────
+
+    @action(detail=True, methods=['get'], url_path='available_units')
+    def available_units(self, request, pk=None):
+        """
+        Return units for this project, grouped-friendly flat list.
+        Defaults to only AVAILABLE units; pass ?status=ALL to include everything,
+        or ?status=AVAILABLE,BLOCKED to include held units too.
+        Used by the Booking form unit dropdown.
+        """
+        project = self.get_object()
+        status_param = request.query_params.get('status', 'AVAILABLE')
+
+        qs = AvailabilityUnit.objects.filter(
+            block__project=project, is_deleted=False
+        ).select_related('block').order_by('block__order', 'floor', 'unit_number')
+
+        if status_param and status_param.upper() != 'ALL':
+            statuses = [s.strip().upper() for s in status_param.split(',') if s.strip()]
+            qs = qs.filter(status__in=statuses)
+
+        serializer = AvailabilityUnitSerializer(qs, many=True, context={'request': request})
+        return Response(serializer.data)
 
     # ── per-project stats ─────────────────────────────────────────────────────
 

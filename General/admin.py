@@ -57,3 +57,18 @@ class GeneralSettingsAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+from .models import ThemeSettings
+
+
+@admin.register(ThemeSettings)
+class ThemeSettingsAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'primary_color', 'secondary_color', 'heading_font', 'body_font')
+
+    def has_add_permission(self, request):
+        # Singleton — only one row allowed
+        return not ThemeSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False

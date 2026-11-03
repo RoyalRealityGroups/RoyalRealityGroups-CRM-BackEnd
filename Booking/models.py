@@ -41,10 +41,14 @@ class Booking(CoreModel):
     customer_email = models.EmailField(blank=True, null=True)
 
     # Project & Unit
+    # Legacy FK to ProjectManagement — now nullable because bookings can
+    # instead reference an Availability project. Kept for backward compatibility.
     project = models.ForeignKey(
         'ProjectManagement.Project',
         on_delete=models.RESTRICT,
         related_name='bookings',
+        null=True,
+        blank=True,
     )
     unit_type = models.CharField(
         max_length=10, choices=UNIT_TYPE_CHOICES, default='PLOT'
@@ -67,6 +71,25 @@ class Booking(CoreModel):
     unit_number = models.CharField(
         max_length=50, blank=True, null=True,
         help_text='Denormalised unit number for quick display'
+    )
+
+    # Availability List integration (new source of projects/units).
+    # These are nullable so existing bookings (linked to old Inventory) keep working.
+    availability_project = models.ForeignKey(
+        'Availability.AvailabilityProject',
+        on_delete=models.RESTRICT,
+        related_name='bookings',
+        null=True,
+        blank=True,
+        help_text='Project selected from the Availability List',
+    )
+    availability_unit = models.ForeignKey(
+        'Availability.AvailabilityUnit',
+        on_delete=models.RESTRICT,
+        related_name='bookings',
+        null=True,
+        blank=True,
+        help_text='Unit (flat/plot) selected from the Availability List',
     )
 
     # Financials
@@ -105,14 +128,20 @@ class Booking(CoreModel):
         ]
 
     def __str__(self):
-        return f"{self.code} - {self.customer_name} | {self.project.name} [{self.status}]"
+        proj = self.project.name if self.project else (
+            self.availability_project.name if self.availability_project else '—'
+        )
+        return f"{self.code} - {self.customer_name} | {proj} [{self.status}]"
 
     def save(self, *args, **kwargs):
-        # Denormalise unit number
-        if self.plot and not self.unit_number:
-            self.unit_number = self.plot.plot_number
-        elif self.flat and not self.unit_number:
-            self.unit_number = self.flat.unit_number
+        # Denormalise unit number from whichever source is set
+        if not self.unit_number:
+            if self.availability_unit:
+                self.unit_number = self.availability_unit.unit_number
+            elif self.plot:
+                self.unit_number = self.plot.plot_number
+            elif self.flat:
+                self.unit_number = self.flat.unit_number
         super().save(*args, **kwargs)
 
 

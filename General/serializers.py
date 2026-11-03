@@ -41,3 +41,42 @@ class GeneralSettingsSerializer(serializers.ModelSerializer):
             "fcm_vapid_key",
         )
         read_only_fields = ("id",)
+
+
+import re
+from .models import ThemeSettings
+
+_HEX_RE = re.compile(r'^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$')
+
+_COLOR_FIELDS = [
+    'primary_color', 'secondary_color', 'background_color', 'paper_color',
+    'text_primary_color', 'text_secondary_color',
+    'success_color', 'error_color', 'warning_color', 'info_color',
+]
+
+
+class ThemeSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ThemeSettings
+        fields = (
+            'id',
+            'primary_color', 'secondary_color', 'background_color', 'paper_color',
+            'text_primary_color', 'text_secondary_color',
+            'success_color', 'error_color', 'warning_color', 'info_color',
+            'heading_font', 'body_font', 'border_radius',
+        )
+        read_only_fields = ('id',)
+
+    def validate(self, attrs):
+        # Validate every provided color is a valid hex string
+        for field in _COLOR_FIELDS:
+            if field in attrs:
+                val = attrs[field]
+                if val and not _HEX_RE.match(val):
+                    raise serializers.ValidationError(
+                        {field: 'Must be a valid hex color, e.g. #4F46E5.'}
+                    )
+        # Clamp border radius to a sane range
+        if 'border_radius' in attrs:
+            attrs['border_radius'] = max(0, min(24, int(attrs['border_radius'])))
+        return attrs

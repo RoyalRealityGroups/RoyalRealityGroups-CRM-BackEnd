@@ -4,8 +4,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 
-from ProjectManagement.models import Project, ProjectImage
-from ProjectManagement.serializers import ProjectSerializer, ProjectImageSerializer, ProjectMiniSerializer
+from ProjectManagement.models import Project, ProjectImage, ProjectFloorPlan
+from ProjectManagement.serializers import (
+    ProjectSerializer, ProjectImageSerializer, ProjectMiniSerializer,
+    ProjectFloorPlanSerializer,
+)
 
 
 # ============================================================================
@@ -181,3 +184,65 @@ class ProjectImageUpload(APIView):
             created.append(ProjectImageSerializer(proj_img, context={'request': request}).data)
 
         return Response({'created': created, 'count': len(created)}, status=status.HTTP_201_CREATED)
+
+
+# ============================================================================
+# PROJECT FLOOR PLANS — bulk PDF/image upload
+# ============================================================================
+
+class ProjectFloorPlanList(generics.ListAPIView):
+    """List all floor plan files for a project."""
+    serializer_class = ProjectFloorPlanSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        project_id = self.kwargs.get('project_id')
+        return ProjectFloorPlan.objects.filter(
+            project_id=project_id, is_deleted=False
+        ).order_by('order', 'created_on')
+
+
+class ProjectFloorPlanUpload(APIView):
+    """Bulk upload floor plan files (PDF or image) for a project."""
+
+    def post(self, request, project_id):
+        project = Project.objects.filter(id=project_id, is_deleted=False).first()
+        if not project:
+            return Response({'detail': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        files = request.FILES.getlist('files')
+        if not files:
+            return Response({'detail': 'No files provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Continue numbering after any existing floor plans
+        existing_count = ProjectFloorPlan.objects.filter(
+            project=project, is_deleted=False
+        ).count()
+
+        created = []
+        for idx, f in enumerate(files):
+            fp = ProjectFloorPlan.objects.create(
+                project=project,
+                file=f,
+                title=f.name,
+                order=existing_count + idx,
+                created_by_type='User',
+                created_by_identifier=str(request.user.id),
+                modified_by_type='User',
+                modified_by_identifier=str(request.user.id),
+            )
+            created.append(ProjectFloorPlanSerializer(fp, context={'request': request}).data)
+
+        return Response({'created': created, 'count': len(created)}, status=status.HTTP_201_CREATED)
+
+
+class ProjectFloorPlanDetail(generics.RetrieveDestroyAPIView):
+    """Retrieve or delete a single floor plan file."""
+    serializer_class = ProjectFloorPlanSerializer
+
+    def get_queryset(self):
+        return ProjectFloorPlan.objects.filter(is_deleted=False)
+
+    def perform_destroy(self, instance):
+        instance.is_deleted = True
+        instance.save(update_fields=['is_deleted'])

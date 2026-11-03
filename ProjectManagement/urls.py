@@ -10,4 +10,8 @@ urlpatterns = [
     path('<str:project_id>/images/', views.ProjectImageList.as_view()),
     path('<str:project_id>/images/upload/', views.ProjectImageUpload.as_view()),
     path('images/<str:pk>/', views.ProjectImageDetail.as_view()),
+    # Floor plan files (bulk PDF/image)
+    path('<str:project_id>/floor-plans/', views.ProjectFloorPlanList.as_view()),
+    path('<str:project_id>/floor-plans/upload/', views.ProjectFloorPlanUpload.as_view()),
+    path('floor-plans/<str:pk>/', views.ProjectFloorPlanDetail.as_view()),
 ]
